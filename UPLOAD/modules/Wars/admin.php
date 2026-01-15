@@ -825,39 +825,83 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             break;
 
         case "add_war":
-            add_war($_REQUEST['etat'], $_REQUEST['team'], $_REQUEST['game'], $_REQUEST['jour'], $_REQUEST['mois'], $_REQUEST['annee'], $_REQUEST['heure'], $_REQUEST['adversaire'], $_REQUEST['url_adv'], $_REQUEST['country'], $_REQUEST['type'], $_REQUEST['style'], $_REQUEST['report'], $_REQUEST['url_league']);
+            add_war(
+                isset($_REQUEST['etat']) ? $_REQUEST['etat'] : '',
+                isset($_REQUEST['team']) ? $_REQUEST['team'] : '',
+                isset($_REQUEST['game']) ? $_REQUEST['game'] : '',
+                isset($_REQUEST['jour']) ? $_REQUEST['jour'] : '',
+                isset($_REQUEST['mois']) ? $_REQUEST['mois'] : '',
+                isset($_REQUEST['annee']) ? $_REQUEST['annee'] : '',
+                isset($_REQUEST['heure']) ? $_REQUEST['heure'] : '',
+                isset($_REQUEST['adversaire']) ? $_REQUEST['adversaire'] : '',
+                isset($_REQUEST['url_adv']) ? $_REQUEST['url_adv'] : '',
+                isset($_REQUEST['country']) ? $_REQUEST['country'] : '',
+                isset($_REQUEST['type']) ? $_REQUEST['type'] : '',
+                isset($_REQUEST['style']) ? $_REQUEST['style'] : '',
+                isset($_REQUEST['report']) ? $_REQUEST['report'] : '',
+                isset($_REQUEST['url_league']) ? $_REQUEST['url_league'] : ''
+            );
             break;
 
         case "del_war":
-            del_war($_REQUEST['war_id']);
+            del_war(isset($_REQUEST['war_id']) ? $_REQUEST['war_id'] : '');
             break;
 
         case "do_edit":
-            do_edit($_REQUEST['war_id'], $_REQUEST['etat'], $_REQUEST['team'], $_REQUEST['game'], $_REQUEST['jour'], $_REQUEST['mois'], $_REQUEST['annee'], $_REQUEST['heure'], $_REQUEST['adversaire'], $_REQUEST['url_adv'], $_REQUEST['country'], $_REQUEST['type'], $_REQUEST['style'], $_REQUEST['report'], $_REQUEST['url_league']);
+            do_edit(
+                isset($_REQUEST['war_id']) ? $_REQUEST['war_id'] : '',
+                isset($_REQUEST['etat']) ? $_REQUEST['etat'] : '',
+                isset($_REQUEST['team']) ? $_REQUEST['team'] : '',
+                isset($_REQUEST['game']) ? $_REQUEST['game'] : '',
+                isset($_REQUEST['jour']) ? $_REQUEST['jour'] : '',
+                isset($_REQUEST['mois']) ? $_REQUEST['mois'] : '',
+                isset($_REQUEST['annee']) ? $_REQUEST['annee'] : '',
+                isset($_REQUEST['heure']) ? $_REQUEST['heure'] : '',
+                isset($_REQUEST['adversaire']) ? $_REQUEST['adversaire'] : '',
+                isset($_REQUEST['url_adv']) ? $_REQUEST['url_adv'] : '',
+                isset($_REQUEST['country']) ? $_REQUEST['country'] : '',
+                isset($_REQUEST['type']) ? $_REQUEST['type'] : '',
+                isset($_REQUEST['style']) ? $_REQUEST['style'] : '',
+                isset($_REQUEST['report']) ? $_REQUEST['report'] : '',
+                isset($_REQUEST['url_league']) ? $_REQUEST['url_league'] : ''
+            );
             break;
 
         case "main_file":
-            main_file($_REQUEST['im_id']);
+            main_file(isset($_REQUEST['im_id']) ? $_REQUEST['im_id'] : '');
             break;
 
         case "add_file":
-            add_file($_REQUEST['im_id']);
+            add_file(isset($_REQUEST['im_id']) ? $_REQUEST['im_id'] : '');
             break;
 
         case "edit_file":
-            edit_file($_REQUEST['fid']);
+            edit_file(isset($_REQUEST['fid']) ? $_REQUEST['fid'] : '');
             break;
 
         case "send_file":
-            send_file($_REQUEST['im_id'], $_REQUEST['file_type'], $_REQUEST['url_file'], $_REQUEST['fichiernom'], $_REQUEST['ecrase_screen']);
+            send_file(
+                isset($_REQUEST['im_id']) ? $_REQUEST['im_id'] : '',
+                isset($_REQUEST['file_type']) ? $_REQUEST['file_type'] : '',
+                isset($_REQUEST['url_file']) ? $_REQUEST['url_file'] : '',
+                isset($_REQUEST['fichiernom']) ? $_REQUEST['fichiernom'] : '',
+                isset($_REQUEST['ecrase_screen']) ? $_REQUEST['ecrase_screen'] : ''
+            );
             break;
 
         case "modif_file":
-            modif_file($_REQUEST['im_id'], $_REQUEST['fid'], $_REQUEST['file_type'], $_REQUEST['url_file'], $_REQUEST['fichiernom'], $_REQUEST['ecrase_screen']);
+            modif_file(
+                isset($_REQUEST['im_id']) ? $_REQUEST['im_id'] : '',
+                isset($_REQUEST['fid']) ? $_REQUEST['fid'] : '',
+                isset($_REQUEST['file_type']) ? $_REQUEST['file_type'] : '',
+                isset($_REQUEST['url_file']) ? $_REQUEST['url_file'] : '',
+                isset($_REQUEST['fichiernom']) ? $_REQUEST['fichiernom'] : '',
+                isset($_REQUEST['ecrase_screen']) ? $_REQUEST['ecrase_screen'] : ''
+            );
             break;
 
         case "del_file":
-            del_file($_REQUEST['fid']);
+            del_file(isset($_REQUEST['fid']) ? $_REQUEST['fid'] : '');
             break;
 
         case "main_pref":
@@ -865,7 +909,7 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             break;
 
         case "change_pref":
-            change_pref($_REQUEST['max_wars']);
+            change_pref(isset($_REQUEST['max_wars']) ? $_REQUEST['max_wars'] : '');
             break;
 
         default:

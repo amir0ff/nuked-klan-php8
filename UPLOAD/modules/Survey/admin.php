@@ -283,19 +283,29 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
             break;
 
         case 'edit_sondage':
-            edit_sondage($_REQUEST['poll_id']);
+            edit_sondage(isset($_REQUEST['poll_id']) ? $_REQUEST['poll_id'] : '');
             break;
 
         case 'del_sondage':
-            del_sondage($_REQUEST['poll_id']);
+            del_sondage(isset($_REQUEST['poll_id']) ? $_REQUEST['poll_id'] : '');
             break;
 
         case 'send_sondage':
-            send_sondage($_REQUEST['titre'], $_REQUEST['option'], $_REQUEST['niveau']);
+            send_sondage(
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['option']) ? $_REQUEST['option'] : '',
+                isset($_REQUEST['niveau']) ? $_REQUEST['niveau'] : ''
+            );
             break;
 
         case 'modif_sondage':
-            modif_sondage($_REQUEST['poll_id'], $_REQUEST['titre'], $_REQUEST['option'], $_REQUEST['newoption'], $_REQUEST['niveau']);
+            modif_sondage(
+                isset($_REQUEST['poll_id']) ? $_REQUEST['poll_id'] : '',
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['option']) ? $_REQUEST['option'] : '',
+                isset($_REQUEST['newoption']) ? $_REQUEST['newoption'] : '',
+                isset($_REQUEST['niveau']) ? $_REQUEST['niveau'] : ''
+            );
             break;
 
         case 'main_pref':
@@ -303,7 +313,7 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
             break;
 
         case 'change_pref':
-            change_pref($_REQUEST['sond_delay']);
+            change_pref(isset($_REQUEST['sond_delay']) ? $_REQUEST['sond_delay'] : '');
             break;
 
         default:

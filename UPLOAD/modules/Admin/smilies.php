@@ -358,19 +358,30 @@ if ($visiteur == 9)
             break;
 
         case "send_smiley":
-            send_smiley($_REQUEST['nom'], $_REQUEST['code'], $_REQUEST['url'], $_REQUEST['fichiernom']);
+            send_smiley(
+                isset($_REQUEST['nom']) ? $_REQUEST['nom'] : '',
+                isset($_REQUEST['code']) ? $_REQUEST['code'] : '',
+                isset($_REQUEST['url']) ? $_REQUEST['url'] : '',
+                isset($_REQUEST['fichiernom']) ? $_REQUEST['fichiernom'] : ''
+            );
             break;
 
         case "edit_smiley":
-            edit_smiley($_REQUEST['smiley_id']);
+            edit_smiley(isset($_REQUEST['smiley_id']) ? $_REQUEST['smiley_id'] : '');
             break;
 
         case "modif_smiley":
-            modif_smiley($_REQUEST['smiley_id'], $_REQUEST['nom'], $_REQUEST['code'], $_REQUEST['url'], $_REQUEST['fichiernom']);
+            modif_smiley(
+                isset($_REQUEST['smiley_id']) ? $_REQUEST['smiley_id'] : '',
+                isset($_REQUEST['nom']) ? $_REQUEST['nom'] : '',
+                isset($_REQUEST['code']) ? $_REQUEST['code'] : '',
+                isset($_REQUEST['url']) ? $_REQUEST['url'] : '',
+                isset($_REQUEST['fichiernom']) ? $_REQUEST['fichiernom'] : ''
+            );
             break;
 
         case "del_smiley":
-            del_smiley($_REQUEST['smiley_id']);
+            del_smiley(isset($_REQUEST['smiley_id']) ? $_REQUEST['smiley_id'] : '');
             break;
 
         case "main":

@@ -714,27 +714,41 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             break;
         case "do_add":
             admintop(); 
-            do_add($_REQUEST['titre'], $_REQUEST['texte'], $_REQUEST['cat']);
+            do_add(
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['texte']) ? $_REQUEST['texte'] : '',
+                isset($_REQUEST['cat']) ? $_REQUEST['cat'] : ''
+            );
             adminfoot();
             break;
         case "edit":
             admintop(); 
-            edit($_REQUEST['artid']);
+            edit(isset($_REQUEST['artid']) ? $_REQUEST['artid'] : '');
             adminfoot();
             break;
         case "do_edit":
             admintop(); 
-            do_edit($_REQUEST['artid'], $_REQUEST['titre'], $_REQUEST['texte'], $_REQUEST['cat']);
+            do_edit(
+                isset($_REQUEST['artid']) ? $_REQUEST['artid'] : '',
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['texte']) ? $_REQUEST['texte'] : '',
+                isset($_REQUEST['cat']) ? $_REQUEST['cat'] : ''
+            );
             adminfoot();
             break;
         case "del":
             admintop(); 
-            del($_REQUEST['artid']);
+            del(isset($_REQUEST['artid']) ? $_REQUEST['artid'] : '');
             adminfoot();
             break;
         case "send_cat":
             admintop(); 
-            send_cat($_REQUEST['parentid'], $_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['position']);
+            send_cat(
+                isset($_REQUEST['parentid']) ? $_REQUEST['parentid'] : '',
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+                isset($_REQUEST['position']) ? $_REQUEST['position'] : ''
+            );
             adminfoot();
             break;
         case "add_cat":
@@ -749,17 +763,23 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             break;
         case "edit_cat":
             admintop(); 
-            edit_cat($_REQUEST['cid']);
+            edit_cat(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
             adminfoot();
             break;
         case "modif_cat":
             admintop(); 
-            modif_cat($_REQUEST['cid'], $_REQUEST['parentid'], $_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['position']);
+            modif_cat(
+                isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '',
+                isset($_REQUEST['parentid']) ? $_REQUEST['parentid'] : '',
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+                isset($_REQUEST['position']) ? $_REQUEST['position'] : ''
+            );
             adminfoot();
             break;
         case "del_cat":
             admintop(); 
-            del_cat($_REQUEST['cid']);
+            del_cat(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
             adminfoot();
             break;
         case "main_pref":
@@ -769,12 +789,15 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             break;
         case "change_pref":
             admintop(); 
-            change_pref($_REQUEST['max_sections']);
+            change_pref(isset($_REQUEST['max_sections']) ? $_REQUEST['max_sections'] : '');
             adminfoot();
             break;
         case "modif_position":
             admintop(); 
-            modif_position($_REQUEST['cid'], $_REQUEST['method']);
+            modif_position(
+                isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '',
+                isset($_REQUEST['method']) ? $_REQUEST['method'] : ''
+            );
             adminfoot();
             break;
         default:

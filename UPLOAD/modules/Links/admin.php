@@ -761,25 +761,46 @@ if ($visiteur >= $level_admin && $level_admin > -1){
 
     switch ($_REQUEST['op']){
         case "edit_link":
-            edit_link($_REQUEST['link_id']);
+            edit_link(isset($_REQUEST['link_id']) ? $_REQUEST['link_id'] : '');
             break;
         case "add_link":
             add_link();
             break;
         case "del":
-            del($_REQUEST['link_id']);
+            del(isset($_REQUEST['link_id']) ? $_REQUEST['link_id'] : '');
             break;
         case "add":
-            add($_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['webmaster'], $_REQUEST['country'], $_REQUEST['cat'], $_REQUEST['url']);
+            add(
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+                isset($_REQUEST['webmaster']) ? $_REQUEST['webmaster'] : '',
+                isset($_REQUEST['country']) ? $_REQUEST['country'] : '',
+                isset($_REQUEST['cat']) ? $_REQUEST['cat'] : '',
+                isset($_REQUEST['url']) ? $_REQUEST['url'] : ''
+            );
             break;
         case "modif_link":
-            modif_link($_REQUEST['link_id'], $_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['webmaster'], $_REQUEST['country'], $_REQUEST['cat'], $_REQUEST['count'], $_REQUEST['url']);
+            modif_link(
+                isset($_REQUEST['link_id']) ? $_REQUEST['link_id'] : '',
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+                isset($_REQUEST['webmaster']) ? $_REQUEST['webmaster'] : '',
+                isset($_REQUEST['country']) ? $_REQUEST['country'] : '',
+                isset($_REQUEST['cat']) ? $_REQUEST['cat'] : '',
+                isset($_REQUEST['count']) ? $_REQUEST['count'] : '',
+                isset($_REQUEST['url']) ? $_REQUEST['url'] : ''
+            );
             break;
         case "main":
             main();
             break;
         case "send_cat":
-            send_cat($_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['parentid'], $_REQUEST['position']);
+            send_cat(
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+                isset($_REQUEST['parentid']) ? $_REQUEST['parentid'] : '',
+                isset($_REQUEST['position']) ? $_REQUEST['position'] : ''
+            );
             break;
         case "add_cat":
             add_cat();
@@ -788,28 +809,37 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             main_cat();
             break;
         case "edit_cat":
-            edit_cat($_REQUEST['cid']);
+            edit_cat(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
             break;
         case "modif_cat":
-            modif_cat($_REQUEST['cid'], $_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['parentid'], $_REQUEST['position']);
+            modif_cat(
+                isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '',
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+                isset($_REQUEST['parentid']) ? $_REQUEST['parentid'] : '',
+                isset($_REQUEST['position']) ? $_REQUEST['position'] : ''
+            );
             break;
         case "del_cat":
-            del_cat($_REQUEST['cid']);
+            del_cat(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
             break;
         case "main_pref":
             main_pref();
             break;
         case "change_pref":
-            change_pref($_REQUEST['max_liens']);
+            change_pref(isset($_REQUEST['max_liens']) ? $_REQUEST['max_liens'] : '');
             break;
         case "modif_position":
-            modif_position($_REQUEST['cid'], $_REQUEST['method']);
+            modif_position(
+                isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '',
+                isset($_REQUEST['method']) ? $_REQUEST['method'] : ''
+            );
             break;
         case "main_broken":
             main_broken();
             break;
         case "del_broke":
-            del_broke($_REQUEST['link_id']);
+            del_broke(isset($_REQUEST['link_id']) ? $_REQUEST['link_id'] : '');
             break;
         case "del_broken":
             del_broken();

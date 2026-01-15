@@ -984,7 +984,7 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 
 	switch ($_REQUEST['op']) {
 		case "edit_file":
-			edit_file($_REQUEST['did']);
+			edit_file(isset($_REQUEST['did']) ? $_REQUEST['did'] : '');
 			break;
 
 		case "add_file":
@@ -992,16 +992,54 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 			break;
 
 		case "del_file":
-			del_file($_REQUEST['did']);
+			del_file(isset($_REQUEST['did']) ? $_REQUEST['did'] : '');
 			break;
 
 		case "send_file":
-			send_file($_REQUEST['date'], $_REQUEST['size'], $_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['cat'], $_REQUEST['url'], $_REQUEST['url2'], $_REQUEST['url3'], $_REQUEST['level'], $_REQUEST['autor'], $_REQUEST['site'], $_REQUEST['comp'], $_REQUEST['screen'], $_REQUEST['screen2'], $_REQUEST['copy'], $_REQUEST['ecrase_file'], $_REQUEST['ecrase_screen']);
+			send_file(
+				isset($_REQUEST['date']) ? $_REQUEST['date'] : '',
+				isset($_REQUEST['size']) ? $_REQUEST['size'] : '',
+				isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+				isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+				isset($_REQUEST['cat']) ? $_REQUEST['cat'] : '',
+				isset($_REQUEST['url']) ? $_REQUEST['url'] : '',
+				isset($_REQUEST['url2']) ? $_REQUEST['url2'] : '',
+				isset($_REQUEST['url3']) ? $_REQUEST['url3'] : '',
+				isset($_REQUEST['level']) ? $_REQUEST['level'] : '',
+				isset($_REQUEST['autor']) ? $_REQUEST['autor'] : '',
+				isset($_REQUEST['site']) ? $_REQUEST['site'] : '',
+				isset($_REQUEST['comp']) ? $_REQUEST['comp'] : '',
+				isset($_REQUEST['screen']) ? $_REQUEST['screen'] : '',
+				isset($_REQUEST['screen2']) ? $_REQUEST['screen2'] : '',
+				isset($_REQUEST['copy']) ? $_REQUEST['copy'] : '',
+				isset($_REQUEST['ecrase_file']) ? $_REQUEST['ecrase_file'] : '',
+				isset($_REQUEST['ecrase_screen']) ? $_REQUEST['ecrase_screen'] : ''
+			);
 			UpdateSitmap();
 			break;
 
 		case "modif_file":
-			modif_file($_REQUEST['did'], $_REQUEST['date'], $_REQUEST['taille'], $_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['cat'], $_REQUEST['count'], $_REQUEST['url'], $_REQUEST['url2'], $_REQUEST['url3'], $_REQUEST['level'], $_REQUEST['autor'], $_REQUEST['site'], $_REQUEST['comp'], $_REQUEST['screen'], $_REQUEST['screen2'], $_REQUEST['copy'], $_REQUEST['ecrase_file'], $_REQUEST['ecrase_screen']);
+			modif_file(
+				isset($_REQUEST['did']) ? $_REQUEST['did'] : '',
+				isset($_REQUEST['date']) ? $_REQUEST['date'] : '',
+				isset($_REQUEST['taille']) ? $_REQUEST['taille'] : '',
+				isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+				isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+				isset($_REQUEST['cat']) ? $_REQUEST['cat'] : '',
+				isset($_REQUEST['count']) ? $_REQUEST['count'] : '',
+				isset($_REQUEST['url']) ? $_REQUEST['url'] : '',
+				isset($_REQUEST['url2']) ? $_REQUEST['url2'] : '',
+				isset($_REQUEST['url3']) ? $_REQUEST['url3'] : '',
+				isset($_REQUEST['level']) ? $_REQUEST['level'] : '',
+				isset($_REQUEST['autor']) ? $_REQUEST['autor'] : '',
+				isset($_REQUEST['site']) ? $_REQUEST['site'] : '',
+				isset($_REQUEST['comp']) ? $_REQUEST['comp'] : '',
+				isset($_REQUEST['screen']) ? $_REQUEST['screen'] : '',
+				isset($_REQUEST['screen2']) ? $_REQUEST['screen2'] : '',
+				isset($_REQUEST['copy']) ? $_REQUEST['copy'] : '',
+				isset($_REQUEST['ecrase_file']) ? $_REQUEST['ecrase_file'] : '',
+				isset($_REQUEST['ecrase_screen']) ? $_REQUEST['ecrase_screen'] : ''
+			);
 			break;
 
 		case "main":
@@ -1009,7 +1047,13 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 			break;
 
 		case "send_cat":
-			send_cat($_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['parentid'], $_REQUEST['level'], $_REQUEST['position']);
+			send_cat(
+				isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+				isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+				isset($_REQUEST['parentid']) ? $_REQUEST['parentid'] : '',
+				isset($_REQUEST['level']) ? $_REQUEST['level'] : '',
+				isset($_REQUEST['position']) ? $_REQUEST['position'] : ''
+			);
 			break;
 
 		case "add_cat":
@@ -1021,15 +1065,22 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 			break;
 
 		case "edit_cat":
-			edit_cat($_REQUEST['cid']);
+			edit_cat(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
 			break;
 
 		case "modif_cat":
-			modif_cat($_REQUEST['cid'], $_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['parentid'], $_REQUEST['level'], $_REQUEST['position']);
+			modif_cat(
+				isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '',
+				isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+				isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+				isset($_REQUEST['parentid']) ? $_REQUEST['parentid'] : '',
+				isset($_REQUEST['level']) ? $_REQUEST['level'] : '',
+				isset($_REQUEST['position']) ? $_REQUEST['position'] : ''
+			);
 			break;
 
 		case "del_cat":
-			del_cat($_REQUEST['cid']);
+			del_cat(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
 			break;
 
 		case "main_broken":
@@ -1037,7 +1088,7 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 			break;
 
 		case "del_broke":
-			del_broke($_REQUEST['did']);
+			del_broke(isset($_REQUEST['did']) ? $_REQUEST['did'] : '');
 			break;
 
 		case "del_broken":
@@ -1049,11 +1100,17 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 			break;
 
 		case "change_pref":
-			change_pref($_REQUEST['max_download'], $_REQUEST['hide_download']);
+			change_pref(
+				isset($_REQUEST['max_download']) ? $_REQUEST['max_download'] : '',
+				isset($_REQUEST['hide_download']) ? $_REQUEST['hide_download'] : ''
+			);
 			break;
 
 		case "modif_position":
-			modif_position($_REQUEST['cid'], $_REQUEST['method']);
+			modif_position(
+				isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '',
+				isset($_REQUEST['method']) ? $_REQUEST['method'] : ''
+			);
 			break;
 
 		default:

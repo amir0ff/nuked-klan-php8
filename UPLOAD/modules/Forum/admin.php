@@ -1005,11 +1005,22 @@ if ($visiteur >= $level_admin && $level_admin > -1)
     switch ($_REQUEST['op'])
     {
         case "edit_forum":
-            edit_forum($_REQUEST['id']);
+            edit_forum(isset($_REQUEST['id']) ? $_REQUEST['id'] : '');
             break;
 
         case "modif_forum":
-            modif_forum($_REQUEST['id'], $_REQUEST['titre'], $_REQUEST['cat'], $_REQUEST['description'], $_REQUEST['niveau'], $_REQUEST['level'], $_REQUEST['ordre'], $_REQUEST['level_poll'], $_REQUEST['level_vote'], $_REQUEST['modo']);
+            modif_forum(
+                isset($_REQUEST['id']) ? $_REQUEST['id'] : '',
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['cat']) ? $_REQUEST['cat'] : '',
+                isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+                isset($_REQUEST['niveau']) ? $_REQUEST['niveau'] : '',
+                isset($_REQUEST['level']) ? $_REQUEST['level'] : '',
+                isset($_REQUEST['ordre']) ? $_REQUEST['ordre'] : '',
+                isset($_REQUEST['level_poll']) ? $_REQUEST['level_poll'] : '',
+                isset($_REQUEST['level_vote']) ? $_REQUEST['level_vote'] : '',
+                isset($_REQUEST['modo']) ? $_REQUEST['modo'] : ''
+            );
             break;
 
         case "add_forum":
@@ -1017,11 +1028,18 @@ if ($visiteur >= $level_admin && $level_admin > -1)
             break;
 
         case "del_modo":
-            del_modo($_REQUEST['uid'], $_REQUEST['forum_id']);
+            del_modo(
+                isset($_REQUEST['uid']) ? $_REQUEST['uid'] : '',
+                isset($_REQUEST['forum_id']) ? $_REQUEST['forum_id'] : ''
+            );
             break;
 
         case "send_cat":
-            send_cat($_REQUEST['nom'], $_REQUEST['niveau'], $_REQUEST['ordre']);
+            send_cat(
+                isset($_REQUEST['nom']) ? $_REQUEST['nom'] : '',
+                isset($_REQUEST['niveau']) ? $_REQUEST['niveau'] : '',
+                isset($_REQUEST['ordre']) ? $_REQUEST['ordre'] : ''
+            );
             break;
 
         case "add_cat":
@@ -1033,23 +1051,38 @@ if ($visiteur >= $level_admin && $level_admin > -1)
             break;
 
         case "edit_cat":
-            edit_cat($_REQUEST['cid']);
+            edit_cat(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
             break;
 
         case "modif_cat":
-            modif_cat($_REQUEST['cid'], $_REQUEST['nom'], $_REQUEST['niveau'], $_REQUEST['ordre']);
+            modif_cat(
+                isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '',
+                isset($_REQUEST['nom']) ? $_REQUEST['nom'] : '',
+                isset($_REQUEST['niveau']) ? $_REQUEST['niveau'] : '',
+                isset($_REQUEST['ordre']) ? $_REQUEST['ordre'] : ''
+            );
             break;
 
         case "del_cat":
-            del_cat($_REQUEST['cid']);
+            del_cat(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
             break;
 
         case "del_forum":
-            del_forum($_REQUEST['id']);
+            del_forum(isset($_REQUEST['id']) ? $_REQUEST['id'] : '');
             break;
 
         case "send_forum":
-            send_forum($_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['cat'], $_REQUEST['modo'], $_REQUEST['niveau'], $_REQUEST['level'], $_REQUEST['ordre'], $_REQUEST['level_poll'], $_REQUEST['level_vote']);
+            send_forum(
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+                isset($_REQUEST['cat']) ? $_REQUEST['cat'] : '',
+                isset($_REQUEST['modo']) ? $_REQUEST['modo'] : '',
+                isset($_REQUEST['niveau']) ? $_REQUEST['niveau'] : '',
+                isset($_REQUEST['level']) ? $_REQUEST['level'] : '',
+                isset($_REQUEST['ordre']) ? $_REQUEST['ordre'] : '',
+                isset($_REQUEST['level_poll']) ? $_REQUEST['level_poll'] : '',
+                isset($_REQUEST['level_vote']) ? $_REQUEST['level_vote'] : ''
+            );
             break;
 
         case "main_rank":
@@ -1061,19 +1094,30 @@ if ($visiteur >= $level_admin && $level_admin > -1)
             break;
 
         case "send_rank":
-            send_rank($_REQUEST['nom'], $_REQUEST['type'], $_REQUEST['post'], $_REQUEST['image']);
+            send_rank(
+                isset($_REQUEST['nom']) ? $_REQUEST['nom'] : '',
+                isset($_REQUEST['type']) ? $_REQUEST['type'] : '',
+                isset($_REQUEST['post']) ? $_REQUEST['post'] : '',
+                isset($_REQUEST['image']) ? $_REQUEST['image'] : ''
+            );
             break;
 
         case "del_rank":
-            del_rank($_REQUEST['rid']);
+            del_rank(isset($_REQUEST['rid']) ? $_REQUEST['rid'] : '');
             break;
 
         case "edit_rank":
-            edit_rank($_REQUEST['rid']);
+            edit_rank(isset($_REQUEST['rid']) ? $_REQUEST['rid'] : '');
             break;
 
         case "modif_rank":
-            modif_rank($_REQUEST['rid'], $_REQUEST['nom'], $_REQUEST['type'], $_REQUEST['post'], $_REQUEST['image']);
+            modif_rank(
+                isset($_REQUEST['rid']) ? $_REQUEST['rid'] : '',
+                isset($_REQUEST['nom']) ? $_REQUEST['nom'] : '',
+                isset($_REQUEST['type']) ? $_REQUEST['type'] : '',
+                isset($_REQUEST['post']) ? $_REQUEST['post'] : '',
+                isset($_REQUEST['image']) ? $_REQUEST['image'] : ''
+            );
             break;
 
         case "prune":
@@ -1081,7 +1125,10 @@ if ($visiteur >= $level_admin && $level_admin > -1)
             break;
 
         case "do_prune":
-            do_prune($_REQUEST['day'], $_REQUEST['forum_id']);
+            do_prune(
+                isset($_REQUEST['day']) ? $_REQUEST['day'] : '',
+                isset($_REQUEST['forum_id']) ? $_REQUEST['forum_id'] : ''
+            );
             break;
 
         case "main_pref":
@@ -1089,7 +1136,19 @@ if ($visiteur >= $level_admin && $level_admin > -1)
             break;
 
         case "change_pref":
-            change_pref($_REQUEST['forum_title'], $_REQUEST['forum_desc'], $_REQUEST['forum_rank_team'], $_REQUEST['thread_forum_page'], $_REQUEST['mess_forum_page'], $_REQUEST['hot_topic'], $_REQUEST['post_flood'], $_REQUEST['forum_field_max'], $_REQUEST['forum_file'], $_REQUEST['forum_file_level'], $_REQUEST['forum_file_maxsize']);
+            change_pref(
+                isset($_REQUEST['forum_title']) ? $_REQUEST['forum_title'] : '',
+                isset($_REQUEST['forum_desc']) ? $_REQUEST['forum_desc'] : '',
+                isset($_REQUEST['forum_rank_team']) ? $_REQUEST['forum_rank_team'] : '',
+                isset($_REQUEST['thread_forum_page']) ? $_REQUEST['thread_forum_page'] : '',
+                isset($_REQUEST['mess_forum_page']) ? $_REQUEST['mess_forum_page'] : '',
+                isset($_REQUEST['hot_topic']) ? $_REQUEST['hot_topic'] : '',
+                isset($_REQUEST['post_flood']) ? $_REQUEST['post_flood'] : '',
+                isset($_REQUEST['forum_field_max']) ? $_REQUEST['forum_field_max'] : '',
+                isset($_REQUEST['forum_file']) ? $_REQUEST['forum_file'] : '',
+                isset($_REQUEST['forum_file_level']) ? $_REQUEST['forum_file_level'] : '',
+                isset($_REQUEST['forum_file_maxsize']) ? $_REQUEST['forum_file_maxsize'] : ''
+            );
             break;
 
         default:

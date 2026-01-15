@@ -55,7 +55,7 @@ include('nuked.php');
 include_once('Includes/hash.php');
 
 if ($nuked['time_generate'] == 'on'){
-    $mtime = microtime();
+    $mtime = microtime(true);
 }
 
 // GESTION DES ERREURS SQL - SQL ERROR MANAGEMENT

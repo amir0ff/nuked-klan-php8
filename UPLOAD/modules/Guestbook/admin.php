@@ -220,15 +220,20 @@ if ($visiteur >= $level_admin && $level_admin > -1)
     switch ($_REQUEST['op'])
     {
         case "edit_book":
-            edit_book($_REQUEST['gid']);
+            edit_book(isset($_REQUEST['gid']) ? $_REQUEST['gid'] : '');
             break;
 
         case "modif_book":
-            modif_book($_REQUEST['gid'], $_REQUEST['comment'], $_REQUEST['email'], $_REQUEST['url']);
+            modif_book(
+                isset($_REQUEST['gid']) ? $_REQUEST['gid'] : '',
+                isset($_REQUEST['comment']) ? $_REQUEST['comment'] : '',
+                isset($_REQUEST['email']) ? $_REQUEST['email'] : '',
+                isset($_REQUEST['url']) ? $_REQUEST['url'] : ''
+            );
             break;
 
         case "del_book":
-            del_book($_REQUEST['gid']);
+            del_book(isset($_REQUEST['gid']) ? $_REQUEST['gid'] : '');
             break;
 
         case "main_pref":
@@ -236,7 +241,7 @@ if ($visiteur >= $level_admin && $level_admin > -1)
             break;
 
         case "change_pref":
-            change_pref($_REQUEST['mess_guest_page']);
+            change_pref(isset($_REQUEST['mess_guest_page']) ? $_REQUEST['mess_guest_page'] : '');
             break;
 
         default:

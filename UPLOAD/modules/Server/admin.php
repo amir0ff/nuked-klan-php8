@@ -461,11 +461,18 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
     switch ($_REQUEST['op'])
     {
         case 'edit_serveur':
-            edit_serveur($_REQUEST['sid']);
+            edit_serveur(isset($_REQUEST['sid']) ? $_REQUEST['sid'] : '');
             break;
 
         case 'modif_serveur':
-            modif_serveur($_REQUEST['sid'], $_REQUEST['ip_serv'], $_REQUEST['port'], $_REQUEST['game'], $_REQUEST['pass'], $_REQUEST['cat']);
+            modif_serveur(
+                isset($_REQUEST['sid']) ? $_REQUEST['sid'] : '',
+                isset($_REQUEST['ip_serv']) ? $_REQUEST['ip_serv'] : '',
+                isset($_REQUEST['port']) ? $_REQUEST['port'] : '',
+                isset($_REQUEST['game']) ? $_REQUEST['game'] : '',
+                isset($_REQUEST['pass']) ? $_REQUEST['pass'] : '',
+                isset($_REQUEST['cat']) ? $_REQUEST['cat'] : ''
+            );
             break;
 
         case 'add_serveur':
@@ -473,7 +480,10 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
             break;
 
         case 'send_cat':
-            send_cat($_REQUEST['titre'], $_REQUEST['description']);
+            send_cat(
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['description']) ? $_REQUEST['description'] : ''
+            );
             break;
 
         case 'add_cat':
@@ -485,23 +495,33 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
             break;
 
         case 'edit_cat':
-            edit_cat($_REQUEST['cid']);
+            edit_cat(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
             break;
 
         case 'modif_cat':
-            modif_cat($_REQUEST['cid'], $_REQUEST['titre'], $_REQUEST['description']);
+            modif_cat(
+                isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '',
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['description']) ? $_REQUEST['description'] : ''
+            );
             break;
 
         case 'del_cat':
-            del_cat($_REQUEST['cid']);
+            del_cat(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
             break;
 
         case 'del_serveur':
-            del_serveur($_REQUEST['sid']);
+            del_serveur(isset($_REQUEST['sid']) ? $_REQUEST['sid'] : '');
             break;
 
         case 'send_serveur':
-            send_serveur($_REQUEST['ip_serv'], $_REQUEST['port'], $_REQUEST['game'], $_REQUEST['pass'], $_REQUEST['cat']);
+            send_serveur(
+                isset($_REQUEST['ip_serv']) ? $_REQUEST['ip_serv'] : '',
+                isset($_REQUEST['port']) ? $_REQUEST['port'] : '',
+                isset($_REQUEST['game']) ? $_REQUEST['game'] : '',
+                isset($_REQUEST['pass']) ? $_REQUEST['pass'] : '',
+                isset($_REQUEST['cat']) ? $_REQUEST['cat'] : ''
+            );
             break;
 
         case 'main_pref':
@@ -509,7 +529,12 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
             break;
 
         case 'change_pref':
-            change_pref($_REQUEST['server_ip'], $_REQUEST['server_port'], $_REQUEST['server_game'], $_REQUEST['server_pass']);
+            change_pref(
+                isset($_REQUEST['server_ip']) ? $_REQUEST['server_ip'] : '',
+                isset($_REQUEST['server_port']) ? $_REQUEST['server_port'] : '',
+                isset($_REQUEST['server_game']) ? $_REQUEST['server_game'] : '',
+                isset($_REQUEST['server_pass']) ? $_REQUEST['server_pass'] : ''
+            );
             break;
 
         default:

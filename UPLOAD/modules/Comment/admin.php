@@ -240,15 +240,19 @@ if ($visiteur >= $level_admin && $level_admin > -1){
     }
     switch ($_REQUEST['op']){
         case "edit_com":
-            edit_com($_REQUEST['cid']);
+            edit_com(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
             break;
 
         case "modif_com":
-            modif_com($_REQUEST['cid'], $_REQUEST['titre'], $_REQUEST['texte']);
+            modif_com(
+                isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '',
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['texte']) ? $_REQUEST['texte'] : ''
+            );
             break;
 
         case "del_com":
-            del_com($_REQUEST['cid']);
+            del_com(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
             break;
 			
 		case "module_com":
@@ -256,7 +260,15 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             break;
 		
 		case "module_send_com":
-            module_send_com($_REQUEST['news'],$_REQUEST['download'],$_REQUEST['sections'],$_REQUEST['links'],$_REQUEST['wars'],$_REQUEST['gallery'],$_REQUEST['survey']);
+            module_send_com(
+                isset($_REQUEST['news']) ? $_REQUEST['news'] : '',
+                isset($_REQUEST['download']) ? $_REQUEST['download'] : '',
+                isset($_REQUEST['sections']) ? $_REQUEST['sections'] : '',
+                isset($_REQUEST['links']) ? $_REQUEST['links'] : '',
+                isset($_REQUEST['wars']) ? $_REQUEST['wars'] : '',
+                isset($_REQUEST['gallery']) ? $_REQUEST['gallery'] : '',
+                isset($_REQUEST['survey']) ? $_REQUEST['survey'] : ''
+            );
             break;
 		
         default:

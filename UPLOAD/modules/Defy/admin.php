@@ -217,15 +217,15 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 
     switch ($_REQUEST['op']){
         case 'view':
-        view($_REQUEST['did']);
+        view(isset($_REQUEST['did']) ? $_REQUEST['did'] : '');
         break;
 
         case 'del':
-        del($_REQUEST['did']);
+        del(isset($_REQUEST['did']) ? $_REQUEST['did'] : '');
         break;
 
         case 'transfert':
-        transfert($_REQUEST['did']);
+        transfert(isset($_REQUEST['did']) ? $_REQUEST['did'] : '');
         break;
 
         case 'edit_pref':
@@ -233,7 +233,11 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
         break;
 
         case 'update_pref':
-        update_pref($_REQUEST['defie_mail'], $_REQUEST['defie_inbox'], $_REQUEST['defie_charte']);
+        update_pref(
+            isset($_REQUEST['defie_mail']) ? $_REQUEST['defie_mail'] : '',
+            isset($_REQUEST['defie_inbox']) ? $_REQUEST['defie_inbox'] : '',
+            isset($_REQUEST['defie_charte']) ? $_REQUEST['defie_charte'] : ''
+        );
         break;
 
         default:

@@ -173,11 +173,11 @@ if ($visiteur >= $level_admin && $level_admin > -1){
 
     switch($_REQUEST['op']){
         case 'view':
-        view($_REQUEST['mid']);
+        view(isset($_REQUEST['mid']) ? $_REQUEST['mid'] : '');
         break;
     
         case 'del':
-        del($_REQUEST['mid']);
+        del(isset($_REQUEST['mid']) ? $_REQUEST['mid'] : '');
         break;
     
         case 'main_pref':
@@ -185,7 +185,10 @@ if ($visiteur >= $level_admin && $level_admin > -1){
         break;
     
         case 'change_pref':
-        change_pref($_REQUEST['contact_mail'], $_REQUEST['contact_flood']);
+        change_pref(
+            isset($_REQUEST['contact_mail']) ? $_REQUEST['contact_mail'] : '',
+            isset($_REQUEST['contact_flood']) ? $_REQUEST['contact_flood'] : ''
+        );
         break;
     
         default:

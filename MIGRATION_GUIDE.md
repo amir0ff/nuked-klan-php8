@@ -216,10 +216,10 @@ This document provides complete technical documentation of the migration of Nuke
 **Problem:** `microtime()` returns string, causing non-numeric value warnings.
 
 **Files Modified:**
-- `index.php` (lines 58, 241-242)
+- `index.php` (line 58)
   - Changed `microtime()` to `microtime(true)` to return float
   - Fixed calculation: `$mtime_end = microtime(true); $mtime = $mtime_end - $mtime;`
-  - Added `number_format()` for display
+  - Prevents "Warning: A non-numeric value encountered" on homepage
 
 ---
 
@@ -288,9 +288,15 @@ This document provides complete technical documentation of the migration of Nuke
 - `modules/Guestbook/admin.php` (line 118)
   - Fixed `$_REQUEST['p']` with isset check
 
-- `modules/News/admin.php` (lines 29, 54-87)
+- `modules/News/admin.php` (lines 29, 54-87, 569-583)
   - Fixed `$_REQUEST['p']` with isset check and type casting
   - Fixed multiple `$_REQUEST['orderby']` occurrences with isset checks
+  - **Critical Fix:** News category INSERT query (line 570)
+    - Removed `nid` field from INSERT (auto_increment field should not be specified)
+    - Changed from: `INSERT INTO ... (nid, titre, ...) VALUES ('', ...)`
+    - Changed to: `INSERT INTO ... (titre, ...) VALUES (...)`
+    - Added error checking with `mysql_error()` and `mysql_affected_rows()` verification
+    - Prevents silent INSERT failures that showed success but didn't actually insert data
 
 - `modules/Sections/admin.php` (lines 28, 53-93)
   - Fixed `$_REQUEST['p']` with isset check and type casting
@@ -328,6 +334,13 @@ This document provides complete technical documentation of the migration of Nuke
 - Database synchronization between related tables when needed
 
 ---
+
+**Comprehensive Admin Module isset() Checks (January 15, 2026):**
+- Fixed all admin module switch statements to use isset() checks for all `$_REQUEST` parameters
+- **18 modules fixed:** News, Links, Gallery, Download, Sections, Survey, Comment, Textbox, Wars, Forum, Guestbook, Server, Admin/smilies, Recruit, Contact, Calendar, Defy, Irc
+- **Pattern applied:** All `$_REQUEST['param']` accesses changed to `isset($_REQUEST['param']) ? $_REQUEST['param'] : ''`
+- Prevents "Undefined array key" warnings when admin forms are submitted without all expected parameters
+- **Files modified:** 18 admin.php files, 488 insertions, 122 deletions
 
 **Additional Admin Panel Fixes:**
 - `modules/Comment/admin.php` (line 238)

@@ -219,11 +219,11 @@ if ($visiteur >= $level_admin && $level_admin > -1)
     switch ($_REQUEST['op'])
     {
         case "view":
-            view($_REQUEST['rid']);
+            view(isset($_REQUEST['rid']) ? $_REQUEST['rid'] : '');
             break;
 
         case "del":
-            del($_REQUEST['rid']);
+            del(isset($_REQUEST['rid']) ? $_REQUEST['rid'] : '');
             break;
 
         case "edit_pref":

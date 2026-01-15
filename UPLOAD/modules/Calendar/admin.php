@@ -300,19 +300,34 @@ if ($visiteur >= $level_admin && $level_admin > -1)
             break;
 
         case "del":
-            del($_REQUEST['eid']);
+            del(isset($_REQUEST['eid']) ? $_REQUEST['eid'] : '');
             break;
 
         case "do_edit":
-            do_edit($_REQUEST['eid'], $_REQUEST['description'], $_REQUEST['titre'], $_REQUEST['heure'], $_REQUEST['date_an'], $_REQUEST['date_mois'], $_REQUEST['date_jour']);
+            do_edit(
+                isset($_REQUEST['eid']) ? $_REQUEST['eid'] : '',
+                isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['heure']) ? $_REQUEST['heure'] : '',
+                isset($_REQUEST['date_an']) ? $_REQUEST['date_an'] : '',
+                isset($_REQUEST['date_mois']) ? $_REQUEST['date_mois'] : '',
+                isset($_REQUEST['date_jour']) ? $_REQUEST['date_jour'] : ''
+            );
             break;
 
         case "edit":
-            edit($_REQUEST['eid']);
+            edit(isset($_REQUEST['eid']) ? $_REQUEST['eid'] : '');
             break;
 
         case "do_add":
-            do_add($_REQUEST['description'], $_REQUEST['titre'], $_REQUEST['heure'], $_REQUEST['date_an'], $_REQUEST['date_mois'], $_REQUEST['date_jour']);
+            do_add(
+                isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+                isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+                isset($_REQUEST['heure']) ? $_REQUEST['heure'] : '',
+                isset($_REQUEST['date_an']) ? $_REQUEST['date_an'] : '',
+                isset($_REQUEST['date_mois']) ? $_REQUEST['date_mois'] : '',
+                isset($_REQUEST['date_jour']) ? $_REQUEST['date_jour'] : ''
+            );
             break;
 
         case "main_pref":

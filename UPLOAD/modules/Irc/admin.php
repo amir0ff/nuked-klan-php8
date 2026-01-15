@@ -233,19 +233,22 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             break;
 
         case "del":
-            del($_REQUEST['irc_id']);
+            del(isset($_REQUEST['irc_id']) ? $_REQUEST['irc_id'] : '');
             break;
 
         case "do_edit":
-            do_edit($_REQUEST['irc_id'], $_REQUEST['text']);
+            do_edit(
+                isset($_REQUEST['irc_id']) ? $_REQUEST['irc_id'] : '',
+                isset($_REQUEST['text']) ? $_REQUEST['text'] : ''
+            );
             break;
 
         case "edit":
-            edit($_REQUEST['irc_id']);
+            edit(isset($_REQUEST['irc_id']) ? $_REQUEST['irc_id'] : '');
             break;
 
         case "do_add":
-            do_add($_REQUEST['text']);
+            do_add(isset($_REQUEST['text']) ? $_REQUEST['text'] : '');
             break;
 
         case "main_pref":

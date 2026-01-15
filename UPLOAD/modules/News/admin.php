@@ -566,7 +566,35 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 		$description = nkHtmlEntityDecode($description);
 		$description = mysql_real_escape_string(stripslashes($description));
 
-		$sql = mysql_query("INSERT INTO " . NEWS_CAT_TABLE . " ( `nid` , `titre` , `description` , `image` ) VALUES ( '' , '" . $titre . "' , '" . $description . "' , '" . $url_image . "' )");
+		// Use NULL for auto_increment field instead of empty string
+		$sql = mysql_query("INSERT INTO " . NEWS_CAT_TABLE . " ( `titre` , `description` , `image` ) VALUES ( '" . $titre . "' , '" . $description . "' , '" . $url_image . "' )");
+		
+		// Check if INSERT succeeded
+		if (!$sql) {
+			echo "<div class=\"notification error png_bg\">\n"
+			   . "<div>\n"
+			   . "Error: Failed to add category! " . mysql_error() . "\n"
+			   . "</div>\n"
+			   . "</div>\n";
+			redirect("index.php?file=News&page=admin&op=add_cat", 2);
+			adminfoot();
+			footer();
+			die;
+		}
+		
+		// Verify the INSERT actually affected a row
+		if (mysql_affected_rows() == 0) {
+			echo "<div class=\"notification error png_bg\">\n"
+			   . "<div>\n"
+			   . "Error: Category was not inserted into database. No rows affected.\n"
+			   . "</div>\n"
+			   . "</div>\n";
+			redirect("index.php?file=News&page=admin&op=add_cat", 2);
+			adminfoot();
+			footer();
+			die;
+		}
+		
 		// Action
 		$texteaction = "". _ACTIONADDCATNEWS .": ".$titre.".";
 		$acdate = time();
@@ -727,7 +755,7 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 	switch ($_REQUEST['op']) {
 		case "edit":
 			admintop();
-			edit($_REQUEST['news_id']);
+			edit(isset($_REQUEST['news_id']) ? $_REQUEST['news_id'] : '');
 			adminfoot();
 			break;
 
@@ -739,7 +767,7 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 
 		case "do_del":
 			admintop();
-			do_del($_REQUEST['news_id']);
+			do_del(isset($_REQUEST['news_id']) ? $_REQUEST['news_id'] : '');
 			adminfoot();
 			break;
 
@@ -752,7 +780,17 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 
 		case "do_edit":
 			admintop();
-			do_edit($_REQUEST['news_id'], $_REQUEST['titre'], $_REQUEST['texte'], $_REQUEST['suite'], $_REQUEST['cat'], $_REQUEST['jour'], $_REQUEST['mois'], $_REQUEST['annee'], $_REQUEST['heure']);
+			do_edit(
+				isset($_REQUEST['news_id']) ? $_REQUEST['news_id'] : '',
+				isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+				isset($_REQUEST['texte']) ? $_REQUEST['texte'] : '',
+				isset($_REQUEST['suite']) ? $_REQUEST['suite'] : '',
+				isset($_REQUEST['cat']) ? $_REQUEST['cat'] : '',
+				isset($_REQUEST['jour']) ? $_REQUEST['jour'] : '',
+				isset($_REQUEST['mois']) ? $_REQUEST['mois'] : '',
+				isset($_REQUEST['annee']) ? $_REQUEST['annee'] : '',
+				isset($_REQUEST['heure']) ? $_REQUEST['heure'] : ''
+			);
 			adminfoot();
 			break;
 
@@ -764,7 +802,12 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 
 		case "send_cat":
 			admintop();
-			send_cat($_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['image'], $_REQUEST['fichiernom']);
+			send_cat(
+				isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+				isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+				isset($_REQUEST['image']) ? $_REQUEST['image'] : '',
+				isset($_REQUEST['fichiernom']) ? $_REQUEST['fichiernom'] : ''
+			);
 			adminfoot();
 			break;
 
@@ -782,19 +825,25 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 
 		case "edit_cat":
 			admintop();
-			edit_cat($_REQUEST['cid']);
+			edit_cat(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
 			adminfoot();
 			break;
 
 		case "modif_cat":
 			admintop();
-			modif_cat($_REQUEST['cid'], $_REQUEST['titre'], $_REQUEST['description'], $_REQUEST['image'], $_REQUEST['fichiernom']);
+			modif_cat(
+				isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '',
+				isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+				isset($_REQUEST['description']) ? $_REQUEST['description'] : '',
+				isset($_REQUEST['image']) ? $_REQUEST['image'] : '',
+				isset($_REQUEST['fichiernom']) ? $_REQUEST['fichiernom'] : ''
+			);
 			adminfoot();
 			break;
 
 		case "del_cat":
 			admintop();
-			del_cat($_REQUEST['cid']);
+			del_cat(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
 			adminfoot();
 			break;
 
@@ -806,7 +855,7 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 
 		case "change_pref":
 			admintop();
-			change_pref($_REQUEST['max_news'], $_REQUEST['max_archives']);
+			change_pref(isset($_REQUEST['max_news']) ? $_REQUEST['max_news'] : '', isset($_REQUEST['max_archives']) ? $_REQUEST['max_archives'] : '');
 			adminfoot();
 			break;
 

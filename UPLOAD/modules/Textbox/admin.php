@@ -242,15 +242,18 @@ if ($visiteur >= $level_admin && $level_admin > -1)
     switch ($_REQUEST['op'])
     {
         case "edit_shout":
-            edit_shout($_REQUEST['mid']);
+            edit_shout(isset($_REQUEST['mid']) ? $_REQUEST['mid'] : '');
             break;
 
         case "modif_shout":
-            modif_shout($_REQUEST['mid'], $_REQUEST['texte']);
+            modif_shout(
+                isset($_REQUEST['mid']) ? $_REQUEST['mid'] : '',
+                isset($_REQUEST['texte']) ? $_REQUEST['texte'] : ''
+            );
             break;
 
         case "del_shout":
-            del_shout($_REQUEST['mid']);
+            del_shout(isset($_REQUEST['mid']) ? $_REQUEST['mid'] : '');
             break;
 
         case "del_all_shout":
@@ -262,7 +265,7 @@ if ($visiteur >= $level_admin && $level_admin > -1)
             break;
 
         case "change_pref":
-            change_pref($_REQUEST['max_shout']);
+            change_pref(isset($_REQUEST['max_shout']) ? $_REQUEST['max_shout'] : '');
             break;
 
         default:
