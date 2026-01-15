@@ -1,0 +1,66 @@
+<?php
+/**
+ * table.forums_read.c.i.u.php
+ *
+ * `[PREFIX]_forums_read` database table script
+ *
+ * @version 1.7
+ * @link http://www.nuked-klan.org Clan Management System for Gamers
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright 2001-2015 Nuked-Klan (Registred Trademark)
+ */
+
+$dbTable->setTable($this->_session['db_prefix'] .'_forums_read');
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Check table integrity
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+if ($process == 'checkIntegrity') {
+    // table and field exist in 1.6.x version
+    $dbTable->checkIntegrity(array(null, 'id'), 'user_id', 'thread_id', 'forum_id');
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Convert charset and collation
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+if ($process == 'checkAndConvertCharsetAndCollation')
+    $dbTable->checkAndConvertCharsetAndCollation();
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Table function
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function createForumsReadTable($dbTable, $table) {
+    $sql = 'CREATE TABLE `'. $table .'` (
+            `user_id` varchar(20) NOT NULL default \'\',
+            `thread_id` text NOT NULL,
+            `forum_id` text NOT NULL,
+            PRIMARY KEY  (`user_id`)
+        ) ENGINE=MyISAM DEFAULT CHARSET='. db::CHARSET .' COLLATE='. db::COLLATION .';';
+
+    $dbTable->dropTable()->createTable($sql);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Table creation
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+if ($process == 'install')
+    createForumsReadTable($dbTable, $this->_session['db_prefix'] .'_forums_read');
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Table update
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+if ($process == 'update') {
+    // update 1.7.9 RC6
+    if ($dbTable->fieldExist('id')) {
+        createForumsReadTable($dbTable, $this->_session['db_prefix'] .'_forums_read');
+
+        $dbTable->setJqueryAjaxResponse('UPDATED');
+    }
+}
+
+?>

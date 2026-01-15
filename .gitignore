@@ -1,0 +1,46 @@
+# Configuration files (generated during install)
+conf.inc.php
+*.inc.php.bak
+
+# User uploads
+upload/*
+!upload/.htaccess
+!upload/index.html
+
+# Session files
+sessions/*
+!sessions/.htaccess
+
+# Cache and temporary files
+cache/*
+tmp/*
+*.tmp
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Log files
+*.log
+logs/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# PHP specific
+composer.lock
+vendor/
+
+# Test files
+test.php
+phpinfo.php
