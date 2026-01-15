@@ -113,19 +113,32 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 		while (list($news_id, $titre, $autor, $autor_id, $cat, $date) = mysql_fetch_array($sql2)) {
 			$date = nkDate($date);
 
-			$sql3 = mysql_query("SELECT titre FROM " . NEWS_CAT_TABLE . " WHERE nid = '" . $cat. "'");
-			list($categorie) = mysql_fetch_array($sql3);
-			$categorie = printSecuTags($categorie);
-
-			if ($autor_id != "") {
-				$sql4 = mysql_query("SELECT pseudo FROM " . USER_TABLE . " WHERE id = '" . $autor_id . "'");
-				$test = mysql_num_rows($sql4);
+			$categorie = '';
+			if (!empty($cat)) {
+				$sql3 = mysql_query("SELECT titre FROM " . NEWS_CAT_TABLE . " WHERE nid = '" . mysql_real_escape_string($cat) . "'");
+				if ($sql3 && mysql_num_rows($sql3) > 0) {
+					list($categorie) = mysql_fetch_array($sql3);
+					$categorie = printSecuTags($categorie);
+				} else {
+					$categorie = 'N/A';
+				}
+			} else {
+				$categorie = 'N/A';
 			}
 
-			if ($autor_id != "" && $test > 0) {
-				list($_REQUEST['auteur']) = mysql_fetch_array($sql4);
+			$test = 0;
+			if (!empty($autor_id)) {
+				$sql4 = mysql_query("SELECT pseudo FROM " . USER_TABLE . " WHERE id = '" . mysql_real_escape_string($autor_id) . "'");
+				if ($sql4) {
+					$test = mysql_num_rows($sql4);
+				}
+			}
+
+			if (!empty($autor_id) && $test > 0) {
+				list($auteur_name) = mysql_fetch_array($sql4);
+				$auteur_display = $auteur_name;
 			} else {
-				$_REQUEST['auteur'] = $autor;
+				$auteur_display = $autor;
 			}
 
 			if (strlen($titre) > 25) {
@@ -138,7 +151,7 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 			   . "<td style=\"width: 25%;\">" . $title . "</td>\n"
 			   . "<td style=\"width: 15%;\" align=\"center\">" . $categorie . "</td>\n"
 			   . "<td style=\"width: 20%;\" align=\"center\">" . $date . "</td>\n"
-			   . "<td style=\"width: 20%;\" align=\"center\">" . $_REQUEST['auteur'] . "</td>\n"
+			   . "<td style=\"width: 20%;\" align=\"center\">" . printSecuTags($auteur_display) . "</td>\n"
 			   . "<td style=\"width: 10%;\" align=\"center\"><a href=\"index.php?file=News&amp;page=admin&amp;op=edit&amp;news_id=" . $news_id . "\"><img style=\"border: 0;\" src=\"images/edit.gif\" alt=\"\" title=\"" . _EDITTHISNEWS . "\" /></a></td>\n"
 			   . "<td style=\"width: 10%;\" align=\"center\"><a href=\"javascript:del_news('" . mysql_real_escape_string(stripslashes($titre)) . "', '" . $news_id . "');\"><img style=\"border: 0;\" src=\"images/del.gif\" alt=\"\" title=\"" . _DELTHISNEWS . "\" /></a></td></tr>\n";
 		}
@@ -200,12 +213,12 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 
 		echo "</select>&nbsp;<select id=\"news_annee\" name=\"annee\">\n";
 
-		$prevprevprevyear = date(Y) -3;
-		$prevprevyear = date(Y) -2;
-		$prevyear = date(Y) -1;
-		$year = date(Y) ;
-		$nextyear = date(Y) + 1;
-		$nextnextyear = date(Y) + 2;
+		$prevprevprevyear = date("Y") -3;
+		$prevprevyear = date("Y") -2;
+		$prevyear = date("Y") -1;
+		$year = date("Y") ;
+		$nextyear = date("Y") + 1;
+		$nextnextyear = date("Y") + 2;
 		$check = "selected=\"selected\"";
 
 		echo "<option value=\"" . $prevprevprevyear . "\">" . $prevprevprevyear . "</option>\n"
@@ -240,33 +253,70 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 	function do_add($titre, $texte, $suite, $cat, $jour, $mois, $annee, $heure) {
 		global $nuked, $user;
 
+		// Validate and set default values
+		$titre = isset($titre) ? $titre : '';
+		$texte = isset($texte) ? $texte : '';
+		$suite = isset($suite) ? $suite : '';
+		$cat = isset($cat) ? $cat : '';
+		$jour = isset($jour) ? (int)$jour : date("d");
+		$mois = isset($mois) ? (int)$mois : date("m");
+		$annee = isset($annee) ? (int)$annee : date("Y");
+		$heure = isset($heure) ? $heure : date("H:i");
 
 		$table = explode(':', $heure, 2);
+		$hour = isset($table[0]) ? (int)$table[0] : date("H");
+		$minute = isset($table[1]) ? (int)$table[1] : date("i");
 
-		$date = mktime ($table[0], $table[1], 0, $mois, $jour, $annee) ;
+		$date = mktime ($hour, $minute, 0, $mois, $jour, $annee) ;
 
 		$texte = nkHtmlEntityDecode($texte);
 		$suite = nkHtmlEntityDecode($suite);
 
+		// Validate required fields
+		if (empty($titre)) {
+			echo "<div class=\"notification error png_bg\">\n"
+			   . "<div>\n"
+			   . "Error: Title is required!\n"
+			   . "</div>\n"
+			   . "</div>\n";
+			redirect("index.php?file=News&page=admin&op=add", 2);
+			return;
+		}
+
 		$titre = mysql_real_escape_string(stripslashes($titre));
 		$texte = mysql_real_escape_string(stripslashes($texte));
 		$suite = mysql_real_escape_string(stripslashes($suite));
-		$auteur = $user[2];
-		$auteur_id = $user[0];
+		$cat = mysql_real_escape_string($cat); // Escape category
+		$auteur = isset($user[2]) ? mysql_real_escape_string($user[2]) : '';
+		$auteur_id = isset($user[0]) ? (int)$user[0] : 0;
 
-		$sql = mysql_query("INSERT INTO " . NEWS_TABLE . " ( `id` , `cat` , `titre` , `auteur` , `auteur_id` , `texte` , `suite` , `date`) VALUES ( '', '" . $cat ."' , '" . $titre . "' , '" . $auteur . "' , '" . $auteur_id . "' , '" . $texte . "' , '" . $suite . "' , '" . $date .  "')");
+		$sql = mysql_query("INSERT INTO " . NEWS_TABLE . " ( `cat` , `titre` , `auteur` , `auteur_id` , `texte` , `suite` , `date`) VALUES ( '" . $cat ."' , '" . $titre . "' , '" . $auteur . "' , '" . $auteur_id . "' , '" . $texte . "' , '" . $suite . "' , '" . $date .  "')");
+		
+		// Check if INSERT succeeded
+		if (!$sql) {
+			echo "<div class=\"notification error png_bg\">\n"
+			   . "<div>\n"
+			   . "Error: Failed to add news! " . mysql_error() . "\n"
+			   . "</div>\n"
+			   . "</div>\n";
+			redirect("index.php?file=News&page=admin&op=add", 2);
+			return;
+		}
+
+		// Get the inserted news ID using mysql_insert_id() instead of querying
+		$news_id = mysql_insert_id();
+		
 		// Action
 		$texteaction = "". _ACTIONADDNEWS .": ".$titre.".";
 		$acdate = time();
-		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user[0]."', '".$texteaction."')");
+		$user_id_action = isset($user[0]) ? $user[0] : '';
+		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user_id_action."', '".$texteaction."')");
 		//Fin action
 		echo "<div class=\"notification success png_bg\">\n"
 		   . "<div>\n"
 		   . _NEWSADD . "\n"
 		   . "</div>\n"
 		   . "</div>\n";
-		$sqls = mysql_query("SELECT id FROM " . NEWS_TABLE . " WHERE titre = '" . $titre . "' AND date = '".$date."'");
-		list($news_id) = mysql_fetch_array($sqls);
 		echo "<script>\n"
 		   . "setTimeout('screen()','3000');\n"
 		   . "function screen() { \n"
@@ -355,8 +405,20 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 	function do_edit($news_id, $titre, $texte, $suite, $cat, $jour, $mois, $annee, $heure) {
 		global $nuked, $user;
 
+		// Validate and set default values
+		$titre = isset($titre) ? $titre : '';
+		$texte = isset($texte) ? $texte : '';
+		$suite = isset($suite) ? $suite : '';
+		$cat = isset($cat) ? $cat : '';
+		$jour = isset($jour) ? (int)$jour : date("d");
+		$mois = isset($mois) ? (int)$mois : date("m");
+		$annee = isset($annee) ? (int)$annee : date("Y");
+		$heure = isset($heure) ? $heure : date("H:i");
+
 		$table = explode(':', $heure, 2);
-		$date = mktime ($table[0], $table[1], 0, $mois, $jour, $annee) ;
+		$hour = isset($table[0]) ? (int)$table[0] : date("H");
+		$minute = isset($table[1]) ? (int)$table[1] : date("i");
+		$date = mktime ($hour, $minute, 0, $mois, $jour, $annee) ;
 
 		$texte = nkHtmlEntityDecode($texte);
 		$titre = mysql_real_escape_string(stripslashes($titre));
@@ -368,7 +430,8 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 		// Action
 		$texteaction = "". _ACTIONMODIFNEWS .": ".$titre.".";
 		$acdate = time();
-		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user[0]."', '".$texteaction."')");
+		$user_id_action = isset($user[0]) ? $user[0] : '';
+		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user_id_action."', '".$texteaction."')");
 		//Fin action
 		echo "<div class=\"notification success png_bg\">\n"
 		   . "<div>\n"
@@ -394,7 +457,8 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 		// Action
 		$texteaction = "". _ACTIONDELNEWS .": ".$titre.".";
 		$acdate = time();
-		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user[0]."', '".$texteaction."')");
+		$user_id_action = isset($user[0]) ? $user[0] : '';
+		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user_id_action."', '".$texteaction."')");
 		//Fin action
 		echo "<div class=\"notification success png_bg\">\n"
 		   . "<div>\n"
@@ -470,14 +534,18 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 	function send_cat($titre, $description, $image, $fichiernom) {
 		global $nuked, $user;
 		
-		$filename = $_FILES['fichiernom']['name'];
+		$filename = isset($_FILES['fichiernom']['name']) ? $_FILES['fichiernom']['name'] : '';
 
 		if ($filename != "") {
 			$ext = pathinfo($filename, PATHINFO_EXTENSION);
 
 			if ($ext == "jpg" || $ext == "jpeg" || $ext == "JPG" || $ext == "JPEG" || $ext == "gif" || $ext == "GIF" || $ext == "png" || $ext == "PNG") {
 				$url_image = "upload/News/" . $filename;
-				move_uploaded_file($_FILES['fichiernom']['tmp_name'], $url_image) or die ("<br /><br /><div style=\"text-align: center;\"><b>Upload file failed !!!</b></div><br /><br />");
+				if (isset($_FILES['fichiernom']['tmp_name']) && is_uploaded_file($_FILES['fichiernom']['tmp_name'])) {
+					move_uploaded_file($_FILES['fichiernom']['tmp_name'], $url_image) or die ("<br /><br /><div style=\"text-align: center;\"><b>Upload file failed !!!</b></div><br /><br />");
+				} else {
+					die ("<br /><br /><div style=\"text-align: center;\"><b>Upload file failed - no file uploaded !!!</b></div><br /><br />");
+				}
 				@chmod ($url_image, 0644);
 			} else {
 				echo "<div class=\"notification error png_bg\">\n"
@@ -502,7 +570,8 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 		// Action
 		$texteaction = "". _ACTIONADDCATNEWS .": ".$titre.".";
 		$acdate = time();
-		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user[0]."', '".$texteaction."')");
+		$user_id = isset($user[0]) ? $user[0] : '';
+		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user_id."', '".$texteaction."')");
 		//Fin action
 		echo "<div class=\"notification success png_bg\">\n"
 		   . "<div>\n"
@@ -537,14 +606,18 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 	function modif_cat($cid, $titre, $description, $image, $fichiernom) {
 		global $nuked, $user;
 
-		$filename = $_FILES['fichiernom']['name'];
+		$filename = isset($_FILES['fichiernom']['name']) ? $_FILES['fichiernom']['name'] : '';
 
 		if ($filename != "") {
 			$ext = pathinfo($filename, PATHINFO_EXTENSION);
 
 			if (!preg_match("`\.php`i", $filename) && !preg_match("`\.htm`i", $filename) && !preg_match("`\.[a-z]htm`i", $filename) && (preg_match("`jpg`i", $ext) || preg_match("`jpeg`i", $ext) || preg_match("`gif`i", $ext) || preg_match("`png`i", $ext))) {
 				$url_image = "upload/News/" . $filename;
-				move_uploaded_file($_FILES['fichiernom']['tmp_name'], $url_image) or die ("<br /><br /><div style=\"text-align: center;\"><b>Upload file failed !!!</b></div><br /><br />");
+				if (isset($_FILES['fichiernom']['tmp_name']) && is_uploaded_file($_FILES['fichiernom']['tmp_name'])) {
+					move_uploaded_file($_FILES['fichiernom']['tmp_name'], $url_image) or die ("<br /><br /><div style=\"text-align: center;\"><b>Upload file failed !!!</b></div><br /><br />");
+				} else {
+					die ("<br /><br /><div style=\"text-align: center;\"><b>Upload file failed - no file uploaded !!!</b></div><br /><br />");
+				}
 				@chmod ($url_image, 0644);
 			} else {
 				echo "<div class=\"notification error png_bg\">\n"
@@ -569,7 +642,8 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 		// Action
 		$texteaction = "". _ACTIONEDITCATNEWS .": ".$titre.".";
 		$acdate = time();
-		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user[0]."', '".$texteaction."')");
+		$user_id = isset($user[0]) ? $user[0] : '';
+		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user_id."', '".$texteaction."')");
 		//Fin action
 		echo "<div class=\"notification success png_bg\">\n"
 		   . "<div>\n"
@@ -599,7 +673,8 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 		// Action
 		$texteaction = "". _ACTIONDELCATNEWS .": ".$titre.".";
 		$acdate = time();
-		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user[0]."', '".$texteaction."')");
+		$user_id_action = isset($user[0]) ? $user[0] : '';
+		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user_id_action."', '".$texteaction."')");
 		//Fin action
 		echo "<div class=\"notification success png_bg\">\n"
 		   . "<div>\n"
@@ -638,7 +713,8 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 		// Action
 		$texteaction = "". _ACTIONPREFNEWS .".";
 		$acdate = time();
-		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user[0]."', '".$texteaction."')");
+		$user_id_action = isset($user[0]) ? $user[0] : '';
+		$sqlaction = mysql_query("INSERT INTO ". $nuked['prefix'] ."_action  (`date`, `pseudo`, `action`)  VALUES ('".$acdate."', '".$user_id_action."', '".$texteaction."')");
 		//Fin action
 		echo "<div class=\"notification success png_bg\">\n"
 		   . "<div>\n"
@@ -669,7 +745,7 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 
 		case "do_add":
 			admintop();
-			do_add($_REQUEST['titre'], $_REQUEST['texte'], $_REQUEST['suite'], $_REQUEST['cat'], $_REQUEST['jour'], $_REQUEST['mois'], $_REQUEST['annee'], $_REQUEST['heure']);
+			do_add(isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '', isset($_REQUEST['texte']) ? $_REQUEST['texte'] : '', isset($_REQUEST['suite']) ? $_REQUEST['suite'] : '', isset($_REQUEST['cat']) ? $_REQUEST['cat'] : '', isset($_REQUEST['jour']) ? $_REQUEST['jour'] : '', isset($_REQUEST['mois']) ? $_REQUEST['mois'] : '', isset($_REQUEST['annee']) ? $_REQUEST['annee'] : '', isset($_REQUEST['heure']) ? $_REQUEST['heure'] : '');
 			UpdateSitmap();
 			adminfoot();
 			break;

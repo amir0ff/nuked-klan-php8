@@ -61,19 +61,19 @@ if ($visiteur == 9)
 
         $rep = Array();
         $handle = @opendir("images/flags");
-        while (false !== ($f = readdir($handle)))
-        {
-            if ($f != ".." && $f != "." && $f != "index.html" && $f != "Thumbs.db")
+        if ($handle) {
+            while (false !== ($f = readdir($handle)))
             {
-                $rep[] = $f;
+                if ($f != ".." && $f != "." && $f != "index.html" && $f != "Thumbs.db")
+                {
+                    $rep[] = $f;
+                }
             }
+            closedir($handle);
         }
-
-        closedir($handle);
         sort ($rep);
-        reset ($rep);
 
-        while (list ($key, $filename) = each ($rep))
+        foreach ($rep as $filename)
         {
             if ($filename == $pays)
             {
@@ -202,20 +202,24 @@ if ($visiteur == 9)
         . "<tr><td><b>" . _YIM . " : </b></td><td><input type=\"text\" name=\"yim\" size=\"30\" maxlength=\"30\" value=\"" . $yim . "\" /></td></tr>\n"
         . "<tr><td><b>" . _COUNTRY . " :</b></td><td><select name=\"country\">\n";
 
+        // Initialize $pays from database (user's current country)
+        $pays = isset($pays) ? $pays : '';
+
         $rep = Array();
         $handle = @opendir("images/flags");
-        while (false !== ($f = readdir($handle)))
-        {
-            if ($f != ".." && $f != "." && $f != "index.html" && $f != "Thumbs.db")
+        if ($handle) {
+            while (false !== ($f = readdir($handle)))
             {
-                $rep[] = $f;
+                if ($f != ".." && $f != "." && $f != "index.html" && $f != "Thumbs.db")
+                {
+                    $rep[] = $f;
+                }
             }
+            closedir($handle);
         }
-        closedir($handle);
         sort ($rep);
-        reset ($rep);
 
-        while (list ($key, $filename) = each ($rep))
+        foreach ($rep as $filename)
         {
                 if ($filename == $pays)
                 {
@@ -369,14 +373,14 @@ if ($visiteur == 9)
             }
 
 
-            if ($rang != "")
+            $ordre = 0; // Initialize with default value
+            if (!empty($rang))
             {
-                $sql_rank = mysql_query("SELECT ordre FROM " . TEAM_RANK_TABLE . " WHERE id = '" . $rang . "'");
-                list($ordre) = mysql_fetch_array($sql_rank);
-            }
-            else
-            {
-                $ordre = 0;
+                $sql_rank = mysql_query("SELECT ordre FROM " . TEAM_RANK_TABLE . " WHERE id = '" . mysql_real_escape_string($rang) . "'");
+                if ($sql_rank && mysql_num_rows($sql_rank) > 0) {
+                    list($ordre_result) = mysql_fetch_array($sql_rank);
+                    $ordre = (int)$ordre_result; // Ensure it's an integer
+                }
             }
 
             $nick = nkHtmlEntities($nick, ENT_QUOTES);
@@ -389,6 +393,7 @@ if ($visiteur == 9)
             $yim = mysql_real_escape_string(stripslashes($yim));
             $url = mysql_real_escape_string(stripslashes($url));
             $avatar = mysql_real_escape_string(stripslashes($avatar));
+            $country = mysql_real_escape_string(stripslashes($country));
 
             $signature = nkHtmlEntityDecode($signature);
             $email = nkHtmlEntities($email);
@@ -400,6 +405,19 @@ if ($visiteur == 9)
             $avatar = nkHtmlEntities($avatar);
 
             $sql = mysql_query("UPDATE " . USER_TABLE . " SET team = '" . $team . "', team2 = '" . $team2 . "', team3 = '" . $team3 . "', rang = '" . $rang . "', ordre = '" . $ordre . "', pseudo = '" . $nick . "', mail = '" . $mail . "', email = '" . $email . "', icq = '" . $icq . "', msn = '" . $msn . "', aim = '" . $aim . "', yim = '" . $yim . "', url = '" . $url . "', country = '" . $country . "', niveau = '" . $niveau . "', " . $cryptpass . "game = '" . $game . "', avatar = '" . $avatar . "', signature = '" . $signature . "' WHERE id = '" . $id_user . "'");
+            
+            // Check if UPDATE succeeded
+            if (!$sql) {
+                echo "<div class=\"notification error png_bg\">\n"
+                . "<div>\n"
+                . "Error: Failed to update user! " . mysql_error() . "\n"
+                . "</div>\n"
+                . "</div>\n";
+                redirect("index.php?file=Admin&page=user&op=edit_user&id_user=" . $id_user, 2);
+                adminfoot();
+                footer();
+                exit();
+            }
 
             // Action
             $texteaction = "". _ACTIONMODIFUSER .": ".$nick."";
@@ -1430,7 +1448,7 @@ if ($visiteur == 9)
     switch ($_REQUEST['op'])
     {
         case "update_user":
-            update_user($_REQUEST['id_user'], $_REQUEST['team'], $_REQUEST['team2'], $_REQUEST['team3'], $_REQUEST['rang'], $_REQUEST['nick'], $_REQUEST['mail'], $_REQUEST['email'], $_REQUEST['url'], $_REQUEST['icq'], $_REQUEST['msn'], $_REQUEST['aim'], $_REQUEST['yim'], $_REQUEST['country'], $_REQUEST['niveau'], $_REQUEST['pass_reg'], $_REQUEST['pass_conf'], $_REQUEST['pass'], $_REQUEST['game'], $_REQUEST['avatar'], $_REQUEST['signature'], $_REQUEST['old_nick']);
+            update_user(isset($_REQUEST['id_user']) ? $_REQUEST['id_user'] : '', isset($_REQUEST['team']) ? $_REQUEST['team'] : '', isset($_REQUEST['team2']) ? $_REQUEST['team2'] : '', isset($_REQUEST['team3']) ? $_REQUEST['team3'] : '', isset($_REQUEST['rang']) ? $_REQUEST['rang'] : '', isset($_REQUEST['nick']) ? $_REQUEST['nick'] : '', isset($_REQUEST['mail']) ? $_REQUEST['mail'] : '', isset($_REQUEST['email']) ? $_REQUEST['email'] : '', isset($_REQUEST['url']) ? $_REQUEST['url'] : '', isset($_REQUEST['icq']) ? $_REQUEST['icq'] : '', isset($_REQUEST['msn']) ? $_REQUEST['msn'] : '', isset($_REQUEST['aim']) ? $_REQUEST['aim'] : '', isset($_REQUEST['yim']) ? $_REQUEST['yim'] : '', isset($_REQUEST['country']) ? $_REQUEST['country'] : '', isset($_REQUEST['niveau']) ? $_REQUEST['niveau'] : '', isset($_REQUEST['pass_reg']) ? $_REQUEST['pass_reg'] : '', isset($_REQUEST['pass_conf']) ? $_REQUEST['pass_conf'] : '', isset($_REQUEST['pass']) ? $_REQUEST['pass'] : '', isset($_REQUEST['game']) ? $_REQUEST['game'] : '', isset($_REQUEST['avatar']) ? $_REQUEST['avatar'] : '', isset($_REQUEST['signature']) ? $_REQUEST['signature'] : '', isset($_REQUEST['old_nick']) ? $_REQUEST['old_nick'] : '');
             break;
 
         case "add_user":
