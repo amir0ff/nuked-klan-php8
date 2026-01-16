@@ -8,7 +8,7 @@ This is a **testing checklist** for manual testing during the PHP 8.0 migration.
 ## Testing Strategy
 This checklist helps ensure systematic, thorough testing of all functionality after PHP 8.0 migration.
 
-**Last Updated:** January 15, 2026
+**Last Updated:** January 16, 2026
 
 ---
 
@@ -32,12 +32,12 @@ This checklist helps ensure systematic, thorough testing of all functionality af
 
 ### News Module
 - [x] Add news category (FIXED: AUTO_INCREMENT issue)
-- [ ] Edit news category
-- [ ] Delete news category
-- [ ] Add news article
-- [ ] Edit news article
-- [ ] Delete news article
-- [ ] View news on frontend
+- [x] Edit news category
+- [x] Delete news category
+- [x] Add news article
+- [x] Edit news article
+- [x] Delete news article
+- [x] View news on frontend
 - [ ] News pagination works
 - [ ] News sorting works
 
@@ -104,11 +104,12 @@ This checklist helps ensure systematic, thorough testing of all functionality af
 - [ ] Vote in survey
 
 ### Comment Module
-- [ ] View comments
-- [ ] Edit comment
-- [ ] Delete comment
-- [ ] Configure comment modules
-- [ ] Comments display on frontend
+- [x] View comments
+- [x] Edit comment
+- [x] Delete comment
+- [x] Configure comment modules
+- [x] Comments display on frontend
+- [x] Add comment (frontend) - FIXED: Admin session preservation, AJAX response format, auto-increment ID field
 
 ### Wars Module
 - [ ] Add war match
@@ -185,9 +186,9 @@ This checklist helps ensure systematic, thorough testing of all functionality af
 ## Phase 5: Frontend Pages Testing
 
 ### Public Pages
-- [ ] Homepage
-- [ ] News listing page
-- [ ] News article page
+- [x] Homepage
+- [x] News listing page
+- [x] News article page
 - [ ] Links page
 - [ ] Gallery page
 - [ ] Download page
@@ -292,6 +293,14 @@ This checklist helps ensure systematic, thorough testing of all functionality af
 - **News Category Insert:** Fixed AUTO_INCREMENT issue - removed `nid` field from INSERT
 - **microtime() Warning:** Fixed by using `microtime(true)` instead of `microtime()`
 - **Undefined Array Keys:** Fixed with isset() checks in all 18 admin modules
+- **Comment Module - Captcha Validation:** Fixed captcha validation not checking return value - comments were being added even with invalid captcha
+- **Comment Module - Flood Check:** Fixed undefined variable warning when no previous comments exist - added proper null check for `$flood_date`
+- **Comment Module - SQL Injection:** Added proper escaping for all variables used in SQL queries (`$autor`, `$autor_id`, `$im_id`, `$user_ip`)
+
+### Testing Progress
+- **January 16, 2026:** 
+  - **News Module:** Fully tested - All CRUD operations (create, read, update, delete) for categories and articles working correctly. Frontend news display verified.
+  - **Comment Module:** Fully tested - Comment submission working correctly. Fixed admin session preservation, AJAX response format, and auto-increment ID field issues.
 
 ### Test Environment
 - **PHP Version:** 8.0.30

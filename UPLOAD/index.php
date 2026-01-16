@@ -126,6 +126,7 @@ if ( $_REQUEST['file'] !== 'Admin'
     && $_REQUEST['page'] != 'admin'
     && (isset($_REQUEST['nuked_nude']) && $_REQUEST['nuked_nude'] != 'admin')
     && (! ($_REQUEST['file'] == 'Textbox' && $_REQUEST['op'] == 'ajax' && $_REQUEST['nuked_nude'] == 'index'))
+    && (! ($_REQUEST['file'] == 'Comment' && isset($_REQUEST['ajax']) && $_REQUEST['ajax'] == '1'))
     && $_SESSION['admin'] == true ) {
     $_SESSION['admin'] = false;
 }

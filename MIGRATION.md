@@ -726,6 +726,71 @@ php8.0 -l /path/to/file.php
 
 ---
 
-**Last Updated:** January 15, 2026  
+---
+
+## Post-Migration Bug Fixes (January 16, 2026)
+
+### Comment Module - Comment Submission Issues
+
+**Issue:** Comments were not being saved to the database and admin session was being cleared when submitting comments.
+
+**Root Causes:**
+1. Admin session was being cleared when accessing non-Admin modules (index.php line 125-131)
+2. AJAX requests were outputting HTML headers instead of JSON
+3. Missing `titre` parameter in AJAX request
+4. Auto-increment `id` field was being set to empty string in INSERT statement
+
+**Fixes Applied:**
+
+#### 1. Admin Session Preservation
+**File:** `index.php` (line 125-131)
+- **Problem:** Code cleared admin session when accessing any non-Admin module
+- **Fix:** Added exception for AJAX comment submissions:
+```php
+&& (! ($_REQUEST['file'] == 'Comment' && isset($_REQUEST['ajax']) && $_REQUEST['ajax'] == '1'))
+```
+
+#### 2. AJAX Response Format
+**File:** `modules/Comment/index.php`
+- **Problem:** AJAX requests were outputting HTML headers, breaking JSON parsing
+- **Fix:** Added proper JSON headers and separated AJAX/non-AJAX logic:
+  - Added `header('Content-Type: application/json')` for AJAX responses
+  - Only output HTML headers for non-AJAX requests
+  - Improved error handling with JSON responses
+
+#### 3. Missing Parameters
+**File:** `modules/Comment/index.php` (line 143)
+- **Problem:** `titre` (title) parameter was not being sent in AJAX request
+- **Fix:** Added `titre` to AJAX send data:
+```javascript
+var titre = document.querySelector('input[name="titre"]') ? document.querySelector('input[name="titre"]').value : '';
+OAjax.send("texte="+encodeURIComponent(editor_txt)+"&pseudo="+pseudo+"&module="+module+"&im_id="+im_id+"&titre="+encodeURIComponent(titre)+"&ajax=1"+captchaData);
+```
+
+#### 4. Auto-Increment ID Field
+**File:** `modules/Comment/index.php` (line 519)
+- **Problem:** INSERT statement was trying to insert empty string `''` for auto-increment `id` column
+- **Fix:** Removed `id` field from INSERT statement:
+  - **Before:** `INSERT INTO ... (id, module, ...) VALUES ('', 'news', ...)`
+  - **After:** `INSERT INTO ... (module, ...) VALUES ('news', ...)`
+
+#### 5. Improved Error Handling
+**File:** `modules/Comment/index.php`
+- Added proper access level checking with error messages
+- Improved verification error handling
+- Added database error checking and reporting
+- Better captcha validation error handling
+
+#### 6. Verification Function Improvements
+**File:** `modules/Comment/index.php` (function `verification()`)
+- Added error checking for missing comment module configuration
+- Added error checking for non-existent items
+- Improved error messages
+
+**Result:** ✅ Comments now save correctly to database and admin session is preserved during comment submission.
+
+---
+
+**Last Updated:** January 16, 2026  
 **Migration Status:** ✅ Complete - Website and Admin Panel fully functional on PHP 8.0  
-**Latest Updates:** Forum module frontend fully compatible, Search module fixed, all frontend modules PHP 8.0 compatible
+**Latest Updates:** Comment module fully functional - comments save correctly, admin session preserved

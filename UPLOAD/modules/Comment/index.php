@@ -64,9 +64,15 @@ function verification($module, $im_id){
     endif;
 
     $Sql = mysql_query("SELECT active FROM " . $nuked['prefix'] . "_comment_mod WHERE module = '$WhereModule'");
+    if (!$Sql || mysql_num_rows($Sql) == 0) {
+        return false; // Comment module not configured for this module type
+    }
     list($active) = mysql_fetch_array($Sql);
 
     $Str = mysql_query("SELECT * FROM " . $nuked['prefix'] . "_$sqlverif WHERE $specification = '" . intval($im_id) . "'");
+    if (!$Str) {
+        return false; // Item doesn't exist
+    }
 
     return (mysql_num_rows($Str) > 0 && $active == 1);
 }
@@ -114,14 +120,28 @@ function com_index($module, $im_id){
                 OAjax.open('POST',"index.php?file=Comment&nuked_nude=index&op=post_comment",true);
                 OAjax.onreadystatechange = function(){
                     if (OAjax.readyState == 4 && OAjax.status==200){
-                        if (document.getElementById){
-                            document.getElementById("message").innerHTML = '<div style="margin:25px 5px;padding:10px 0;text-align:center;border:1px solid #e3e3e3;background:#edfff7;color:#333"><b><?php echo _THXCOM; ?></b></div>';
-                            document.location = document.location;
+                        try {
+                            var response = JSON.parse(OAjax.responseText);
+                            if (response.success){
+                                if (document.getElementById){
+                                    document.getElementById("message").innerHTML = '<div style="margin:25px 5px;padding:10px 0;text-align:center;border:1px solid #e3e3e3;background:#edfff7;color:#333"><b>' + response.message + '</b></div>';
+                                    setTimeout(function(){ document.location = document.location; }, 1000);
+                                }
+                            } else {
+                                alert(response.message || 'Error submitting comment');
+                            }
+                        } catch(e) {
+                            // Fallback for non-JSON responses
+                            if (document.getElementById){
+                                document.getElementById("message").innerHTML = '<div style="margin:25px 5px;padding:10px 0;text-align:center;border:1px solid #e3e3e3;background:#edfff7;color:#333"><b><?php echo _THXCOM; ?></b></div>';
+                                setTimeout(function(){ document.location = document.location; }, 1000);
+                            }
                         }
                     }
                 }
                 OAjax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                OAjax.send("texte="+encodeURIComponent(editor_txt)+"&pseudo="+pseudo+"&module="+module+"&im_id="+im_id+"&ajax=1"+captchaData);
+                var titre = document.querySelector('input[name="titre"]') ? document.querySelector('input[name="titre"]').value : '';
+                OAjax.send("texte="+encodeURIComponent(editor_txt)+"&pseudo="+pseudo+"&module="+module+"&im_id="+im_id+"&titre="+encodeURIComponent(titre)+"&ajax=1"+captchaData);
                 return true;
             }
         }
@@ -404,8 +424,28 @@ function post_comment($im_id, $module, $titre, $texte, $pseudo) {
         $pseudo = utf8_decode($pseudo);
     }
     $level_access = nivo_mod("Comment");
-    if (!verification($module,$im_id)){}
-    else if ($visiteur >= $level_access && $level_access > -1){
+    $is_ajax = isset($_REQUEST['ajax']) && $_REQUEST['ajax'] == '1';
+    
+    if (!verification($module,$im_id)){
+        if ($is_ajax){
+            header('Content-Type: application/json');
+            echo json_encode(array('success' => false, 'message' => _NOENTRANCE . ' (verification failed)'));
+            exit();
+        }
+        die ("<div style=\"text-align: center;\"><br /><br />" . _NOENTRANCE . "<br><a href=\"#\" onclick=\"history.back()\">" . _BACK . "</a></div></body></html>");
+    }
+    
+    if ($visiteur < $level_access || $level_access <= -1){
+        if ($is_ajax){
+            header('Content-Type: application/json');
+            echo json_encode(array('success' => false, 'message' => _NOENTRANCE . ' (access level: ' . $visiteur . ' required: ' . $level_access . ')'));
+            exit();
+        }
+        die ("<div style=\"text-align: center;\"><br /><br />" . _NOENTRANCE . "<br><a href=\"#\" onclick=\"history.back()\">" . _BACK . "</a></div></body></html>");
+    }
+    
+    // Only output HTML headers for non-AJAX requests
+    if (!$is_ajax){
         echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
                 . "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\">\n"
                 . "<head><title>" . _POSTCOMMENT . "</title>\n"
@@ -413,9 +453,16 @@ function post_comment($im_id, $module, $titre, $texte, $pseudo) {
                 . "<meta http-equiv=\"content-style-type\" content=\"text/css\" />\n"
                 . "<link title=\"style\" type=\"text/css\" rel=\"stylesheet\" href=\"themes/" . $theme . "/style.css\" /></head>\n"
                 . "<body style=\"background : " . $bgcolor2 . ";\">\n";
+    }
 
-        if (initCaptcha())
-            ValidCaptchaCode();
+    if (initCaptcha() && !ValidCaptchaCode()){
+        if ($is_ajax){
+            header('Content-Type: application/json');
+            echo json_encode(array('success' => false, 'message' => _BADCODECONFIRM));
+            exit();
+        }
+        die ("<div style=\"text-align: center;\"><br /><br />" . _BADCODECONFIRM . "<br><a href=\"#\" onclick=\"history.back()\">" . _BACK . "</a></div></body></html>");
+    }
 
         if ($visiteur > 0){
             $autor = $user[2];
@@ -439,13 +486,15 @@ function post_comment($im_id, $module, $titre, $texte, $pseudo) {
             }
         }
 
-        $flood = mysql_query("SELECT date FROM " . COMMENT_TABLE . " WHERE autor = '" . $autor . "' OR autor_ip = '" . $user_ip . "' ORDER BY date DESC LIMIT 0, 1");
-        list($flood_date) = mysql_fetch_row($flood);
+        $autor_escaped = mysql_real_escape_string($autor);
+        $flood = mysql_query("SELECT date FROM " . COMMENT_TABLE . " WHERE autor = '" . $autor_escaped . "' OR autor_ip = '" . mysql_real_escape_string($user_ip) . "' ORDER BY date DESC LIMIT 0, 1");
+        $flood_row = mysql_fetch_row($flood);
+        $flood_date = ($flood_row && isset($flood_row[0])) ? $flood_row[0] : 0;
         $anti_flood = $flood_date + $nuked['post_flood'];
 
         $date = time();
 
-        if ($date < $anti_flood && $user[1] < admin_mod("Comment")){
+        if ($flood_date > 0 && $date < $anti_flood && (!isset($user[1]) || $user[1] < admin_mod("Comment"))){
             echo "<br /><br /><div style=\"text-align: center;\">" . _NOFLOOD . "</div><br /><br />";
             $url = "index.php?file=Comment&nuked_nude=index&op=view_com&im_id=" . $im_id . "&module=" . $module;
             redirect($url, 2);
@@ -463,34 +512,43 @@ function post_comment($im_id, $module, $titre, $texte, $pseudo) {
              $titre = substr($titre, 0, 40) . "...";
         }
 
-        $add = mysql_query("INSERT INTO " . COMMENT_TABLE . " ( `id` , `module` , `im_id` , `autor` , `autor_id` , `titre` , `comment` , `date` , `autor_ip` ) VALUES ( '' , '" . $module . "' , '" . $im_id . "' , '" . $autor . "' , '" . $autor_id . "' , '" . $titre . "' , '" . mysql_real_escape_string($texte) . "' , '" . $date . "' , '" . $user_ip . "')");
+        $autor_id_escaped = mysql_real_escape_string($autor_id);
+        $im_id_escaped = mysql_real_escape_string($im_id);
+        $user_ip_escaped = mysql_real_escape_string($user_ip);
+        $texte_escaped = mysql_real_escape_string($texte);
+        $add = mysql_query("INSERT INTO " . COMMENT_TABLE . " ( `module` , `im_id` , `autor` , `autor_id` , `titre` , `comment` , `date` , `autor_ip` ) VALUES ( '" . $module . "' , '" . $im_id_escaped . "' , '" . $autor_escaped . "' , '" . $autor_id_escaped . "' , '" . $titre . "' , '" . $texte_escaped . "' , '" . $date . "' , '" . $user_ip_escaped . "')");
+        
+        if (!$add){
+            $error_msg = mysql_error();
+            if ($is_ajax){
+                header('Content-Type: application/json');
+                echo json_encode(array('success' => false, 'message' => 'Database error: ' . $error_msg));
+                exit();
+            }
+            die ("<div style=\"text-align: center;\"><br /><br />Database error: " . htmlspecialchars($error_msg) . "<br><a href=\"#\" onclick=\"history.back()\">" . _BACK . "</a></div></body></html>");
+        }
+        
+        if ($is_ajax){
+            header('Content-Type: application/json');
+            echo json_encode(array('success' => true, 'message' => _COMMENTADD));
+            exit();
+        }
+        
         echo "<div style=\"text-align: center;\"><br /><br /><br /><b>" . _COMMENTADD . "</b>";
 
         if ($module == "news"){
-            echo "<br /><br />[ <a href=\"#\" onclick=\"javascript:window.close();window.opener.document.location.reload(true);\">" . _CLOSEWINDOW . "</a> ]</div></body></html>";
+            if (!$is_ajax){
+                echo "<br /><br />[ <a href=\"#\" onclick=\"javascript:window.close();window.opener.document.location.reload(true);\">" . _CLOSEWINDOW . "</a> ]</div></body></html>";
+            }
         }
         else{
-            echo "</div>";
-
-            if (! isset($_REQUEST['ajax'])){
+            if (!$is_ajax){
+                echo "</div>";
                 $url_redir = "index.php?file=Comment&nuked_nude=index&op=view_com&im_id=" . $im_id . "&module=" . $module;
                 redirect($url_redir, 2);
+                echo "</body></html>";
             }
-
-            echo "</body></html>";
         }
-    }
-    else{
-        echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-                . "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\">\n"
-                . "<head><title>" . _POSTCOMMENT . "</title>\n"
-                . "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\" />\n"
-                . "<meta http-equiv=\"content-style-type\" content=\"text/css\" />\n"
-                . "<link title=\"style\" type=\"text/css\" rel=\"stylesheet\" href=\"themes/" . $theme . "/style.css\" /></head>\n"
-                . "<body style=\"background : " . $bgcolor2 . ";\">\n"
-                . "<div style=\"text-align: center;\"><br /><br /><br />" . _NOENTRANCE . "</div><br /><br /><br />\n"
-                . "<a href=\"#\" onclick=\"javascript:window.close()\"><b>" . _CLOSEWINDOW . "</b></a></div></body></html>";
-    }
 }
 
 function del_comment($cid){
