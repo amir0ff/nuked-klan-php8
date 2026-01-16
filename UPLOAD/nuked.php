@@ -903,8 +903,31 @@ function admin_mod($mod){
 function translate($file_lang){
     global $nuked;
 
+    // SECURITY FIX: Replace eval() with direct include after path validation
+    // Remove directory traversal attempts
+    $file_lang = str_replace('..', '', $file_lang);
+    
+    // Validate path structure - allow lang/, modules/*/lang/, and themes/*/lang/ files
+    if (!preg_match('`^(lang|modules/[^/]+/lang|themes/[^/]+/lang)/[a-z]+\.lang\.php$`', $file_lang)) {
+        return '';
+    }
+    
+    // Use realpath to prevent directory traversal and ensure file is within document root
+    $real_path = realpath($file_lang);
+    $doc_root = realpath('.');
+    
+    // Ensure file exists, is readable, and is within document root
+    if (!$real_path || !is_file($real_path) || !is_readable($real_path)) {
+        return '';
+    }
+    
+    // Ensure the resolved path is within the document root (prevent directory traversal)
+    if ($doc_root && strpos($real_path, $doc_root) !== 0) {
+        return '';
+    }
+    
     ob_start();
-    print eval(" include ('$file_lang'); ");
+    include($real_path);
     $lang_define = ob_get_contents();
     $lang_define = nkHtmlEntities($lang_define, ENT_NOQUOTES);
     $lang_define = str_replace('&lt;', '<', $lang_define);

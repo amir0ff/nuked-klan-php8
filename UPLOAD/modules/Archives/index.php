@@ -33,13 +33,14 @@ if ($visiteur >= $level_access && $level_access > -1)
         $sql = mysql_query("SELECT date FROM " . NEWS_TABLE . " ORDER BY date DESC");
         $count = mysql_num_rows($sql);
 
-        if (!$_REQUEST['p']) $_REQUEST['p'] = 1;
+        // SECURITY FIX: Use isset() to check for array keys (PHP 8.0 compatibility)
+        if (!isset($_REQUEST['p']) || empty($_REQUEST['p'])) $_REQUEST['p'] = 1;
         $start = $_REQUEST['p'] * $nb_news - $nb_news;
 
         echo "<br /><div style=\"text-align: center;\"><big><b>" . _ARCHIVE . "</b></big></div><br />\n"
         . "<table width=\"100%\"><tr><td align=\"right\">" . _ORDERBY . " : ";
 
-        if (!$_REQUEST['orderby'])
+        if (!isset($_REQUEST['orderby']) || empty($_REQUEST['orderby']))
         {
             $_REQUEST['orderby'] = "date";
         }
@@ -116,6 +117,8 @@ if ($visiteur >= $level_access && $level_access > -1)
             $sql2 = mysql_query("SELECT id, titre, auteur, auteur_id, date, cat FROM " . NEWS_TABLE . " WHERE " . $day . " >= date ORDER BY id DESC LIMIT " . $start . ", " . $nb_news."");
         }
 
+        // SECURITY FIX: Initialize $j variable before loop (PHP 8.0 compatibility)
+        $j = 0;
         while (list($news_id, $titre, $autor, $autor_id, $date, $cat) = mysql_fetch_array($sql2))
         {
             $date = nkDate($date);
@@ -203,13 +206,14 @@ if ($visiteur >= $level_access && $level_access > -1)
         $sql = mysql_query("SELECT cat FROM " . NEWS_TABLE . " WHERE cat = '" . $cat_id . "' ORDER BY date DESC");
         $count = mysql_num_rows($sql);
 
-        if (!$_REQUEST['p']) $_REQUEST['p'] = 1;
+        // SECURITY FIX: Use isset() to check for array keys (PHP 8.0 compatibility)
+        if (!isset($_REQUEST['p']) || empty($_REQUEST['p'])) $_REQUEST['p'] = 1;
         $start = $_REQUEST['p'] * $nb_news - $nb_news;
 
         echo "<br /><div style=\"text-align: center;\"><big><b>" . _ARCHIVE . "</b></big></div><br />\n"
         . "<table width=\"100%\"><tr><td align=\"right\">" . _ORDERBY . " : ";
 
-        if (!$_REQUEST['orderby'])
+        if (!isset($_REQUEST['orderby']) || empty($_REQUEST['orderby']))
         {
             $_REQUEST['orderby'] = "date";
         }
@@ -271,6 +275,8 @@ if ($visiteur >= $level_access && $level_access > -1)
             $sql2 = mysql_query("SELECT id, titre, auteur, auteur_id, date, cat FROM " . NEWS_TABLE . " WHERE cat = '" . $cat_id . "' AND '" . $day . "' >= date ORDER BY id DESC LIMIT " . $start . ", " . $nb_news."");
         }
 
+        // SECURITY FIX: Initialize $j variable before loop (PHP 8.0 compatibility)
+        $j = 0;
         while (list($news_id, $titre, $autor, $autor_id, $date, $cat) = mysql_fetch_array($sql2))
         {
 

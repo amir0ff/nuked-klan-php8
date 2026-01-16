@@ -356,7 +356,10 @@ if ($visiteur >= $nuked['level_analys'] && $nuked['level_analys']!= -1) {
 
                 if (!empty($_REQUEST['oday']) && !empty($_REQUEST['omonth'])) {
                     echo '<select name="oday">';
-                    $sql10 = mysql_query("SELECT day FROM " . STATS_VISITOR_TABLE . " WHERE month = '" . $_REQUEST['omonth'] . "' AND year = '" . $_REQUEST['oyear'] . "' GROUP BY day ORDER BY day");
+                    // SECURITY FIX: Escape user input to prevent SQL injection
+                    $omonth_escaped = mysql_real_escape_string($_REQUEST['omonth']);
+                    $oyear_escaped = mysql_real_escape_string($_REQUEST['oyear']);
+                    $sql10 = mysql_query("SELECT day FROM " . STATS_VISITOR_TABLE . " WHERE month = '" . $omonth_escaped . "' AND year = '" . $oyear_escaped . "' GROUP BY day ORDER BY day");
                     while (list($newday) = mysql_fetch_array($sql10)) {
                         $selected = ($_REQUEST['oday'] == $newday) ? 'selected="selected"' : '';
 
@@ -440,7 +443,11 @@ function view_all() {
     . '<td align="center"><b>' . _HOURS . '</b></td></tr>'."\n";
 
     $i = 0;
-    $sql = mysql_query("SELECT ip, user_id, browser, host, referer, os, date FROM " . STATS_VISITOR_TABLE . " WHERE day = '" . $_REQUEST['oday'] . "' AND month = '" . $_REQUEST['omonth'] . "' AND year = '" . $_REQUEST['oyear'] . "' ORDER BY date");
+    // SECURITY FIX: Escape user input to prevent SQL injection
+    $oday_escaped = mysql_real_escape_string($_REQUEST['oday']);
+    $omonth_escaped = mysql_real_escape_string($_REQUEST['omonth']);
+    $oyear_escaped = mysql_real_escape_string($_REQUEST['oyear']);
+    $sql = mysql_query("SELECT ip, user_id, browser, host, referer, os, date FROM " . STATS_VISITOR_TABLE . " WHERE day = '" . $oday_escaped . "' AND month = '" . $omonth_escaped . "' AND year = '" . $oyear_escaped . "' ORDER BY date");
     while (list($ip, $user_id, $browser, $host, $referer, $os, $date) = mysql_fetch_array($sql)) {
 
         $host = nkHtmlEntities($host);

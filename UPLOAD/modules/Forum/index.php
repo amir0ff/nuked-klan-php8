@@ -52,7 +52,9 @@ if ($visiteur >= $level_access && $level_access > -1)
             exit();
         }
 
-        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= level AND id = '" . $_REQUEST['forum_id'] . "'");
+        // SECURITY FIX: Escape user input to prevent SQL injection
+        $forum_id_escaped = mysql_real_escape_string($_REQUEST['forum_id']);
+        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= level AND id = '" . $forum_id_escaped . "'");
         list($modos) = mysql_fetch_array($result);
 
         $administrator = ($user && $modos != "" && strpos($modos, $user[0]) !== false) ? 1 : 0;
@@ -91,7 +93,9 @@ if ($visiteur >= $level_access && $level_access > -1)
 
             if ($mid == $mess_id)
             {
-                $upd = mysql_query("UPDATE " . FORUM_THREADS_TABLE . " SET titre = '" . $_REQUEST['titre'] . "' WHERE id = '" . $thread_id . "'");
+                // SECURITY FIX: Escape user input to prevent SQL injection
+                $titre_escaped = mysql_real_escape_string($_REQUEST['titre']);
+                $upd = mysql_query("UPDATE " . FORUM_THREADS_TABLE . " SET titre = '" . $titre_escaped . "' WHERE id = '" . $thread_id . "'");
             }
 
             $sql_page = mysql_query("SELECT id FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $thread_id . "'");
@@ -126,7 +130,9 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         opentable();
 
-        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $_REQUEST['forum_id'] . "'");
+        // SECURITY FIX: Escape user input to prevent SQL injection
+        $forum_id_escaped = mysql_real_escape_string($_REQUEST['forum_id']);
+        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $forum_id_escaped . "'");
         list($modos) = mysql_fetch_array($result);
 
         if ($user && $modos != "" && strpos($modos, $user[0]) !== false)
@@ -142,7 +148,9 @@ if ($visiteur >= $level_access && $level_access > -1)
         {
             if ($_REQUEST['confirm'] == _YES)
             {
-                $sql2 = mysql_query("SELECT id, file FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $_REQUEST['thread_id'] . "' ORDER BY id LIMIT 0, 1");
+                // SECURITY FIX: Escape user input to prevent SQL injection
+                $thread_id_escaped = mysql_real_escape_string($_REQUEST['thread_id']);
+                $sql2 = mysql_query("SELECT id, file FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $thread_id_escaped . "' ORDER BY id LIMIT 0, 1");
                 list($mid, $filename) = mysql_fetch_row($sql2);
 
                 if ($filename != "")
@@ -151,21 +159,24 @@ if ($visiteur >= $level_access && $level_access > -1)
 
                     if (is_file($path))
                     {
-                        $filesys = str_replace("/", "\\", $path);
+                        // SECURITY FIX: Remove system() call - unlink() is sufficient and safer
                         @chmod ($path, 0775);
                         @unlink($path);
-                        @system("del $filesys");
                     }
                 }
 
                 if ($mid == $mess_id)
                 {
-                    $sql_survey = mysql_query("SELECT sondage FROM " . FORUM_THREADS_TABLE . " WHERE id = '" . $_REQUEST['thread_id'] . "'");
+                    // SECURITY FIX: Escape user input to prevent SQL injection
+                    $thread_id_escaped = mysql_real_escape_string($_REQUEST['thread_id']);
+                    $sql_survey = mysql_query("SELECT sondage FROM " . FORUM_THREADS_TABLE . " WHERE id = '" . $thread_id_escaped . "'");
                     list($sondage) = mysql_fetch_row($sql_survey);
 
                     if ($sondage == 1)
                     {
-                        $sql_poll = mysql_query("SELECT id FROM " . FORUM_POLL_TABLE . " WHERE thread_id = '" . $_REQUEST['thread_id'] . "'");
+                        // SECURITY FIX: Escape user input to prevent SQL injection
+                        $thread_id_escaped = mysql_real_escape_string($_REQUEST['thread_id']);
+                        $sql_poll = mysql_query("SELECT id FROM " . FORUM_POLL_TABLE . " WHERE thread_id = '" . $thread_id_escaped . "'");
                         list($poll_id) = mysql_fetch_row($sql_poll);
 
                         $sup1 = mysql_query("DELETE FROM " . FORUM_POLL_TABLE . " WHERE id = '" . $poll_id . "'");
@@ -221,7 +232,9 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         opentable();
 
-        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $_REQUEST['forum_id'] . "'");
+        // SECURITY FIX: Escape user input to prevent SQL injection
+        $forum_id_escaped = mysql_real_escape_string($_REQUEST['forum_id']);
+        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $forum_id_escaped . "'");
         list($modos) = mysql_fetch_array($result);
 
         if ($user && $modos != "" && strpos($modos, $user[0]) !== false)
@@ -308,7 +321,9 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         opentable();
 
-        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $_REQUEST['forum_id'] . "'");
+        // SECURITY FIX: Escape user input to prevent SQL injection
+        $forum_id_escaped = mysql_real_escape_string($_REQUEST['forum_id']);
+        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $forum_id_escaped . "'");
         list($modos) = mysql_fetch_array($result);
 
         if ($user && $modos != "" && strpos($modos, $user[0]) !== false)
@@ -326,8 +341,10 @@ if ($visiteur >= $level_access && $level_access > -1)
             {
                 echo"<br /><br /><div style=\"text-align: center;\">" . _TOPICMOVED . "</div><br /><br />";
 
-                    mysql_query("UPDATE " . FORUM_THREADS_TABLE . " SET forum_id = '" . $_REQUEST['newforum'] . "' WHERE id = '" . (int) $_REQUEST['thread_id'] . "'");
-                    mysql_query("UPDATE " . FORUM_MESSAGES_TABLE . " SET forum_id = '" . $_REQUEST['newforum'] . "' WHERE thread_id = '" . (int) $_REQUEST['thread_id'] . "'");
+                    // SECURITY FIX: Escape user input to prevent SQL injection
+                    $newforum_escaped = mysql_real_escape_string($_REQUEST['newforum']);
+                    mysql_query("UPDATE " . FORUM_THREADS_TABLE . " SET forum_id = '" . $newforum_escaped . "' WHERE id = '" . (int) $_REQUEST['thread_id'] . "'");
+                    mysql_query("UPDATE " . FORUM_MESSAGES_TABLE . " SET forum_id = '" . $newforum_escaped . "' WHERE thread_id = '" . (int) $_REQUEST['thread_id'] . "'");
                     $SQL = "SELECT thread_id, forum_id, user_id FROM " . FORUM_READ_TABLE . " WHERE forum_id LIKE '%," . $_REQUEST['forum_id'] . ",%' OR  forum_id LIKE '%," . $_REQUEST['newforum'] . ",%' ";
                     $req = mysql_query($SQL);
                     $update = '';
@@ -450,7 +467,9 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         opentable();
 
-        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $_REQUEST['forum_id'] . "'");
+        // SECURITY FIX: Escape user input to prevent SQL injection
+        $forum_id_escaped = mysql_real_escape_string($_REQUEST['forum_id']);
+        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $forum_id_escaped . "'");
         list($modos) = mysql_fetch_array($result);
 
         if ($user && $modos != "" && strpos($modos, $user[0]) !== false)
@@ -500,7 +519,9 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         opentable();
 
-        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $_REQUEST['forum_id'] . "'");
+        // SECURITY FIX: Escape user input to prevent SQL injection
+        $forum_id_escaped = mysql_real_escape_string($_REQUEST['forum_id']);
+        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $forum_id_escaped . "'");
         list($modos) = mysql_fetch_array($result);
 
         if ($user && $modos != "" && strpos($modos, $user[0]) !== false)
@@ -558,7 +579,9 @@ if ($visiteur >= $level_access && $level_access > -1)
             exit();
         }
 
-        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $_REQUEST['forum_id'] . "'");
+        // SECURITY FIX: Escape user input to prevent SQL injection
+        $forum_id_escaped = mysql_real_escape_string($_REQUEST['forum_id']);
+        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $forum_id_escaped . "'");
         list($modos) = mysql_fetch_array($result);
 
         if ($user && $modos != "" && strpos($modos, $user[0]) !== false)
@@ -1055,7 +1078,9 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         opentable();
 
-        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $_REQUEST['forum_id'] . "'");
+        // SECURITY FIX: Escape user input to prevent SQL injection
+        $forum_id_escaped = mysql_real_escape_string($_REQUEST['forum_id']);
+        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $forum_id_escaped . "'");
         list($modos) = mysql_fetch_array($result);
 
         if ($user && $modos != "" && strpos($modos, $user[0]) !== false)
@@ -1075,10 +1100,9 @@ if ($visiteur >= $level_access && $level_access > -1)
             $path = "upload/Forum/" . $filename;
             if (is_file($path))
             {
-                $filesys = str_replace("/", "\\", $path);
+                // SECURITY FIX: Remove system() call - unlink() is sufficient and safer
                 @chmod ($path, 0775);
                 @unlink($path);
-                @system("del $filesys");
 
                 $upd = mysql_query("UPDATE " . FORUM_MESSAGES_TABLE . " SET file = '' WHERE id = '" . $_REQUEST['mess_id'] . "'");
                 echo "<br /><br /><div style=\"text-align: center;\">" . _FILEDELETED . "</div><br /><br />";
@@ -1339,7 +1363,9 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         opentable();
 
-        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $_REQUEST['forum_id'] . "'");
+        // SECURITY FIX: Escape user input to prevent SQL injection
+        $forum_id_escaped = mysql_real_escape_string($_REQUEST['forum_id']);
+        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $forum_id_escaped . "'");
         list($modos) = mysql_fetch_array($result);
 
         if ($user && $modos != "" && strpos($modos, $user[0]) !== false)

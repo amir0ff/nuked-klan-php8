@@ -98,11 +98,20 @@ function inc_bl($modul, $bid){
          $blok_content = '';
     }
     else{
-        ob_start();
-        print eval("\$bid = \"$bid\";");
-        print eval(' include ("modules/" . $modul . "/blok.php"); ');
-        $blok_content = ob_get_contents();
-        ob_end_clean();
+        // SECURITY FIX: Replace eval() with direct include after validation
+        // Module is already validated against whitelist, safe to include
+        $bid = mysql_real_escape_string($bid); // Escape bid for safety
+        $blok_file = 'modules/' . basename($modul) . '/blok.php';
+        
+        // Double-check file exists and is within modules directory
+        if (is_file($blok_file) && strpos(realpath($blok_file), realpath('modules/')) === 0) {
+            ob_start();
+            include($blok_file);
+            $blok_content = ob_get_contents();
+            ob_end_clean();
+        } else {
+            $blok_content = '';
+        }
     }
     return $blok_content;
 }

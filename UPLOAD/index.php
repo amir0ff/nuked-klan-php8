@@ -185,10 +185,18 @@ else if (($_REQUEST['file'] != 'Admin' AND $_REQUEST['page'] != 'admin') || ( ni
     else
         header('Content-Type: text/html;charset=ISO-8859-1');
 
-    if (is_file('modules/' . $_REQUEST['file'] . '/' . $_REQUEST['im_file'] . '.php')){
-        include('modules/' . $_REQUEST['file'] . '/' . $_REQUEST['im_file'] . '.php');
+    // SECURITY FIX: Additional validation for file inclusion to prevent LFI/RFI
+    $module_file = 'modules/' . basename($_REQUEST['file']) . '/' . basename($_REQUEST['im_file']) . '.php';
+    $module_path = realpath($module_file);
+    $modules_base = realpath('modules/');
+    
+    // Ensure file is within modules directory and exists
+    if ($module_path && $modules_base && strpos($module_path, $modules_base) === 0 && is_file($module_file)) {
+        include($module_file);
     }
-    else include('modules/404/index.php');
+    else {
+        include('modules/404/index.php');
+    }
 
     if ($_REQUEST['file'] != 'Admin' && $_REQUEST['page'] != 'admin' && defined('EDITOR_CHECK')) {
     echo '<script type="text/javascript" src="media/ckeditor/ckeditor.js"></script>',"\n"

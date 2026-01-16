@@ -159,19 +159,37 @@ function select_module($mod){
 }
 
 function inc_bl1($mod1, $bid){
-    ob_start();
-    print eval("\$bid = \"$bid\";");
-    print eval(' include("modules/" . $mod1 . "/blok.php"); ');
-    $blok_content = ob_get_contents();
-    ob_end_clean();
+    // SECURITY FIX: Replace eval() with direct include after validation
+    $mod1 = basename($mod1); // Sanitize module name
+    $bid = mysql_real_escape_string($bid); // Escape bid for safety
+    $blok_file = 'modules/' . $mod1 . '/blok.php';
+    
+    // Validate file exists and is within modules directory
+    if (is_file($blok_file) && strpos(realpath($blok_file), realpath('modules/')) === 0) {
+        ob_start();
+        include($blok_file);
+        $blok_content = ob_get_contents();
+        ob_end_clean();
+    } else {
+        $blok_content = '';
+    }
     return $blok_content;
 }
 
 function inc_bl2($mod2){
-    ob_start();
-    print eval(' include("modules/" . $mod2 . "/blok.php"); ');
-    $blok_content = ob_get_contents();
-    ob_end_clean();
+    // SECURITY FIX: Replace eval() with direct include after validation
+    $mod2 = basename($mod2); // Sanitize module name
+    $blok_file = 'modules/' . $mod2 . '/blok.php';
+    
+    // Validate file exists and is within modules directory
+    if (is_file($blok_file) && strpos(realpath($blok_file), realpath('modules/')) === 0) {
+        ob_start();
+        include($blok_file);
+        $blok_content = ob_get_contents();
+        ob_end_clean();
+    } else {
+        $blok_content = '';
+    }
     return $blok_content;
 }
 ?>

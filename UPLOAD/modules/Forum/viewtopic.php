@@ -183,7 +183,9 @@ if ($visiteur >= $level_access && $level_access > -1)
         {
             echo "<tr style=\"background: " . $color2 . ";\"><td colspan=\"2\" align=\"center\">";
 
-            $sql_poll = mysql_query("SELECT id, titre FROM " . FORUM_POLL_TABLE . " WHERE thread_id = '" . $_REQUEST['thread_id'] . "'");
+            // SECURITY FIX: Escape user input to prevent SQL injection
+            $thread_id_escaped = mysql_real_escape_string($_REQUEST['thread_id']);
+            $sql_poll = mysql_query("SELECT id, titre FROM " . FORUM_POLL_TABLE . " WHERE thread_id = '" . $thread_id_escaped . "'");
             list($poll_id, $question) = mysql_fetch_array($sql_poll);
             $question = printSecuTags($question);
 
@@ -535,7 +537,9 @@ if ($visiteur >= $level_access && $level_access > -1)
     
         if ($user[0] != "")
         {
-            $sql_notify = mysql_query("SELECT emailnotify FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $_REQUEST['thread_id'] . "' AND auteur_id = '" . $user[0] . "'");
+            // SECURITY FIX: Escape user input to prevent SQL injection
+            $thread_id_escaped = mysql_real_escape_string($_REQUEST['thread_id']);
+            $sql_notify = mysql_query("SELECT emailnotify FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $thread_id_escaped . "' AND auteur_id = '" . $user[0] . "'");
             $user_notify = mysql_num_rows($sql_notify);
             
             if ($user_notify > 0)

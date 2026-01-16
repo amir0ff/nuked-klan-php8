@@ -121,7 +121,9 @@ function show_message($mid){
 	
 	echo '<br /><div style="text-align:center;"><big><b>'._PRIVATEMESS.'</b></big></div><br /><br />';
 	
-	$sql2 = mysql_query("SELECT titre, message, user_from, date FROM " . USERBOX_TABLE . " WHERE mid = '" . $_REQUEST['mid'] . "' AND user_for = '" . $user[0] . "'");
+	// SECURITY FIX: Escape user input to prevent SQL injection
+	$mid_escaped = mysql_real_escape_string($_REQUEST['mid']);
+	$sql2 = mysql_query("SELECT titre, message, user_from, date FROM " . USERBOX_TABLE . " WHERE mid = '" . $mid_escaped . "' AND user_for = '" . $user[0] . "'");
 	$row = mysql_fetch_assoc($sql2);
 
     if ($row > 1) {

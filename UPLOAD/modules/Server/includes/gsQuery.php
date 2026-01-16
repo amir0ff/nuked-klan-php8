@@ -225,12 +225,24 @@ class gsQuery
       require_once GSQUERY_DIR . 'rvnshld.php';
       return new rvnshld($address, $port);
     default:
-      // we should be careful when using eval with supplied arguments
-      // e.g.: $port="123); system(\"some nasty stuff\")";
-      // normally this should be assured by the caller, but we are in reality
+      // SECURITY FIX: Replace eval() with safe class instantiation
+      // Validate protocol name to prevent code injection
       if(preg_match("`^[A-Za-z0-9_-]+$`", $protocol) && preg_match("`^[A-Za-z0-9\\.-]+$`", $address) && is_numeric($port)) {
-	require_once(GSQUERY_DIR . $protocol .'.php');
-	return eval("return new $protocol(\"$address\", $port);");
+	$protocol_file = GSQUERY_DIR . $protocol .'.php';
+	
+	// Validate file exists and is readable
+	if (!is_file($protocol_file) || !is_readable($protocol_file)) {
+	    return FALSE;
+	}
+	
+	require_once($protocol_file);
+	
+	// SECURITY: Use class_exists() and safe instantiation instead of eval()
+	if (class_exists($protocol)) {
+	    return new $protocol($address, $port);
+	} else {
+	    return FALSE;
+	}
       } else {
 	return FALSE;
       }

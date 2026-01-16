@@ -144,7 +144,12 @@ function mod_search($module, $main, $autor, $limit, $searchtype){
                     $modname = "_S" . $umod;
                     if (defined($modname)) $modname = constant($modname);
                     else $modname = $mod;
-                    require("modules/Search/rubriques/" . $mod . ".php");
+                    // SECURITY FIX: Validate module name to prevent file inclusion
+                    $mod_safe = basename($mod);
+                    $mod_file = "modules/Search/rubriques/" . $mod_safe . ".php";
+                    if (is_file($mod_file) && strpos(realpath($mod_file), realpath('modules/Search/rubriques/')) === 0) {
+                        require($mod_file);
+                    }
                 } 
             } 
         } 

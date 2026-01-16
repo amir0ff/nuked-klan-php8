@@ -154,13 +154,20 @@ function session_new($userid, $remember_me) {
     if (mysql_affected_rows() == 0)
         $ins = mysql_query("INSERT INTO " . SESSIONS_TABLE . " ( `id` , `user_id` , `date` , `ip` , `vars` ) VALUES( '" . $session_id . "' , '" . $userid . "' , '" . $time . "' , '" . $user_ip . "', '' )");
     if ($upd !== FALSE && ($ins !== FALSE || mysql_affected_rows() > 0)) {
+        // SECURITY FIX: Add HttpOnly and Secure flags to session cookies
+        // Note: Secure flag should be true in production (HTTPS), false for HTTP testing
+        $is_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+        $expires = ($remember_me == "ok") ? $timelimit : 0;
+        
+        // PHP 7.3+ supports array options, but for compatibility use individual parameters
+        // setcookie(name, value, expires, path, domain, secure, httponly)
         if ($remember_me == "ok") {
-            setcookie($cookie_session, $session_id, $timelimit);
-            setcookie($cookie_userid, $userid, $timelimit);
+            setcookie($cookie_session, $session_id, $expires, '/', '', $is_https, true);
+            setcookie($cookie_userid, $userid, $expires, '/', '', $is_https, true);
         }
         else {
-            setcookie($cookie_session, $session_id);
-            setcookie($cookie_userid, $userid);
+            setcookie($cookie_session, $session_id, 0, '/', '', $is_https, true);
+            setcookie($cookie_userid, $userid, 0, '/', '', $is_https, true);
         }
     }
     else {

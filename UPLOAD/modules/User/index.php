@@ -851,10 +851,13 @@ function login_screen(){
     else{
         opentable();
 
-        if ($_REQUEST['error'] == 1){
+        // Fix: Add isset() checks for $_REQUEST['error'] and initialize $error variable
+        $error = isset($_REQUEST['error']) ? (int)$_REQUEST['error'] : 0;
+        
+        if ($error == 1){
             $erreur = "<br /><div style=\"text-align: center;\">" . _NOFIELD . "</div><br />\n";
         }
-        else if ($_REQUEST['error'] == 2){
+        else if ($error == 2){
             $erreur = "<br /><div style=\"text-align: center;\">" . _BADLOG . "</div><br />\n";
         }
         else{
@@ -1653,17 +1656,30 @@ function update_pref($prenom, $jour, $mois, $an, $sexe, $ville, $motherboard, $c
 function logout(){
     global $nuked, $user, $cookie_theme, $cookie_langue, $cookie_session, $cookie_userid, $cookie_forum;
 
-    $del = mysql_query("UPDATE " . SESSIONS_TABLE . " SET ip = '' WHERE user_id = '" . $user[0] . "'");
+    // Delete session from database
+    if (isset($user) && is_array($user) && isset($user[0])) {
+        $del = mysql_query("UPDATE " . SESSIONS_TABLE . " SET ip = '' WHERE user_id = '" . $user[0] . "'");
+    }
 
-    setcookie($cookie_session, "");
-    setcookie($cookie_userid, "");
-    setcookie($cookie_theme, "");
-    setcookie($cookie_langue, "");
-    setcookie($cookie_forum, "");
+    // SECURITY FIX: Properly clear cookies by setting them with expiration in the past
+    // Must use same parameters (path, domain, secure, httponly) as when they were set
+    $is_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+    $expires_past = time() - 3600; // Set expiration to 1 hour ago to delete cookie
+    
+    // Clear session cookies (HttpOnly=true)
+    setcookie($cookie_session, '', $expires_past, '/', '', $is_https, true);
+    setcookie($cookie_userid, '', $expires_past, '/', '', $is_https, true);
+    
+    // Clear theme/language cookies (HttpOnly=false, needs JS access)
+    setcookie($cookie_theme, '', $expires_past, '/', '', $is_https, false);
+    setcookie($cookie_langue, '', $expires_past, '/', '', $is_https, false);
+    setcookie($cookie_forum, '', $expires_past, '/', '', $is_https, false);
 
     $_SESSION['admin'] = false;
+    unset($_SESSION);
 
     header("location:index.php");
+    exit();
 }
 
 function oubli_pass(){
@@ -1893,10 +1909,12 @@ function modif_theme(){
     $dir = "themes/" . $_REQUEST['user_theme'];
 
     if (is_dir($dir) && $_REQUEST['user_theme']){
-        setcookie($cookie_theme, $_REQUEST['user_theme'], $timelimit);
+        // SECURITY FIX: Escape user input to prevent SQL injection
+        $user_theme_escaped = mysql_real_escape_string($_REQUEST['user_theme']);
+        setcookie($cookie_theme, $user_theme_escaped, $timelimit);
 
         if ($user){
-            $upd = mysql_query("UPDATE " . USER_TABLE . " SET user_theme = '" . $_REQUEST['user_theme'] . "' WHERE id = '" . $user[0] . "'");
+            $upd = mysql_query("UPDATE " . USER_TABLE . " SET user_theme = '" . $user_theme_escaped . "' WHERE id = '" . $user[0] . "'");
         }
     }
 
@@ -1907,10 +1925,12 @@ function modif_langue(){
     global $user, $nuked, $cookie_langue, $timelimit;
 
     if ($_REQUEST['user_langue'] != ""){
-        setcookie($cookie_langue, $_REQUEST['user_langue'], $timelimit);
+        // SECURITY FIX: Escape user input to prevent SQL injection
+        $user_langue_escaped = mysql_real_escape_string($_REQUEST['user_langue']);
+        setcookie($cookie_langue, $user_langue_escaped, $timelimit);
 
         if ($user){
-            $upd = mysql_query("UPDATE " . USER_TABLE . " SET user_langue = '" . $_REQUEST['user_langue'] . "' WHERE id = '" . $user[0] . "'");
+            $upd = mysql_query("UPDATE " . USER_TABLE . " SET user_langue = '" . $user_langue_escaped . "' WHERE id = '" . $user[0] . "'");
         }
     }
 
@@ -1921,7 +1941,9 @@ function validation() {
     global $user, $nuked;
 
     if ($nuked['validation'] == 'mail') {
-        $sql = mysql_query('SELECT niveau FROM ' . USER_TABLE . ' WHERE id = "' . $_REQUEST['id_user'] . '"');
+        // SECURITY FIX: Escape user input to prevent SQL injection
+        $id_user_escaped = mysql_real_escape_string($_REQUEST['id_user']);
+        $sql = mysql_query('SELECT niveau FROM ' . USER_TABLE . ' WHERE id = "' . $id_user_escaped . '"');
         list($niveau) = mysql_fetch_array($sql);
 
         if ($niveau > 0) {
