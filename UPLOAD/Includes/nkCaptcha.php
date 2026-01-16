@@ -56,7 +56,7 @@ function create_captcha() {
     // Save token in session
     if (! array_key_exists('CT_TOKEN', $_SESSION) || empty($_SESSION['CT_TOKEN'])) {
         // Generate token code
-        $token = md5(uniqid(microtime(), true));
+        $token = md5(uniqid(microtime(true), true));
         $_SESSION['CT_TOKEN'] = $token;
     }
     else {

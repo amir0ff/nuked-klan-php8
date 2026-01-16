@@ -33,27 +33,31 @@ if ($visiteur >= $level_access && $level_access > -1)
 {
     $nb_mess_for = $nuked['thread_forum_page'];
 
-    if ($_REQUEST['date_max'] != "")
+    $date_max = isset($_REQUEST['date_max']) ? $_REQUEST['date_max'] : '';
+    $forum_id = isset($_REQUEST['forum_id']) ? $_REQUEST['forum_id'] : '';
+    
+    if ($date_max != "")
     {
         $date_jour = time();
-        $date_select = $date_jour - $_REQUEST['date_max'];
+        $date_select = $date_jour - (int)$date_max;
     }
 
-    if ($_REQUEST['date_max'] != "")
+    if ($date_max != "")
     {
-        $sql2 = mysql_query("SELECT forum_id FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . $_REQUEST['forum_id'] . "' AND date > '" . $date_select . "' ORDER BY last_post DESC");
+        $sql2 = mysql_query("SELECT forum_id FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . mysql_real_escape_string($forum_id) . "' AND date > '" . (int)$date_select . "' ORDER BY last_post DESC");
     }
     else
     {
-        $sql2 = mysql_query("SELECT forum_id FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . $_REQUEST['forum_id'] . "' ORDER BY last_post DESC");
+        $sql2 = mysql_query("SELECT forum_id FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . mysql_real_escape_string($forum_id) . "' ORDER BY last_post DESC");
     }
 
     $count = mysql_num_rows($sql2);
 
-    $p = !$_GET['p']?1:$_GET['p'];
+    $p = isset($_GET['p']) ? (int)$_GET['p'] : 1;
+    if ($p < 1) $p = 1;
     $start = $p * $nb_mess_for - $nb_mess_for;
 
-    $sql = mysql_query("SELECT nom, moderateurs, cat, level FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $_REQUEST['forum_id'] . "'");
+    $sql = mysql_query("SELECT nom, moderateurs, cat, level FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . mysql_real_escape_string($forum_id) . "'");
     $level_ok = mysql_num_rows($sql);
 
     if ($level_ok == 0)
@@ -101,7 +105,7 @@ if ($visiteur >= $level_access && $level_access > -1)
         if ($count > $nb_mess_for)
         {
             echo "<br /><br />\n";
-            $url_page = "index.php?file=Forum&amp;page=viewforum&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;date_max=" . $_REQUEST['date_max'];
+            $url_page = "index.php?file=Forum&amp;page=viewforum&amp;forum_id=" . urlencode($forum_id) . "&amp;date_max=" . urlencode($date_max);
             number($count, $nb_mess_for, $url_page);
         }
 
@@ -109,12 +113,12 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($level == 0 || $user[1] >= $level || $administrator == 1)
         {
-            echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . $_REQUEST['forum_id'] . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/newthread.gif\" alt=\"\" title=\"" . _NEWSTOPIC . "\" /></a>";
+            echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . urlencode($forum_id) . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/newthread.gif\" alt=\"\" title=\"" . _NEWSTOPIC . "\" /></a>";
         }
 
         if ($user)
         {
-            echo "<br /><a href=\"index.php?file=Forum&amp;op=mark&amp;forum_id=" . $_REQUEST['forum_id'] . "\">" . _MARKSUBJECTREAD . "</a>";
+            echo "<br /><a href=\"index.php?file=Forum&amp;op=mark&amp;forum_id=" . urlencode($forum_id) . "\">" . _MARKSUBJECTREAD . "</a>";
         }
 
         echo "</td></tr></table>\n"
@@ -131,13 +135,13 @@ if ($visiteur >= $level_access && $level_access > -1)
             echo "<tr style=\"background: " . $color2 . ";\"><td colspan=\"6\" align=\"center\">" . _NOPOSTFORUM . "</td></tr>\n";
         }
 
-        if ($_REQUEST['date_max'] != "")
+        if ($date_max != "")
         {
-            $sql3 = mysql_query("SELECT id, titre, auteur, view, closed, annonce, sondage FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . $_REQUEST['forum_id'] . "' AND date > '" . $date_select . "' ORDER BY annonce DESC, last_post DESC LIMIT " . $start . ", " . $nb_mess_for."");
+            $sql3 = mysql_query("SELECT id, titre, auteur, view, closed, annonce, sondage FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . mysql_real_escape_string($forum_id) . "' AND date > '" . (int)$date_select . "' ORDER BY annonce DESC, last_post DESC LIMIT " . (int)$start . ", " . (int)$nb_mess_for."");
         }
         else
         {
-            $sql3 = mysql_query("SELECT id, titre, auteur, auteur_id, view, closed, annonce, sondage FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . $_REQUEST['forum_id'] . "' ORDER BY annonce DESC, last_post DESC LIMIT " . $start . ", " . $nb_mess_for."");
+            $sql3 = mysql_query("SELECT id, titre, auteur, auteur_id, view, closed, annonce, sondage FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . mysql_real_escape_string($forum_id) . "' ORDER BY annonce DESC, last_post DESC LIMIT " . (int)$start . ", " . (int)$nb_mess_for."");
         }
 
         while (list($thread_id, $titre, $auteur, $auteur_id, $nb_read, $closed, $annonce, $sondage) = mysql_fetch_row($sql3))
@@ -169,11 +173,11 @@ if ($visiteur >= $level_access && $level_access > -1)
 
             if (strlen($titre) > 30)
             {
-                $titre_topic = "<a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $thread_id . "\" onmouseover=\"AffBulle('" . mysql_real_escape_string(stripslashes($title)) . "', '" . mysql_real_escape_string(stripslashes($texte)) . "', 400)\" onmouseout=\"HideBulle()\"><b>" . printSecuTags(substr($titre, 0, 30)) . "...</b></a>";
+                $titre_topic = "<a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($thread_id) . "\" onmouseover=\"AffBulle('" . mysql_real_escape_string(stripslashes($title)) . "', '" . mysql_real_escape_string(stripslashes($texte)) . "', 400)\" onmouseout=\"HideBulle()\"><b>" . printSecuTags(substr($titre, 0, 30)) . "...</b></a>";
             }
             else
             {
-                $titre_topic = "<a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $thread_id . "\" onmouseover=\"AffBulle('" . mysql_real_escape_string(stripslashes($title)) . "', '" . mysql_real_escape_string(stripslashes($texte)) . "', 400)\" onmouseout=\"HideBulle()\"><b>" . printSecuTags($titre) . "</b></a>";
+                $titre_topic = "<a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($thread_id) . "\" onmouseover=\"AffBulle('" . mysql_real_escape_string(stripslashes($title)) . "', '" . mysql_real_escape_string(stripslashes($texte)) . "', 400)\" onmouseout=\"HideBulle()\"><b>" . printSecuTags($titre) . "</b></a>";
             }
 
             $sql4 = mysql_query("SELECT file FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $thread_id . "'");
@@ -261,7 +265,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                 $topicpages = $posts / $nuked['mess_forum_page'];
                 $topicpages = ceil($topicpages);
 
-                $link_post = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $thread_id . "&amp;p=" . $topicpages . "#" . $mess_id;
+                $link_post = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($thread_id) . "&amp;p=" . $topicpages . "#" . $mess_id;
 
                 for ($l = 1; $l <= $topicpages; $l++)
                 {
@@ -274,7 +278,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             else
             {
                 $multipage2 = "";
-                $link_post = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $thread_id . "#" . $mess_id;
+                $link_post = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($thread_id) . "#" . $mess_id;
             }
 
             if ($auteur_id != "")
@@ -338,7 +342,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($count > $nb_mess_for)
         {
-            $url_page = "index.php?file=Forum&amp;page=viewforum&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;date_max=" . $_REQUEST['date_max'];
+            $url_page = "index.php?file=Forum&amp;page=viewforum&amp;forum_id=" . urlencode($forum_id) . "&amp;date_max=" . urlencode($date_max);
             number($count, $nb_mess_for, $url_page);
         }
 
@@ -374,7 +378,7 @@ if ($visiteur >= $level_access && $level_access > -1)
         }
 
         echo "</select></div></form></td><td>"
-        . "<form method=\"post\" action=\"index.php?file=Forum&amp;page=viewforum&amp;forum_id=" . $_REQUEST['forum_id'] . "\">\n"
+        . "<form method=\"post\" action=\"index.php?file=Forum&amp;page=viewforum&amp;forum_id=" . urlencode($forum_id) . "\">\n"
        . "<div>&nbsp;&nbsp;" . _SEETHETOPIC . " : <select name=\"date_max\" onchange=\"submit();\">\n"
     . "<option>" . _THEFIRST . "</option>\n"
     . "<option value=\"86400\">" . _ONEDAY . "</option>\n"

@@ -419,6 +419,156 @@ This document provides complete technical documentation of the migration of Nuke
 
 ---
 
+### 20. Forum Module Frontend PHP 8.0 Compatibility Fixes (January 15, 2026)
+**Problem:** Multiple PHP 8.0 compatibility issues in Forum module frontend pages causing undefined array key warnings and functional bugs.
+
+**Files Modified:**
+
+**Forum/main.php:**
+- Fixed undefined array key "cat" (line 67)
+  - Added `isset()` check: `$cat = isset($_REQUEST['cat']) ? (int)$_REQUEST['cat'] : 0;`
+  - Used `mysql_real_escape_string()` for SQL queries and `urlencode()` for URLs
+  - Initialized `$cat_check` variable with proper escaping
+
+**Forum/search.php:**
+- Fixed multiple undefined array keys: "do", "id_forum", "query", "autor", "into", "searchtype", "limit", "date_max", "op", "p"
+  - Initialized all parameters with `isset()` checks at function start
+  - Added type casting for numeric values: `(int)$_REQUEST['p']`
+  - Used local variables consistently with proper SQL escaping and URL encoding
+  - Fixed pagination logic for `$_REQUEST['p']`
+
+**Forum/viewforum.php:**
+- Fixed undefined array keys: "date_max", "p" (line 36, 42, 53)
+  - Initialized `$date_max` and `$forum_id` from `$_REQUEST` with `isset()` and type casting
+  - Used variables consistently in SQL queries and URL construction
+  - Fixed pagination: `$p = isset($_GET['p']) ? (int)$_GET['p'] : 1;`
+
+**Forum/post.php:**
+- Fixed multiple undefined array keys and variables: "do", "thread_id", "mess_id", "$ftexte", "$emailnotify", "$annonce", "$usersig", "$e_txt", "$e_titre", "$author"
+  - Initialized all `$_REQUEST` parameters (`$do`, `$forum_id`, `$thread_id`, `$mess_id`) with `isset()` checks
+  - Initialized all potentially undefined variables to default empty/zero values
+  - Replaced all direct `$_REQUEST` accesses with local variables
+  - Added SQL escaping (`mysql_real_escape_string()`) and HTML escaping (`htmlspecialchars()`) for output
+
+**Forum/index.php:**
+- Fixed undefined array keys: "emailnotify", "annonce", "survey", "survey_field" (and their `_reply`, `_edit`, `_check` variants)
+  - Initialized all variables with `isset()` checks and default values before use in `post`, `edit`, and `reply` functions
+  - **Critical Fix - AUTO_INCREMENT:** Removed `id` from `INSERT` statements for `FORUM_THREADS_TABLE`, `FORUM_MESSAGES_TABLE`, `FORUM_POLL_TABLE`, and `FORUM_OPTIONS_TABLE` to allow MySQL to auto-increment
+  - **Critical Fix - Integer Default Values:** Changed default values for `closed` and `view` columns from `''` to `'0'` in `FORUM_THREADS_TABLE` INSERT statement
+  - **Critical Fix - Thread ID Retrieval:** Improved thread ID retrieval after insertion:
+    - Prioritized `mysql_insert_id()` with fallbacks using `SELECT MAX(id)` with specific conditions (forum/author) and general (most recent for forum)
+    - Added error handling if `thread_id` remains 0
+  - **Critical Fix - Redirect URL:** Corrected redirect URLs after posting to use reliably retrieved `$idmax` (as `$thread_id_redirect`) instead of `$_REQUEST['thread_id']`, preventing `thread_id=0` in URL
+  - Added SQL escaping for all string values being inserted into database
+  - Fixed `$_REQUEST['survey_field']` access in `add_poll()` to use local variable and `urlencode()`
+
+**Forum/viewtopic.php:**
+- Fixed multiple undefined variable and array key issues:
+  - **Array offset on null (lines 58, 59, 62, 72):** Added `is_array()` checks before accessing `$user_visit` array keys, initialized `$tid` and `$fid` to empty strings
+  - **Undefined variables `$prev` and `$next` (line 119):** Initialized both to empty strings before conditional blocks, added proper null checks for `mysql_fetch_array()` results
+  - **Undefined array key "highlight" (lines 259, 493):** Added `isset()` check and stored in `$highlight` variable, used consistently throughout
+  - **Undefined variable `$tmpcnt` (line 284):** Added `if (!isset($tmpcnt)) $tmpcnt = 0;` before first use, changed increment logic
+  - **Undefined array key "p" (lines 415, 446):** Used initialized `$p` variable consistently with proper URL encoding
+  - **Undefined variable `$attach_file` (line 415):** Added `if (!isset($attach_file)) $attach_file = '';` before use
+  - Fixed all `$_REQUEST` accesses to use local variables with proper escaping
+  - Added proper URL encoding for all URL parameters
+
+**Pattern Applied:**
+- All `$_REQUEST` parameters initialized with `isset()` checks at function start
+- Type casting for numeric values: `(int)$_REQUEST['param']`
+- SQL escaping: `mysql_real_escape_string()` for all database queries
+- HTML escaping: `htmlspecialchars()` for all HTML output
+- URL encoding: `urlencode()` for all URL parameters
+- AUTO_INCREMENT fields: Omit from INSERT column lists, let MySQL handle
+- Integer defaults: Use `'0'` instead of `''` for integer columns
+
+---
+
+### 21. Search Module Frontend PHP 8.0 Compatibility Fixes (January 15, 2026)
+**Problem:** Multiple undefined array key warnings in Search module frontend.
+
+**Files Modified:**
+- `modules/Search/index.php` (lines 41, 43, 80, 193)
+  - **Undefined variables `$checked1` through `$checked6`:** Initialized all to empty strings (`''`) at start of `index()` function
+  - **Undefined array key "module" in loop:** Fixed `$_REQUEST['module']` access in `foreach` loop by introducing local variable `$module_check` with `isset()` check
+  - **Undefined array keys in `mod_search()`:** Explicitly initialized `$module`, `$main`, `$autor`, `$limit`, `$searchtype` with `isset()` checks within `switch` statement `case "mod_search"` before passing to `mod_search()`
+  - Used local variables consistently in URL construction (`urlencode()`) and SQL queries (`mysql_real_escape_string()`)
+
+**Pattern Applied:**
+- Initialize conditionally assigned variables to default values before conditional blocks
+- Use local variables with proper escaping for all database and URL operations
+
+---
+
+### 22. Additional Frontend Module PHP 8.0 Compatibility Fixes (January 15, 2026)
+**Problem:** Multiple undefined array key warnings in various frontend modules.
+
+**Files Modified:**
+
+**Team/index.php:**
+- Fixed undefined array keys: "cid", "game", "op"
+  - Added `isset()` checks for `$_REQUEST['cid']` and `$_REQUEST['game']`
+  - Initialized `$game` variable and handled all `$_REQUEST['game']` accesses with `isset()` checks, type casting, and URL encoding
+  - Updated `switch` statement for `$_REQUEST['op']` with `isset()` check
+
+**Server/index.php:**
+- Fixed undefined array key: "op"
+  - Updated `switch` statement for `$_REQUEST['op']` with `isset()` check
+
+**Textbox/index.php:**
+- Fixed undefined array key: "p", "op"
+  - Fixed pagination logic by initializing `$p` with `isset()` and type casting
+  - Updated `switch` statement for `$_REQUEST['op']` with `isset()` check
+
+**Guestbook/index.php:**
+- Fixed undefined array key: "p", "op"
+  - Fixed pagination logic by initializing `$p` with `isset()` and type casting
+  - Updated `switch` statement for `$_REQUEST['op']` with `isset()` check
+
+**Wars/index.php:**
+- Fixed undefined array keys: "p", "p2", "p3", "tid", "orderby", "op"
+  - Fixed pagination logic by initializing `$p`, `$p2`, `$p3` with `isset()` and type casting in multiple locations
+  - Initialized `$tid` for `$_REQUEST['tid']` accesses, used `mysql_real_escape_string()` for SQL, and `urlencode()` for URLs
+  - Initialized `$orderby` for `$_REQUEST['orderby']` accesses, used it in logic, and `urlencode()` for URLs
+  - Updated `switch` statement for `$_REQUEST['op']` with `isset()` check
+
+**Comment/index.php:**
+- Fixed undefined array key: "op"
+  - Updated `switch` statement for `$_REQUEST['op']` with `isset()` check
+  - Added `isset()` checks for all `$_REQUEST` parameters passed to functions like `del_comment`, `modif_comment`, `com_index`, `post_com`, `view_com`, `post_comment`, `edit_comment`
+
+**Stats/top.php:**
+- Fixed undefined variables: `$j`, `$j1`, `$j2`, `$j3`, `$j4`
+  - Initialized all row counter variables to `0` before their respective loops for alternating row colors
+
+**Defy/index.php:**
+- Fixed deprecated `each()` function (line 110)
+  - Replaced `each()` with `foreach` loop for iterating arrays
+  - `each()` was removed in PHP 8.0
+
+**User/index.php:**
+- Fixed `microtime()` non-numeric value warning
+  - Changed `srand((double)microtime() * 1000000);` to `srand((double)microtime(true) * 1000000);` to ensure `microtime()` returns a float
+
+**Includes/nkSessions.php:**
+- Fixed `microtime()` non-numeric value warning
+  - Changed `list($usec, $sec) = explode(' ', microtime());` to `$microtime_str = microtime(); list($usec, $sec) = explode(' ', $microtime_str);` to avoid passing `microtime()` directly to `explode()`
+
+**Includes/nkCaptcha.php:**
+- Fixed `microtime()` non-numeric value warning
+  - Changed `md5(uniqid(microtime(), true));` to `md5(uniqid(microtime(true), true));` to ensure `microtime()` returns a float
+
+**Pattern Applied:**
+- All `$_REQUEST` parameters checked with `isset()` before use
+- Type casting for numeric values: `(int)$_REQUEST['param']`
+- SQL escaping: `mysql_real_escape_string()` for database queries
+- URL encoding: `urlencode()` for URL parameters
+- Initialize loop counters before use
+- Replace deprecated `each()` with `foreach`
+- Use `microtime(true)` to return float instead of string
+
+---
+
 ## Files Modified Summary
 
 ### Core Files (5 files)
@@ -468,15 +618,41 @@ This document provides complete technical documentation of the migration of Nuke
 - `themes/Impact_Nk/theme.php` - Fixed undefined array keys (User, News), undefined constant (titre), all display functions
 - `modules/User/index.php` - Fixed undefined array keys, file upload handling, avatar synchronization between tables
 
-**Total Files Modified:** 76+ files (updated from 67+)
+**Frontend Module Files (18 files):**
+- `modules/Forum/main.php` - Fixed undefined array key "cat"
+- `modules/Forum/search.php` - Fixed multiple undefined array keys (do, id_forum, query, autor, into, searchtype, limit, date_max, op, p)
+- `modules/Forum/viewforum.php` - Fixed undefined array keys (date_max, p)
+- `modules/Forum/post.php` - Fixed multiple undefined array keys and variables
+- `modules/Forum/index.php` - Fixed undefined array keys, AUTO_INCREMENT issues, thread ID retrieval, redirect URLs
+- `modules/Forum/viewtopic.php` - Fixed multiple undefined variables and array keys (prev, next, highlight, tmpcnt, p, attach_file, user_visit array access)
+- `modules/Search/index.php` - Fixed undefined variables ($checked1-6) and array keys (module, autor, limit, searchtype)
+- `modules/Team/index.php` - Fixed undefined array keys (cid, game, op)
+- `modules/Server/index.php` - Fixed undefined array key "op"
+- `modules/Textbox/index.php` - Fixed undefined array keys (p, op)
+- `modules/Guestbook/index.php` - Fixed undefined array keys (p, op)
+- `modules/Wars/index.php` - Fixed undefined array keys (p, p2, p3, tid, orderby, op)
+- `modules/Comment/index.php` - Fixed undefined array key "op" and function parameters
+- `modules/Stats/top.php` - Fixed undefined variables ($j, $j1, $j2, $j3, $j4)
+- `modules/Defy/index.php` - Fixed deprecated `each()` function
+- `modules/User/index.php` - Fixed `microtime()` non-numeric value warning
+- `Includes/nkSessions.php` - Fixed `microtime()` non-numeric value warning
+- `Includes/nkCaptcha.php` - Fixed `microtime()` non-numeric value warning
+
+**Total Files Modified:** 94+ files (updated from 76+)
 
 **Recent Additions (January 15, 2026):**
 - Members module: Fixed `each()`, undefined array keys, and `$j` variable
 - 9 frontend modules: Fixed undefined `$j` variable for row coloring
+- Forum module frontend: Complete PHP 8.0 compatibility fixes (6 files)
+- Search module: Fixed undefined variables and array keys
+- 8 additional frontend modules: Fixed undefined array keys and deprecated functions
+- 3 Includes files: Fixed `microtime()` non-numeric value warnings
 
 ---
 
 ## Testing Checklist
+
+> **Note:** For a comprehensive manual testing checklist, see [TESTING.md](TESTING.md).
 
 - [x] Installer loads without errors
 - [x] Database connection test works
@@ -551,4 +727,5 @@ php8.0 -l /path/to/file.php
 ---
 
 **Last Updated:** January 15, 2026  
-**Migration Status:** ✅ Complete - Website and Admin Panel fully functional on PHP 8.0
+**Migration Status:** ✅ Complete - Website and Admin Panel fully functional on PHP 8.0  
+**Latest Updates:** Forum module frontend fully compatible, Search module fixed, all frontend modules PHP 8.0 compatible

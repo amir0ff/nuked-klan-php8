@@ -28,7 +28,12 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         echo '<br />';
 
-        if ($_REQUEST['cid'] != '') $where2 = "WHERE cid = '" . $_REQUEST['cid'] . "'"; else $where2 = '';
+        $cid = isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '';
+        if ($cid != '') {
+            $where2 = "WHERE cid = '" . mysql_real_escape_string($cid) . "'";
+        } else {
+            $where2 = '';
+        }
         $sql = mysql_query("SELECT cid, titre, tag, tag2, game FROM " . TEAM_TABLE . " " . $where2 . " ORDER BY ordre, titre");
         $nb_team = mysql_num_rows($sql);
         $res = mysql_fetch_row($sql);
@@ -46,7 +51,8 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         while (is_array($res))
         {
-            list($team, $titre, $team_tag, $tag2, $_REQUEST['game']) = $res;
+            list($team, $titre, $team_tag, $tag2, $game_id) = $res;
+            $game = isset($_REQUEST['game']) ? $_REQUEST['game'] : $game_id;
 
             $titre = printSecuTags($titre);
             $team_tag = printSecuTags($team_tag);
@@ -111,14 +117,15 @@ if ($visiteur >= $level_access && $level_access > -1)
                         $j = 0;
                     }
 
-                    if ($_REQUEST['game'] > 0)
+                    $game_filter = isset($_REQUEST['game']) ? (int)$_REQUEST['game'] : 0;
+                    if ($game_filter > 0)
                     {
-                        $sql3 = mysql_query("SELECT * FROM " . GAMES_PREFS_TABLE . " WHERE game = '" . $_REQUEST['game'] . "' AND user_id = '" . $id_user . "'");
+                        $sql3 = mysql_query("SELECT * FROM " . GAMES_PREFS_TABLE . " WHERE game = '" . $game_filter . "' AND user_id = '" . $id_user . "'");
                         $test = mysql_num_rows($sql3);
 
                         if ($test > 0)
                         {
-                            $url_member = "index.php?file=Team&amp;op=detail&amp;autor=" . urlencode($pseudo) . "&amp;game=" . $_REQUEST['game'];
+                            $url_member = "index.php?file=Team&amp;op=detail&amp;autor=" . urlencode($pseudo) . "&amp;game=" . $game_filter;
                         }
                         else
                         {
@@ -232,9 +239,10 @@ if ($visiteur >= $level_access && $level_access > -1)
             $res = mysql_num_rows($sql2);
             list($prenom, $birthday, $sexe, $ville, $motherboard, $cpu, $ram, $video, $resolution, $sons, $ecran, $souris, $clavier, $connexion, $osystem, $photo, $pref1, $pref2, $pref3, $pref4, $pref5) = mysql_fetch_array($sql2);
 
-            if ($_REQUEST['game'] != "")
+            $game_detail = isset($_REQUEST['game']) ? $_REQUEST['game'] : '';
+            if ($game_detail != "")
             {
-                $sql3 = mysql_query("SELECT titre, pref_1, pref_2, pref_3, pref_4, pref_5 FROM " . GAMES_TABLE . " WHERE id = '" . $_REQUEST['game'] . "'");
+                $sql3 = mysql_query("SELECT titre, pref_1, pref_2, pref_3, pref_4, pref_5 FROM " . GAMES_TABLE . " WHERE id = '" . mysql_real_escape_string($game_detail) . "'");
                 list($titre, $pref_1, $pref_2, $pref_3, $pref_4, $pref_5) = mysql_fetch_array($sql3);
 
 
@@ -246,7 +254,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                 $pref_5 = printSecuTags($pref_5);
 
 
-                $sql4 = mysql_query("SELECT pref_1, pref_2, pref_3, pref_4, pref_5 FROM " . GAMES_PREFS_TABLE . " WHERE game = '" . $_REQUEST['game'] . "' AND user_id = '" . $id_user . "'");
+                $sql4 = mysql_query("SELECT pref_1, pref_2, pref_3, pref_4, pref_5 FROM " . GAMES_PREFS_TABLE . " WHERE game = '" . mysql_real_escape_string($game_detail) . "' AND user_id = '" . $id_user . "'");
                 list($gpref1, $gpref2, $gpref3, $gpref4, $gpref5) = mysql_fetch_array($sql4);
 
             }
@@ -439,14 +447,14 @@ if ($visiteur >= $level_access && $level_access > -1)
         closetable();
     }
 
-    switch ($_REQUEST['op'])
+    switch (isset($_REQUEST['op']) ? $_REQUEST['op'] : '')
     {
         case"index":
             index();
             break;
 
         case"detail":
-            detail($_REQUEST['autor']);
+            detail(isset($_REQUEST['autor']) ? $_REQUEST['autor'] : '');
             break;
 
         default:

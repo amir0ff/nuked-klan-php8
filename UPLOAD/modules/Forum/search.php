@@ -31,19 +31,21 @@ $ModName = basename(dirname(__FILE__));
 $level_access = nivo_mod($ModName);
 if ($visiteur >= $level_access && $level_access > -1)
 {
-    if ($_REQUEST['do'] == "search")
+    $do = isset($_REQUEST['do']) ? $_REQUEST['do'] : '';
+    if ($do == "search")
     {
         $where = "AS M , " . FORUM_TABLE . " AS F , " . FORUM_CAT_TABLE . " AS C WHERE";
 
-    if (is_int(strpos($_REQUEST['id_forum'], 'cat_')))
+    $id_forum = isset($_REQUEST['id_forum']) ? $_REQUEST['id_forum'] : '';
+    if ($id_forum != '' && is_int(strpos($id_forum, 'cat_')))
     {
-            $cat = preg_replace("`cat_`i", "", $_REQUEST['id_forum']);
-            $where .= " F.cat = '" . $cat . "' AND";
+            $cat = preg_replace("`cat_`i", "", $id_forum);
+            $where .= " F.cat = '" . mysql_real_escape_string($cat) . "' AND";
     }
-        else if ($_REQUEST['id_forum'] != "")
+        else if ($id_forum != "")
         {
-            $cat = $_REQUEST['id_forum'];
-            $where .= " M.forum_id = '" . $cat . "' AND";
+            $cat = $id_forum;
+            $where .= " M.forum_id = '" . mysql_real_escape_string($cat) . "' AND";
         }
     else
     {
@@ -57,13 +59,18 @@ if ($visiteur >= $level_access && $level_access > -1)
 
     $where .= " F.cat = C.id AND '" . $searchLevelAccess . "' >= C.niveau AND M.forum_id = F.id AND '" . $searchLevelAccess . "' >= F.niveau AND";
 
-        if ($_REQUEST['limit'] == "" || !is_numeric($_REQUEST['limit'])) $_REQUEST['limit'] = 50;
-        if (!$_REQUEST['p']) $_REQUEST['p'] = 1;
-        $start = $_REQUEST['p'] * $_REQUEST['limit'] - $_REQUEST['limit'];
+        $limit = isset($_REQUEST['limit']) ? $_REQUEST['limit'] : '';
+        $p = isset($_REQUEST['p']) ? $_REQUEST['p'] : '';
+        $query = isset($_REQUEST['query']) ? $_REQUEST['query'] : '';
+        $autor = isset($_REQUEST['autor']) ? $_REQUEST['autor'] : '';
+        
+        if ($limit == "" || !is_numeric($limit)) $limit = 50;
+        if (!$p) $p = 1;
+        $start = (int)$p * (int)$limit - (int)$limit;
 
-        $_REQUEST['autor'] = trim($_REQUEST['autor']);
+        $autor = trim($autor);
 
-        if (preg_match("`%20union%20`i", $_REQUEST['query']) ||preg_match("` union `i", $_REQUEST['query']) || preg_match("`\*union\*`i", $_REQUEST['query']) || preg_match("`\+union\+`i", $_REQUEST['query']) || preg_match("`\*`i", $_REQUEST['query']) || !is_numeric($cat))
+        if (preg_match("`%20union%20`i", $query) ||preg_match("` union `i", $query) || preg_match("`\*union\*`i", $query) || preg_match("`\+union\+`i", $query) || preg_match("`\*`i", $query) || !is_numeric($cat))
     {
             echo "<br /><br /><div style=\"text-align: center;\"><big>What are you trying to do ?</big></div><br /><br />";
             redirect("index.php?file=Forum&page=search", 2);
@@ -72,15 +79,18 @@ if ($visiteur >= $level_access && $level_access > -1)
             exit();
     }
 
-        $_REQUEST['query'] = mysql_real_escape_string(stripslashes($_REQUEST['query']));
-        $_REQUEST['query'] = trim($_REQUEST['query']);
+        $query = mysql_real_escape_string(stripslashes($query));
+        $query = trim($query);
+        $date_max = isset($_REQUEST['date_max']) ? $_REQUEST['date_max'] : '';
+        $searchtype = isset($_REQUEST['searchtype']) ? $_REQUEST['searchtype'] : '';
+        $into = isset($_REQUEST['into']) ? $_REQUEST['into'] : '';
 
-        if ($_REQUEST['date_max'] != "" && !preg_match("`[^0-9]`i", $_REQUEST['date_max']))
+        if ($date_max != "" && !preg_match("`[^0-9]`i", $date_max))
         {
-            $req = "SELECT M.id, M.auteur, M.auteur_id, M.titre, M.txt, M.thread_id, M.forum_id, M.date FROM " . FORUM_MESSAGES_TABLE . " " . $where . " M.date > '" . $_REQUEST['date_max'] . "' ORDER BY M.date DESC";
+            $req = "SELECT M.id, M.auteur, M.auteur_id, M.titre, M.txt, M.thread_id, M.forum_id, M.date FROM " . FORUM_MESSAGES_TABLE . " " . $where . " M.date > '" . (int)$date_max . "' ORDER BY M.date DESC";
             $result = mysql_query($req);
         } 
-        else if (($_REQUEST['query'] != "" && strlen($_REQUEST['query']) < 3) || ($_REQUEST['autor'] != "" && strlen($_REQUEST['autor']) < 3))
+        else if (($query != "" && strlen($query) < 3) || ($autor != "" && strlen($autor) < 3))
         {
             echo "<br /><br /><div style=\"text-align: center;\">" . _3CHARSMIN . "</div><br /><br />";
             redirect("index.php?file=Forum&page=search", 2);
@@ -89,58 +99,58 @@ if ($visiteur >= $level_access && $level_access > -1)
             exit();
         } 
 
-        else if ($_REQUEST['query'] != "" || $_REQUEST['autor'] != "")
+        else if ($query != "" || $autor != "")
         {
             $and = "";
 
-            if ($_REQUEST['autor'] != "" && $_REQUEST['query'] != "")
+            if ($autor != "" && $query != "")
             { 
-                $_REQUEST['autor'] = nk_CSS($_REQUEST['autor']);
-                $_REQUEST['autor'] = nkHtmlEntities($_REQUEST['autor'], ENT_QUOTES);
-                $and .= "(M.auteur LIKE '%" . $_REQUEST['autor'] . "%') AND ";
+                $autor = nk_CSS($autor);
+                $autor = nkHtmlEntities($autor, ENT_QUOTES);
+                $and .= "(M.auteur LIKE '%" . mysql_real_escape_string($autor) . "%') AND ";
             }
-            else if ($_REQUEST['autor'] != "")
+            else if ($autor != "")
             { 
-                $_REQUEST['autor'] = nk_CSS($_REQUEST['autor']);
-                $_REQUEST['autor'] = nkHtmlEntities($_REQUEST['autor'], ENT_QUOTES);
-                $and .= "(M.auteur LIKE '%" . $_REQUEST['autor'] . "%')";
+                $autor = nk_CSS($autor);
+                $autor = nkHtmlEntities($autor, ENT_QUOTES);
+                $and .= "(M.auteur LIKE '%" . mysql_real_escape_string($autor) . "%')";
             }
 
-            if ($_REQUEST['searchtype'] == "matchexact" && $_REQUEST['query'] != "")
+            if ($searchtype == "matchexact" && $query != "")
             {
-                if ($_REQUEST['into'] == "message")
+                if ($into == "message")
                 {
-                    $and .= "(M.txt LIKE '%" . $_REQUEST['query'] . "%')";
+                    $and .= "(M.txt LIKE '%" . mysql_real_escape_string($query) . "%')";
                 } 
-                else if ($_REQUEST['into'] == "subject")
+                else if ($into == "subject")
                 {
-                    $and .= "(M.titre LIKE '%" . $_REQUEST['query'] . "%')";
+                    $and .= "(M.titre LIKE '%" . mysql_real_escape_string($query) . "%')";
                 } 
                 else
                 {
-                    $and .= "(M.txt LIKE '%" . $_REQUEST['query'] . "%' OR M.titre LIKE '%" . $_REQUEST['query'] . "%')";
+                    $and .= "(M.txt LIKE '%" . mysql_real_escape_string($query) . "%' OR M.titre LIKE '%" . mysql_real_escape_string($query) . "%')";
                 } 
             } 
-            else if ($_REQUEST['query'] != "")
+            else if ($query != "")
             {
-                $search = explode(" ", $_REQUEST['query']);
+                $search = explode(" ", $query);
                 $sep = "";
                 $and .= "(";
                 for($i = 0; $i < count($search); $i++)
                 {
-                    if ($_REQUEST['into'] == "message")
+                    if ($into == "message")
                     {
-                        $and .= $sep . "M.txt LIKE '%" . $search[$i] . "%'";
+                        $and .= $sep . "M.txt LIKE '%" . mysql_real_escape_string($search[$i]) . "%'";
                     } 
-                    else if ($_REQUEST['into'] == "subject")
+                    else if ($into == "subject")
                     {
-                        $and .= $sep . "M.titre LIKE '%" . $search[$i] . "%'";
+                        $and .= $sep . "M.titre LIKE '%" . mysql_real_escape_string($search[$i]) . "%'";
                     } 
                     else
                     {
-                        $and .= $sep . "(M.txt LIKE '%" . $search[$i] . "%' OR M.titre LIKE '%" . $search[$i] . "%')";
+                        $and .= $sep . "(M.txt LIKE '%" . mysql_real_escape_string($search[$i]) . "%' OR M.titre LIKE '%" . mysql_real_escape_string($search[$i]) . "%')";
                     } 
-                    if ($_REQUEST['searchtype'] == "matchor") $sep = " OR ";
+                    if ($searchtype == "matchor") $sep = " OR ";
                     else $sep = " AND ";
                 } 
                 $and .= ")";
@@ -164,8 +174,17 @@ if ($visiteur >= $level_access && $level_access > -1)
     . "<tr><td><big><b>" . _FSEARCHRESULT . "</b></big> - " . $nb_result . "&nbsp;" . _FSEARCHFOUND . "</td></tr>\n"
     . "<tr><td><a href=\"index.php?file=Forum\"><b>" . _INDEXFORUM . "</b></a> -&gt; <a href=\"index.php?file=Forum&amp;page=search\"><b>" . _SEARCH . "</b></a></td></tr></table>\n";
     
-    $url = "index.php?file=Forum&amp;page=search&amp;op=" . $op . "&amp;query=" . urlencode($_REQUEST['query']) . "&amp;autor=" . urlencode($_REQUEST['autor']) . "&amp;do=" . $_REQUEST['do'] . "&amp;into=" . $_REQUEST['into'] . "&amp;searchtype=" . $_REQUEST['searchtype'] . "&amp;id_forum=" . $_REQUEST['id_forum'] . "&amp;limit=" . $_REQUEST['limit'] . "&amp;date_max=" . $_REQUEST['date_max'];
-        if ($nb_result > $_REQUEST['limit']) number($nb_result, $_REQUEST['limit'], $url);
+    $query = isset($_REQUEST['query']) ? $_REQUEST['query'] : '';
+    $autor = isset($_REQUEST['autor']) ? $_REQUEST['autor'] : '';
+    $into = isset($_REQUEST['into']) ? $_REQUEST['into'] : '';
+    $searchtype = isset($_REQUEST['searchtype']) ? $_REQUEST['searchtype'] : '';
+    $id_forum = isset($_REQUEST['id_forum']) ? $_REQUEST['id_forum'] : '';
+    $limit = isset($_REQUEST['limit']) ? $_REQUEST['limit'] : '';
+    $date_max = isset($_REQUEST['date_max']) ? $_REQUEST['date_max'] : '';
+    $op = isset($_REQUEST['op']) ? $_REQUEST['op'] : '';
+    
+    $url = "index.php?file=Forum&amp;page=search&amp;op=" . urlencode($op) . "&amp;query=" . urlencode($query) . "&amp;autor=" . urlencode($autor) . "&amp;do=" . urlencode($do) . "&amp;into=" . urlencode($into) . "&amp;searchtype=" . urlencode($searchtype) . "&amp;id_forum=" . urlencode($id_forum) . "&amp;limit=" . urlencode($limit) . "&amp;date_max=" . urlencode($date_max);
+        if ($nb_result > $limit) number($nb_result, $limit, $url);
 
         echo "<table style=\"background: " . $color3 . ";\" width=\"100%\" border=\"0\" cellspacing=\"1\" cellpadding=\"3\">\n"
     . "<tr " . $background . "><td style=\"width: 20%;\" align=\"center\"><b>" . _FORUMS . "</b></td>\n"
@@ -287,8 +306,17 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         echo "</table>\n";
 
-    $url = "index.php?file=Forum&amp;page=search&amp;op=" . $op . "&amp;query=" . urlencode($_REQUEST['query']) . "&amp;autor=" . urlencode($_REQUEST['autor']) . "&amp;do=" . $_REQUEST['do'] . "&amp;into=" . $_REQUEST['into'] . "&amp;searchtype=" . $_REQUEST['searchtype'] . "&amp;id_forum=" . $_REQUEST['id_forum'] . "&amp;limit=" . $_REQUEST['limit'] . "&amp;date_max=" . $_REQUEST['date_max'];
-        if ($nb_result > $_REQUEST['limit']) number($nb_result, $_REQUEST['limit'], $url);
+    $query = isset($_REQUEST['query']) ? $_REQUEST['query'] : '';
+    $autor = isset($_REQUEST['autor']) ? $_REQUEST['autor'] : '';
+    $into = isset($_REQUEST['into']) ? $_REQUEST['into'] : '';
+    $searchtype = isset($_REQUEST['searchtype']) ? $_REQUEST['searchtype'] : '';
+    $id_forum = isset($_REQUEST['id_forum']) ? $_REQUEST['id_forum'] : '';
+    $limit = isset($_REQUEST['limit']) ? $_REQUEST['limit'] : '';
+    $date_max = isset($_REQUEST['date_max']) ? $_REQUEST['date_max'] : '';
+    $op = isset($_REQUEST['op']) ? $_REQUEST['op'] : '';
+    
+    $url = "index.php?file=Forum&amp;page=search&amp;op=" . urlencode($op) . "&amp;query=" . urlencode($query) . "&amp;autor=" . urlencode($autor) . "&amp;do=" . urlencode($do) . "&amp;into=" . urlencode($into) . "&amp;searchtype=" . urlencode($searchtype) . "&amp;id_forum=" . urlencode($id_forum) . "&amp;limit=" . urlencode($limit) . "&amp;date_max=" . urlencode($date_max);
+        if ($nb_result > $limit) number($nb_result, $limit, $url);
 
         echo "<br /><form method=\"get\" action=\"index.php\">\n"
         . "<div style=\"text-align: center;\">\n"

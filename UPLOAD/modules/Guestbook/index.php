@@ -197,8 +197,9 @@ if ($visiteur >= $level_access && $level_access > -1)
         $sql = mysql_query("SELECT id FROM " . GUESTBOOK_TABLE);
         $count = mysql_num_rows($sql);
 
-        if (!$_REQUEST['p']) $_REQUEST['p'] = 1;
-        $start = $_REQUEST['p'] * $nb_mess_guest - $nb_mess_guest;
+        $p = isset($_REQUEST['p']) ? (int)$_REQUEST['p'] : 1;
+        if ($p < 1) $p = 1;
+        $start = $p * $nb_mess_guest - $nb_mess_guest;
 
         echo "<br /><div style=\"text-align: center;\"><big><b>" . _GUESTBOOK . "</b></big>\n"
         . "<br /><br />[ <a href=\"index.php?file=Guestbook&amp;op=post_book\">" . _SIGNGUESTBOOK . "</a> ]</div><br />\n";
@@ -312,7 +313,7 @@ if ($visiteur >= $level_access && $level_access > -1)
         closetable();
     }
 
-    switch ($_REQUEST['op'])
+    switch (isset($_REQUEST['op']) ? $_REQUEST['op'] : '')
     {
         case "post_book":
             post_book();

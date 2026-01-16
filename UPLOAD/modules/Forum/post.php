@@ -33,7 +33,22 @@ if ($visiteur >= $level_access && $level_access > -1)
 {
     define('EDITOR_CHECK', 1);
 
-    $sql = mysql_query("SELECT nom, cat, level_poll FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $_REQUEST['forum_id'] . "'");
+    // Initialize all REQUEST variables
+    $do = isset($_REQUEST['do']) ? $_REQUEST['do'] : '';
+    $forum_id = isset($_REQUEST['forum_id']) ? $_REQUEST['forum_id'] : '';
+    $thread_id = isset($_REQUEST['thread_id']) ? $_REQUEST['thread_id'] : '';
+    $mess_id = isset($_REQUEST['mess_id']) ? $_REQUEST['mess_id'] : '';
+    
+    // Initialize variables that may be undefined
+    $ftexte = '';
+    $emailnotify = 0;
+    $annonce = 0;
+    $usersig = 0;
+    $e_txt = '';
+    $e_titre = '';
+    $author = '';
+    
+    $sql = mysql_query("SELECT nom, cat, level_poll FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . mysql_real_escape_string($forum_id) . "'");
     $level_ok = mysql_num_rows($sql);
 
     if ($level_ok == 0)
@@ -44,10 +59,10 @@ if ($visiteur >= $level_access && $level_access > -1)
     {
         list($nom, $cat, $level_poll) = mysql_fetch_array($sql);
 
-        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $_REQUEST['forum_id'] . "'");
+        $result = mysql_query("SELECT moderateurs FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . mysql_real_escape_string($forum_id) . "'");
         list($modos) = mysql_fetch_array($result);
 
-        $select_cat = mysql_query('SELECT nom FROM ' . FORUM_CAT_TABLE . ' WHERE id = ' . $cat);
+        $select_cat = mysql_query('SELECT nom FROM ' . FORUM_CAT_TABLE . ' WHERE id = ' . (int)$cat);
         list($nom2) = mysql_fetch_array($select_cat);
 
         if ($user && $modos != "" && strpos($user[0], $modos))
@@ -59,20 +74,24 @@ if ($visiteur >= $level_access && $level_access > -1)
             $administrator = 0;
         }
 
-        if ($_REQUEST['do'] == "edit" || $_REQUEST['do'] == "quote")
+        if ($do == "edit" || $do == "quote")
         {
-            $result = mysql_query("SELECT txt, titre, auteur, usersig, emailnotify FROM " . FORUM_MESSAGES_TABLE . " WHERE id = '" . $_REQUEST['mess_id'] . "' AND forum_id = '" . $_REQUEST['forum_id'] . "'");
+            $result = mysql_query("SELECT txt, titre, auteur, usersig, emailnotify FROM " . FORUM_MESSAGES_TABLE . " WHERE id = '" . mysql_real_escape_string($mess_id) . "' AND forum_id = '" . mysql_real_escape_string($forum_id) . "'");
             list($e_txt, $e_titre, $author, $usersig, $emailnotify) = mysql_fetch_array($result);
 
             $e_titre = printSecuTags($e_titre);
+            if ($do == "quote")
+            {
+                $ftexte = "[quote=" . $author . "]" . $e_txt . "[/quote]";
+            }
         }
 
-        if ($_REQUEST['thread_id'] != "")
+        if ($thread_id != "")
         {
             $action = "index.php?file=Forum&amp;op=reply";
             $action_name = _POSTREPLY;
         }
-        else if ($_REQUEST['do'] == "edit")
+        else if ($do == "edit")
         {
             $action = "index.php?file=Forum&amp;op=edit";
             $action_name = _POSTEDIT;
@@ -85,12 +104,12 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         echo "<br /><form method=\"post\" action=\"" . $action . "\" enctype=\"multipart/form-data\">\n"
     . "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"0\">\n"
-    . "<tr><td valign=\"bottom\"><a href=\"index.php?file=Forum\"><b>" . _INDEXFORUM . "</b></a> -&gt; <a href=\"index.php?file=Forum&amp;cat=" . $cat . "\"><b>" . $nom2 . "</b></a> -&gt; <a href=\"index.php?file=Forum&amp;page=viewforum&amp;forum_id=" . $_REQUEST['forum_id'] . "\"><b>" . $nom . "</b></a></td></tr></table>\n"
+    . "<tr><td valign=\"bottom\"><a href=\"index.php?file=Forum\"><b>" . _INDEXFORUM . "</b></a> -&gt; <a href=\"index.php?file=Forum&amp;cat=" . urlencode($cat) . "\"><b>" . $nom2 . "</b></a> -&gt; <a href=\"index.php?file=Forum&amp;page=viewforum&amp;forum_id=" . urlencode($forum_id) . "\"><b>" . $nom . "</b></a></td></tr></table>\n"
     . "<table style=\"background: " . $color3 . ";\" width=\"100%\" cellspacing=\"1\" cellpadding=\"4\" border=\"0\">\n"
     . "<tr " . $background . "><td colspan=\"2\" align=\"center\"><b>" . $action_name . "</b></td></tr>\n"
     . "<tr><td style=\"width: 25%;background: " . $color1 . ";\"><big><b>" . _PSEUDO . "</b></big></td><td style=\"width: 75%;background: " . $color2 . ";\">";
 
-        if ($_REQUEST['do'] == "edit")
+        if ($do == "edit")
         {
             echo $author;
     }
@@ -107,27 +126,27 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         echo "<tr><td style=\"width: 25%;background: " . $color1 . ";\"><big><b>" . _TITLE . "</b></big></td><td style=\"width: 75%;background: " . $color2 . ";\">";
 
-        if ($_REQUEST['thread_id'] != "")
+        if ($thread_id != "")
         {
-            $sql1 = mysql_query("SELECT titre, annonce FROM " . FORUM_THREADS_TABLE . " WHERE id = '" . $_REQUEST['thread_id'] . "' AND forum_id = '" . $_REQUEST['forum_id'] . "'");
+            $sql1 = mysql_query("SELECT titre, annonce FROM " . FORUM_THREADS_TABLE . " WHERE id = '" . mysql_real_escape_string($thread_id) . "' AND forum_id = '" . mysql_real_escape_string($forum_id) . "'");
             list($titre, $annonce) = mysql_fetch_array($sql1);
             $titre = nkHtmlEntities($titre);
             $titre = preg_replace("`&amp;lt;`i", "&lt;", $titre);
             $titre = preg_replace("`&amp;gt;`i", "&gt;", $titre);
             $re_titre = "RE : " . $titre;
 
-            echo "<input id=\"forum_titre\" type=\"text\" size=\"70\"  maxlength=\"70\" name=\"titre\" value=\"" . $re_titre . "\" />";
+            echo "<input id=\"forum_titre\" type=\"text\" size=\"70\"  maxlength=\"70\" name=\"titre\" value=\"" . htmlspecialchars($re_titre) . "\" />";
         }
-        else if ($_REQUEST['do'] == "edit")
+        else if ($do == "edit")
         {
-            echo "<input id=\"forum_titre\" type=\"text\" size=\"70\"  maxlength=\"70\" name=\"titre\" value=\"" . $e_titre . "\" />";
+            echo "<input id=\"forum_titre\" type=\"text\" size=\"70\"  maxlength=\"70\" name=\"titre\" value=\"" . htmlspecialchars($e_titre) . "\" />";
         }
         else
         {
             echo "<input id=\"forum_titre\" size=\"70\"  maxlength=\"70\" type=\"text\" name=\"titre\" />";
         }
 
-        if ($_REQUEST['do'] == "edit")
+        if ($do == "edit")
         {
             echo "<input type=\"hidden\" name=\"author\" value=\"" . $author . "\" />";
         }
@@ -135,30 +154,30 @@ if ($visiteur >= $level_access && $level_access > -1)
         echo "</td></tr><tr><td style=\"width: 25%;background: " . $color1 . ";\" valign=\"top\"><big><b>" . _MESSAGE . "</b></big><br /><br />\n"
         . "</td><td style=\"width: 75%;background: " . $color2 . ";\">";
 
-        if ($_REQUEST['do'] == "edit")
+        if ($do == "edit")
         {
             $ftexte = $e_txt;
         }
-        else if ($_REQUEST['do'] == "quote")
+        else if ($do == "quote")
         {
             $ftexte = '<blockquote style="border: 1px dashed ' . $bgcolor3 . '; background: #FFF; color: #000; padding: 5px"><strong>' . _QUOTE . ' ' . _BY . ' ' . $author . ' :</strong><br />' . $e_txt . '</blockquote>';
         }
 
-        if ($_REQUEST['do'] == "quote")
+        if ($do == "quote")
         {
-            echo "<textarea id=\"e_advanced\" name=\"texte\" cols=\"70\" rows=\"15\">" . $ftexte . "<p></p></textarea>";
+            echo "<textarea id=\"e_advanced\" name=\"texte\" cols=\"70\" rows=\"15\">" . htmlspecialchars($ftexte) . "<p></p></textarea>";
         }
         else
         {
-            echo "<textarea id=\"e_advanced\" name=\"texte\" cols=\"70\" rows=\"15\">" . $ftexte . "</textarea>";
+            echo "<textarea id=\"e_advanced\" name=\"texte\" cols=\"70\" rows=\"15\">" . htmlspecialchars($ftexte) . "</textarea>";
         }
 
 
-        if ($_REQUEST['do'] == "edit" && $usersig == 1)
+        if ($do == "edit" && $usersig == 1)
         {
             $checked1 = "checked=\"checked\"";
         }
-        else if ($_REQUEST['do'] == "edit" && $usersig == 0)
+        else if ($do == "edit" && $usersig == 0)
         {
             $checked1 = "";
         }
@@ -194,7 +213,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             . "<input type=\"checkbox\" class=\"checkbox\" name=\"emailnotify\" value=\"1\" " . $checked2 . " />&nbsp;" . _EMAILNOTIFY . "<br />\n";
         }
 
-        if ($_REQUEST['do'] == "edit")
+        if ($do == "edit")
         {
             if($force_edit_message == 'on' && $administrator != 1){
                 echo '<input type="hidden" name="edit_text" value="1" />'."\n";
@@ -204,7 +223,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             }
         }
 
-        if ($_REQUEST['thread_id'] != "" || $_REQUEST['do'] == "edit")
+        if ($thread_id != "" || $do == "edit")
         {
             echo "<br />";
         }
@@ -218,7 +237,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         }
 
-        if ($visiteur < $level_poll || $_REQUEST['thread_id'] != "" || $_REQUEST['do'] == "edit")
+        if ($visiteur < $level_poll || $thread_id != "" || $do == "edit")
         {
             echo "<br />";
         }
@@ -229,7 +248,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             . "<input type=\"text\" name=\"survey_field\" size=\"2\" value=\"4\">&nbsp;" . _SURVEYFIELD . "&nbsp;(" . _MAX . " : " . $nuked['forum_field_max'] . ")";
         }
 
-        if ($visiteur >= $nuked['forum_file_level'] && $nuked['forum_file'] == "on" && $nuked['forum_file_maxsize'] > 0 && $_REQUEST['do'] != "edit")
+        if ($visiteur >= $nuked['forum_file_level'] && $nuked['forum_file'] == "on" && $nuked['forum_file_maxsize'] > 0 && $do != "edit")
         {
             if ($nuked['forum_file_maxsize'] >= 1000)
             {
@@ -253,17 +272,17 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if (initCaptcha()) echo create_captcha();
 
-        echo "<input type=\"hidden\" name=\"forum_id\" value=\"" . $_REQUEST['forum_id'] . "\" />\n"
-        . "<input type=\"hidden\" name=\"thread_id\" value=\"" . $_REQUEST['thread_id'] . "\" />\n"
-        . "<input type=\"hidden\" name=\"mess_id\" value=\"" . $_REQUEST['mess_id'] . "\" />\n"
+        echo "<input type=\"hidden\" name=\"forum_id\" value=\"" . htmlspecialchars($forum_id) . "\" />\n"
+        . "<input type=\"hidden\" name=\"thread_id\" value=\"" . htmlspecialchars($thread_id) . "\" />\n"
+        . "<input type=\"hidden\" name=\"mess_id\" value=\"" . htmlspecialchars($mess_id) . "\" />\n"
         . "</td></tr></table></form>\n";
 
-        if ($_REQUEST['thread_id'] != "")
+        if ($thread_id != "")
         {
             echo "<div style=\"margin-left: auto;margin-right: auto;text-align: left;width: 100%; height: 200px; overflow: auto;\">\n"
             . "<table style=\"background: " . $color3 . ";\" cellspacing=\"1\" cellpadding=\"4\" width=\"96%\" border=\"0\">\n";
 
-            $sql2 = mysql_query("SELECT txt, auteur, date FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $_REQUEST['thread_id'] . "' AND forum_id = '" . $_REQUEST['forum_id'] . "' ORDER BY date DESC LIMIT 0, 20");
+            $sql2 = mysql_query("SELECT txt, auteur, date FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . mysql_real_escape_string($thread_id) . "' AND forum_id = '" . mysql_real_escape_string($forum_id) . "' ORDER BY date DESC LIMIT 0, 20");
             while (list($txt, $auteur, $date) = mysql_fetch_row($sql2))
             {
                 $date = nkDate($date);

@@ -24,10 +24,13 @@ if ($visiteur >= $level_access && $level_access > -1)
 {
     $nb_mess_for_mess = $nuked['mess_forum_page'];
 
-    $sql = mysql_query("SELECT nom, moderateurs, cat, level FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $_REQUEST['forum_id'] . "'");
+    $forum_id = isset($_REQUEST['forum_id']) ? (int)$_REQUEST['forum_id'] : 0;
+    $thread_id = isset($_REQUEST['thread_id']) ? (int)$_REQUEST['thread_id'] : 0;
+    
+    $sql = mysql_query("SELECT nom, moderateurs, cat, level FROM " . FORUM_TABLE . " WHERE '" . $visiteur . "' >= niveau AND id = '" . $forum_id . "'");
     $level_ok = mysql_num_rows($sql);
 
-    $sql2 = mysql_query("SELECT titre, view, closed, annonce, last_post, auteur_id, sondage FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . $_REQUEST['forum_id'] . "' AND id = '" . $_REQUEST['thread_id'] . "'");
+    $sql2 = mysql_query("SELECT titre, view, closed, annonce, last_post, auteur_id, sondage FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . $forum_id . "' AND id = '" . $thread_id . "'");
     $topic_ok = mysql_num_rows($sql2);
 
      // No user access
@@ -43,21 +46,28 @@ if ($visiteur >= $level_access && $level_access > -1)
 
           if ($user) {
 
-               $SQL = "SELECT id FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = " . (int) $_GET['forum_id'] . " ";
+               $SQL = "SELECT id FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = " . $forum_id . " ";
                $req = mysql_query($SQL) or die(mysql_error());
                $thread_table = array();
                while ($res = mysql_fetch_assoc($req)) {
                     $thread_table[] = $res['id'];
             } 
 
-               $visit = mysql_query("SELECT user_id, thread_id, forum_id FROM " . FORUM_READ_TABLE . " WHERE user_id = '" . $user[0] . "'") or die(mysql_error());
+               $visit = mysql_query("SELECT user_id, thread_id, forum_id FROM " . FORUM_READ_TABLE . " WHERE user_id = '" . (int)$user[0] . "'") or die(mysql_error());
                $user_visit = mysql_fetch_assoc($visit);
-               $tid = substr($user_visit['thread_id'], 1); // Thread ID
-               $fid = substr($user_visit['forum_id'], 1); // Forum ID
-               if (!$user_visit || strrpos($user_visit['thread_id'], ',' . $_GET['thread_id'] . ',') === false || strrpos($user_visit['forum_id'], ',' . $_GET['forum_id'] . ',') === false) {
+               $tid = '';
+               $fid = '';
+               if (is_array($user_visit) && isset($user_visit['thread_id']) && isset($user_visit['forum_id'])) {
+                   $tid = substr($user_visit['thread_id'], 1); // Thread ID
+                   $fid = substr($user_visit['forum_id'], 1); // Forum ID
+               }
+               $get_thread_id = isset($_GET['thread_id']) ? (int)$_GET['thread_id'] : 0;
+               $get_forum_id = isset($_GET['forum_id']) ? (int)$_GET['forum_id'] : 0;
+               
+               if (!is_array($user_visit) || !isset($user_visit['thread_id']) || !isset($user_visit['forum_id']) || strrpos($user_visit['thread_id'], ',' . $get_thread_id . ',') === false || strrpos($user_visit['forum_id'], ',' . $get_forum_id . ',') === false) {
 
-                    if (strrpos($user_visit['thread_id'], ',' . $_GET['thread_id'] . ',') === false)
-                         $tid .= $_GET['thread_id'] . ',';
+                    if (!is_array($user_visit) || !isset($user_visit['thread_id']) || strrpos($user_visit['thread_id'], ',' . $get_thread_id . ',') === false)
+                         $tid .= $get_thread_id . ',';
 
                     $read = false;
                     foreach ($thread_table as $thread) {
@@ -66,8 +76,8 @@ if ($visiteur >= $level_access && $level_access > -1)
         }
     } 
 
-                    if (strrpos($user_visit['forum_id'], ',' . $_GET['forum_id'] . ',') === false && $read === false)
-                         $fid .= $_GET['forum_id'] . ',';
+                    if (!is_array($user_visit) || !isset($user_visit['forum_id']) || (strrpos($user_visit['forum_id'], ',' . $get_forum_id . ',') === false && $read === false))
+                         $fid .= $get_forum_id . ',';
 
                     // Insertion SQL du read
                     mysql_query("REPLACE INTO " . FORUM_READ_TABLE . " ( `user_id` , `thread_id` , `forum_id` ) VALUES ( '" . $user[0] . "' , '," . $tid . "' , '," . $fid . "' )") or die(mysql_error());
@@ -94,37 +104,54 @@ if ($visiteur >= $level_access && $level_access > -1)
         $titre = printSecuTags($titre);
         $titre = nk_CSS($titre);
 
-        $upd = mysql_query("UPDATE " . FORUM_THREADS_TABLE . " SET view = view + 1 WHERE forum_id = '" . $_REQUEST['forum_id'] . "' AND id = '" . $_REQUEST['thread_id'] . "'");
+        $upd = mysql_query("UPDATE " . FORUM_THREADS_TABLE . " SET view = view + 1 WHERE forum_id = '" . $forum_id . "' AND id = '" . $thread_id . "'");
 
-        $sql_next = mysql_query("SELECT id FROM " . FORUM_THREADS_TABLE . " WHERE last_post > '" . $lastpost. "' AND forum_id = '" . $_REQUEST['forum_id'] . "' ORDER BY last_post LIMIT 0, 1");
-        list($nextid) = mysql_fetch_array($sql_next);
+        // Initialize prev and next variables
+        $prev = '';
+        $next = '';
+        
+        $sql_next = mysql_query("SELECT id FROM " . FORUM_THREADS_TABLE . " WHERE last_post > '" . (int)$lastpost. "' AND forum_id = '" . $forum_id . "' ORDER BY last_post LIMIT 0, 1");
+        if ($sql_next) {
+            $next_row = mysql_fetch_array($sql_next);
+            $nextid = isset($next_row[0]) ? $next_row[0] : '';
+            if ($nextid != "")
+            {
+                $next = "<small><a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($nextid) . "\">" . _NEXTTHREAD . "</a> &gt;</small>";
+            }
+        }
 
-        if ($nextid != "")
-        {
-            $next = "<small><a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $nextid . "\">" . _NEXTTHREAD . "</a> &gt;</small>";
-        } 
-
-        $sql_last = mysql_query("SELECT id FROM " . FORUM_THREADS_TABLE . " WHERE last_post < '" . $lastpost . "' AND forum_id = '" . $_REQUEST['forum_id'] . "' ORDER BY last_post DESC LIMIT 0, 1");
-        list($lastid) = mysql_fetch_array($sql_last);
-
-        if ($lastid != "")
-        {
-            $prev = "<small>&lt; <a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $lastid . "\">" . _LASTTHREAD . "</a>&nbsp;</small>";
-        } 
+        $sql_last = mysql_query("SELECT id FROM " . FORUM_THREADS_TABLE . " WHERE last_post < '" . (int)$lastpost . "' AND forum_id = '" . $forum_id . "' ORDER BY last_post DESC LIMIT 0, 1");
+        if ($sql_last) {
+            $last_row = mysql_fetch_array($sql_last);
+            $lastid = isset($last_row[0]) ? $last_row[0] : '';
+            if ($lastid != "")
+            {
+                $prev = "<small>&lt; <a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($lastid) . "\">" . _LASTTHREAD . "</a>&nbsp;</small>";
+            }
+        }
 
         echo "<br /><a name=\"top\"></a><table width=\"100%\" id=\"Forum\" cellspacing=\"0\" cellpadding=\"4\" border=\"0\">\n"
-        . "<tr><td><big><b>" . $titre . "</b></big></td><td align=\"right\">" . $prev . "&nbsp;" . $next . "</td></tr>\n"
+        . "<tr><td><big><b>" . htmlspecialchars($titre) . "</b></big></td><td align=\"right\">" . $prev . "&nbsp;" . $next . "</td></tr>\n"
         . "<tr><td valign=\"bottom\"><a href=\"index.php?file=Forum\"><b>" . _INDEXFORUM . "</b></a> -&gt; <a href=\"index.php?file=Forum&amp;cat=" . $cat . "\"><b>" . $cat_name . "</b></a> -&gt; <a href=\"index.php?file=Forum&amp;page=viewforum&amp;forum_id=" . $_REQUEST['forum_id'] . "\"><b>" . $nom . "</b></a>\n";
 
-        $sql3 = mysql_query("SELECT thread_id FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $_REQUEST['thread_id'] . "'");
+        $sql3 = mysql_query("SELECT thread_id FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $thread_id . "'");
         $count = mysql_num_rows($sql3);
+        
+        // Initialize variables
+        $p = isset($_REQUEST['p']) ? (int)$_REQUEST['p'] : 1;
+        if ($p < 1) $p = 1;
+        $highlight_check = isset($_REQUEST['highlight']) ? $_REQUEST['highlight'] : '';
+        $tmpcnt = 0;
 
-        if (!$_REQUEST['p']) $_REQUEST['p'] = 1;
-        $start = $_REQUEST['p'] * $nb_mess_for_mess - $nb_mess_for_mess;
+        $p = isset($_REQUEST['p']) ? (int)$_REQUEST['p'] : 1;
+        if ($p < 1) $p = 1;
+        $start = $p * $nb_mess_for_mess - $nb_mess_for_mess;
 
-        if ($_REQUEST['highlight'] != "")
+        $highlight = isset($_REQUEST['highlight']) ? $_REQUEST['highlight'] : '';
+        if ($highlight != "")
         {
-            $url_page = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "&amp;highlight=" . urlencode($_REQUEST['highlight']);
+            $highlight = isset($_REQUEST['highlight']) ? $_REQUEST['highlight'] : '';
+            $url_page = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($thread_id) . "&amp;highlight=" . urlencode($highlight);
         } 
         else
         {
@@ -235,8 +262,8 @@ if ($visiteur >= $level_access && $level_access > -1)
                     echo "<tr><td><input type=\"radio\" class=\"checkbox\" name=\"voteid\" value=\"" . $voteid . "\" />&nbsp;" . $optiontext . "</td></tr>\n";
                 } 
 
-                echo "<tr><td>&nbsp;<input type=\"hidden\" name=\"forum_id\" value=\"" . $_REQUEST['forum_id'] . "\" /><input type=\"hidden\" name=\"thread_id\" value=\"" . $_REQUEST['thread_id'] . "\" /></td></tr>\n"
-                . "<tr><td align=\"center\"><input type=\"submit\" value=\"" . _TOVOTE . "\" />&nbsp;<input type=\"button\" value=\"" . _RESULT . "\" onclick=\"document.location='index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "&amp;vote=view'\" /></td></tr></table></form>\n";
+                echo "<tr><td>&nbsp;<input type=\"hidden\" name=\"forum_id\" value=\"" . htmlspecialchars($forum_id) . "\" /><input type=\"hidden\" name=\"thread_id\" value=\"" . htmlspecialchars($thread_id) . "\" /></td></tr>\n"
+                . "<tr><td align=\"center\"><input type=\"submit\" value=\"" . _TOVOTE . "\" />&nbsp;<input type=\"button\" value=\"" . _RESULT . "\" onclick=\"document.location='index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($thread_id) . "&amp;vote=view'\" /></td></tr></table></form>\n";
             } 
 
             echo "</td></tr>\n";
@@ -244,17 +271,18 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         echo "<tr " . $background . "><td style=\"width: 25%;\" align=\"center\"><b>" . _AUTHOR . "</b></td><td style=\"width: 75%;\" align=\"center\" id=\"forum-table\"><b>" . _MESSAGE . "</b></td></tr>\n";
 
-        $sql4 = mysql_query("SELECT id, titre, auteur, auteur_id, auteur_ip, txt, date, edition, usersig, file  FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $_REQUEST['thread_id'] . "' ORDER BY date ASC limit " . $start . ", " . $nb_mess_for_mess."");
+        $sql4 = mysql_query("SELECT id, titre, auteur, auteur_id, auteur_ip, txt, date, edition, usersig, file  FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $thread_id . "' ORDER BY date ASC limit " . (int)$start . ", " . (int)$nb_mess_for_mess."");
         while (list($mess_id, $title, $auteur, $auteur_id, $auteur_ip, $txt, $date, $edition, $usersig, $fichier) = mysql_fetch_row($sql4))
         {
 
             $title = printSecuTags($title);            
 
-            if ($_REQUEST['highlight'] != "")
+            $highlight = isset($_REQUEST['highlight']) ? $_REQUEST['highlight'] : '';
+            if ($highlight != "")
             { 
-                $string = trim($_REQUEST['highlight']);
+                $string = trim($highlight);
                 $string = printSecuTags($string);
-                $title = str_replace($string, '<span style="color: #FF0000">' . $string . '</span>', $title);
+                $title = str_replace($string, '<span style="color: #FF0000">' . htmlspecialchars($string) . '</span>', $title);
 
                 $search = explode(" ", $string);
                 for($i = 0; $i < count($search); $i++)
@@ -275,7 +303,9 @@ if ($visiteur >= $level_access && $level_access > -1)
             else if (strftime("%d", $date) == (strftime("%d", time()) - 1) && strftime("%m %Y", time()) == strftime("%m %Y", $date)) $date = _FYESTERDAY . "&nbsp;" . strftime("%H:%M", $date);    
             else $date = _THE . ' ' . nkDate($date);
 
-            $tmpcnt++ % 2 == 1 ? $color = $color1 : $color = $color2;
+            if (!isset($tmpcnt)) $tmpcnt = 0;
+            $tmpcnt++;
+            $tmpcnt % 2 == 1 ? $color = $color1 : $color = $color2;
 
             echo "<tr style=\"background: " . $color . ";\"><td style=\"width: 25%;\" valign=\"top\"><a name=\"" . $mess_id . "\"></a>";
 
@@ -404,23 +434,26 @@ if ($visiteur >= $level_access && $level_access > -1)
             } 
 
 
+            // Initialize $attach_file if not set
+            if (!isset($attach_file)) $attach_file = '';
+            
             echo "</td><td style=\"width: 75%;\" valign=\"top\">\n"
             . "<table width=\"100%\" cellpadding=\"5\" cellspacing=\"1\" border=\"0\">\n"
-            . "<tr><td><a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "&amp;p=" . $_REQUEST['p'] . "#" . $mess_id . "\" title=\"" . _PERMALINK_TITLE . "\"><img src=\"images/posticon.gif\" style=\"border:0px;\" alt=\"\" /></a>" . _POSTEDON . " " . $date . "&nbsp;&nbsp;" . $attach_file . "</td><td align=\"right\">";
+            . "<tr><td><a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($thread_id) . "&amp;p=" . urlencode($p) . "#" . urlencode($mess_id) . "\" title=\"" . _PERMALINK_TITLE . "\"><img src=\"images/posticon.gif\" style=\"border:0px;\" alt=\"\" /></a>" . _POSTEDON . " " . $date . "&nbsp;&nbsp;" . $attach_file . "</td><td align=\"right\">";
 
             if ($closed == 0 && $administrator == 1 || $visiteur >= admin_mod("Forum") || $visiteur >= $level)
             {
-                echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "&amp;mess_id=" . $mess_id . "&amp;do=quote\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/quote.gif\" alt=\"\" title=\"" . _REPLYQUOTE . "\" /></a>";
+                echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($thread_id) . "&amp;mess_id=" . urlencode($mess_id) . "&amp;do=quote\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/quote.gif\" alt=\"\" title=\"" . _REPLYQUOTE . "\" /></a>";
             } 
 
             if ($user && $auteur_id == $user[0] && $closed == 0 || $visiteur >= admin_mod("Forum") || $administrator == 1)
             {
-                echo "&nbsp;<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;mess_id=" . $mess_id . "&amp;do=edit\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/edit.gif\" title=\"" . _EDITMESSAGE . "\" alt=\"\" /></a>";
+                echo "&nbsp;<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . urlencode($forum_id) . "&amp;mess_id=" . urlencode($mess_id) . "&amp;do=edit\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/edit.gif\" title=\"" . _EDITMESSAGE . "\" alt=\"\" /></a>";
             } 
 
             if ($visiteur >= admin_mod("Forum") || $administrator == 1)
             {
-                echo "&nbsp;<a href=\"index.php?file=Forum&amp;op=del&amp;mess_id=" . $mess_id . "&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/delete.gif\" alt=\"\" title=\"" . _DELMESSAGE . "\" /></a>";
+                echo "&nbsp;<a href=\"index.php?file=Forum&amp;op=del&amp;mess_id=" . urlencode($mess_id) . "&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($thread_id) . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/delete.gif\" alt=\"\" title=\"" . _DELMESSAGE . "\" /></a>";
             } 
 
             echo "</td></tr><tr style=\"background: " . $color . ";\"><td colspan=\"2\"><b>" . $title . "</b></td></tr>\n"
@@ -437,7 +470,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             } 
 
             echo "</table></td></tr>\n"
-            . "<tr style=\"background: " . $color . ";\"><td style=\"width: 25%;\" valign=\"middle\"><a href=\"#top\" title=\"" . _BACKTOTOP . "\">" . _BACKTOTOP . "</a>&nbsp;|&nbsp;<a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "&amp;p=" . $_REQUEST['p'] . "#" . $mess_id . "\" title=\"" . _PERMALINK_TITLE . "\">" . _PERMALINK . "</a></td><td style=\"width: 75%;\" valign=\"bottom\">";
+            . "<tr style=\"background: " . $color . ";\"><td style=\"width: 25%;\" valign=\"middle\"><a href=\"#top\" title=\"" . _BACKTOTOP . "\">" . _BACKTOTOP . "</a>&nbsp;|&nbsp;<a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($thread_id) . "&amp;p=" . urlencode($p) . "#" . urlencode($mess_id) . "\" title=\"" . _PERMALINK_TITLE . "\">" . _PERMALINK . "</a></td><td style=\"width: 75%;\" valign=\"bottom\">";
 
             if ($test > 0 && $auteur_id != "")
             {
@@ -484,7 +517,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         echo "</table><table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"0\"><tr><td valign=\"top\">";
 
-        if ($_REQUEST['highlight'] != "")
+        if ($highlight_check != "")
         {
             $url_page = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&thread_id=" . $_REQUEST['thread_id'] . "&amp;highlight=" . urlencode($_REQUEST['highlight']);
         } 

@@ -43,9 +43,9 @@ if ($visiteur >= $level_access && $level_access > -1){
 
         $nb_wars = $nuked['max_wars'];
         
-        if (!$_REQUEST['p']) $_REQUEST['p'] = 1;
-        
-        $start = $_REQUEST['p'] * $nb_wars - $nb_wars;
+        $p = isset($_REQUEST['p']) ? (int)$_REQUEST['p'] : 1;
+        if ($p < 1) $p = 1;
+        $start = $p * $nb_wars - $nb_wars;
 
         if ($nb_matchs == 0){
             echo '<br /><div style="text-align: center"><big><b>'._MATCHES.' - '.$nuked['name'].'</b></big></div>
@@ -55,7 +55,8 @@ if ($visiteur >= $level_access && $level_access > -1){
             $sql2 = mysql_query('SELECT A.titre, B.team FROM '.TEAM_TABLE.' AS A LEFT JOIN '.WARS_TABLE.' AS B ON A.cid = B.team WHERE B.etat = 1 GROUP BY B.team ORDER BY A.ordre, A.titre');
             $nb_team = mysql_num_rows($sql2);
 
-            if (!$_REQUEST['tid'] && $nb_team > 1){
+            $tid_filter = isset($_REQUEST['tid']) ? $_REQUEST['tid'] : '';
+            if (!$tid_filter && $nb_team > 1){
                 while (list($team_name, $team) = mysql_fetch_array($sql2)){
                     if ($team_name != ''){
                         $team_name = printSecuTags($team_name);
@@ -163,16 +164,17 @@ if ($visiteur >= $level_access && $level_access > -1){
                 
                 $start = $_REQUEST['p'] * $nb_wars - $nb_wars;
 
-                if (!$_REQUEST['tid'] && $team > 0){
-                    $_REQUEST['tid'] = $team;
+                $tid = isset($_REQUEST['tid']) ? $_REQUEST['tid'] : '';
+                if (!$tid && $team > 0){
+                    $tid = $team;
                 } 
 
-                if ($_REQUEST['tid'] != ''){
-                    $sql6 = mysql_query('SELECT titre FROM ' . TEAM_TABLE . ' WHERE cid = \'' . $_REQUEST['tid'] . '\' ');
+                if ($tid != ''){
+                    $sql6 = mysql_query('SELECT titre FROM ' . TEAM_TABLE . ' WHERE cid = \'' . mysql_real_escape_string($tid) . '\' ');
                     list($team_name, $team) = mysql_fetch_array($sql6);
                     $team_name = printSecuTags($team_name);
-                    $and = 'AND team = \'' . $_REQUEST['tid'] . '\' ';
-                    $sql7 = mysql_query('SELECT warid FROM ' . WARS_TABLE . ' WHERE etat = 1 AND team = \'' . $_REQUEST['tid'] . '\' ');
+                    $and = 'AND team = \'' . mysql_real_escape_string($tid) . '\' ';
+                    $sql7 = mysql_query('SELECT warid FROM ' . WARS_TABLE . ' WHERE etat = 1 AND team = \'' . mysql_real_escape_string($tid) . '\' ');
                     $count = mysql_num_rows($sql7);
                 } 
                 else{
@@ -183,23 +185,24 @@ if ($visiteur >= $level_access && $level_access > -1){
 
                 echo '<br /><div style="text-align: center;"><big><b>' . _MATCHES . ' - ' . $team_name . '</b></big></div>';
 
-                if (!$_REQUEST['orderby']){
-                    $_REQUEST['orderby'] = 'date';
+                $orderby = isset($_REQUEST['orderby']) ? $_REQUEST['orderby'] : 'date';
+                if (!$orderby){
+                    $orderby = 'date';
                 } 
 
-                if ($_REQUEST['orderby'] == 'date'){
+                if ($orderby == 'date'){
                     $order = 'ORDER BY date_an DESC, date_mois DESC, date_jour DESC';
                 } 
-                else if ($_REQUEST['orderby'] == 'adver'){
+                else if ($orderby == 'adver'){
                     $order = 'ORDER BY adversaire';
                 } 
-                else if ($_REQUEST['orderby'] == 'game'){
+                else if ($orderby == 'game'){
                     $order = 'ORDER BY game';
                 } 
-                else if ($_REQUEST['orderby'] == 'type'){
+                else if ($orderby == 'type'){
                     $order = 'ORDER BY type';
                 } 
-                else if ($_REQUEST['orderby'] == 'style'){
+                else if ($orderby == 'style'){
                     $order = 'ORDER BY style';
                 } 
                 else{
@@ -209,46 +212,47 @@ if ($visiteur >= $level_access && $level_access > -1){
                 if ($count > 1){
                     echo '<br /><table width="100%"><tr><td style="text-align:right;">' . _ORDERBY . ' : </b>';
 
-                    if ($_REQUEST['orderby'] == 'date'){
+                    if ($orderby == 'date'){
                         echo '<b>' . _DATE . '</b> | ';
                     } 
                     else{
-                        echo '<a href="index.php?file=Wars&amp;tid=' . $_REQUEST['tid'] . '&amp;orderby=date">' . _DATE . '</a> | ';
+                        echo '<a href="index.php?file=Wars&amp;tid=' . urlencode($tid) . '&amp;orderby=date">' . _DATE . '</a> | ';
                     } 
 
-                    if ($_REQUEST['orderby'] == 'adver'){
+                    if ($orderby == 'adver'){
                         echo '<b>' . _OPPONENT . '</b> | ';
                     } 
                     else{
-                        echo '<a href="index.php?file=Wars&amp;tid=' . $_REQUEST['tid'] . '&amp;orderby=adver">' . _OPPONENT . '</a> | ';
+                        echo '<a href="index.php?file=Wars&amp;tid=' . urlencode($tid) . '&amp;orderby=adver">' . _OPPONENT . '</a> | ';
                     } 
 
-                    if ($_REQUEST['orderby'] == 'game'){
+                    if ($orderby == 'game'){
                         echo '<b>' . _GAME . '</b> | ';
-                    } 
+                    }
                     else{
-                        echo '<a href="index.php?file=Wars&amp;tid=' . $_REQUEST['tid'] . '&amp;orderby=game">' . _GAME . '</a> | ';
+                        echo '<a href="index.php?file=Wars&amp;tid=' . urlencode($tid) . '&amp;orderby=game">' . _GAME . '</a> | ';
                     }
 
-                    if ($_REQUEST['orderby'] == 'type'){
+                    if ($orderby == 'type'){
                         echo '<b>' . _TYPE . '</b> | ';
                     } 
                     else{
-                        echo '<a href="index.php?file=Wars&amp;tid=' . $_REQUEST['tid'] . '&amp;orderby=type">' . _TYPE . '</a> | ';
+                        echo '<a href="index.php?file=Wars&amp;tid=' . urlencode($tid) . '&amp;orderby=type">' . _TYPE . '</a> | ';
                     }
 
-                    if ($_REQUEST['orderby'] == 'style'){
+                    if ($orderby == 'style'){
                         echo '<b>' . _STYLE . '</b>';
                     } 
                     else{
-                        echo '<a href="index.php?file=Wars&amp;tid=' . $_REQUEST['tid'] . '&amp;orderby=style">' . _STYLE . '</a>';
+                        echo '<a href="index.php?file=Wars&amp;tid=' . urlencode($tid) . '&amp;orderby=style">' . _STYLE . '</a>';
                     }
                     
                     echo '</td></tr></table>';
                 } 
 
                 if ($count > $nb_wars){
-                    $url_page = 'index.php?file=Wars&amp;tid=' . $_REQUEST['tid'] . '&amp;orderby=' . $_REQUEST['orderby'];
+                    $orderby = isset($_REQUEST['orderby']) ? $_REQUEST['orderby'] : '';
+                    $url_page = 'index.php?file=Wars&amp;tid=' . urlencode($tid) . '&amp;orderby=' . urlencode($orderby);
                     number($count, $nb_wars, $url_page);
                 } 
     
@@ -336,7 +340,8 @@ if ($visiteur >= $level_access && $level_access > -1){
                 echo '</table>';
 
                 if ($count > $nb_wars){
-                    $url_page = 'index.php?file=Wars&amp;tid=' . $_REQUEST['tid'] . '&amp;orderby=' . $_REQUEST['orderby'];
+                    $orderby = isset($_REQUEST['orderby']) ? $_REQUEST['orderby'] : '';
+                    $url_page = 'index.php?file=Wars&amp;tid=' . urlencode($tid) . '&amp;orderby=' . urlencode($orderby);
                     number($count, $nb_wars, $url_page);
                 } 
             } 
@@ -347,7 +352,8 @@ if ($visiteur >= $level_access && $level_access > -1){
             echo '<br /><div style="text-align: center;"><small><b>' . $nb_matchs . '</b> ' . $war . ' : <b><span style="color: #009900;">' . $nb_victory . '</span></b> ' . _WIN . ' - <b><span style="color: #990000;">' . $nb_defeat . '</span></b> ' . _LOST . ' - <b><span style="color: #3333FF;">' . $nb_nul . '</span></b> ' . _DRAW . '</small></div><br />';
         }
 
-        if ($_REQUEST['p'] == 1 OR !isset($_REQUEST['p'])){
+        $p3 = isset($_REQUEST['p']) ? (int)$_REQUEST['p'] : 1;
+        if ($p3 == 1){
             $sqlx = mysql_query("SELECT warid FROM " . WARS_TABLE . " WHERE etat = 0");
             $nb_matchs2 = mysql_num_rows($sqlx);
 
@@ -616,7 +622,7 @@ if ($visiteur >= $level_access && $level_access > -1){
         closetable();
     } 
 
-    switch ($_REQUEST['op']){
+    switch (isset($_REQUEST['op']) ? $_REQUEST['op'] : ''){
         case 'index':
             index();
             break;

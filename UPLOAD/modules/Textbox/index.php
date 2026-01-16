@@ -40,8 +40,9 @@ function index()
         $sql = mysql_query("SELECT id FROM " . TEXTBOX_TABLE);
         $count = mysql_num_rows($sql);
 
-        if (!$_REQUEST['p']) $_REQUEST['p'] = 1;
-        $start = $_REQUEST['p'] * $nb_mess - $nb_mess;
+        $p = isset($_REQUEST['p']) ? (int)$_REQUEST['p'] : 1;
+        if ($p < 1) $p = 1;
+        $start = $p * $nb_mess - $nb_mess;
 
         echo "<br /><div style=\"text-align: center;\"><big><b>" . _SHOUTBOX . "</b></big></div><br />\n";
 
@@ -301,7 +302,7 @@ function index()
         }
     }
 
-switch ($_REQUEST['op'])
+switch (isset($_REQUEST['op']) ? $_REQUEST['op'] : '')
 {
 
     case"smilies":

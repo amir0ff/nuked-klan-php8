@@ -440,7 +440,7 @@ if ($visiteur >= $level_access && $level_access > -1) {
         return $gameserver;
     } 
 
-    switch ($_REQUEST['op']) {
+    switch (isset($_REQUEST['op']) ? $_REQUEST['op'] : '') {
         case 'index':
             index();
             break;

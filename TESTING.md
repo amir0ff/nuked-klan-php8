@@ -1,9 +1,9 @@
 # Nuked-Klan PHP 8.0 Migration - Manual Testing Checklist
 
 ## Purpose
-This is a **testing checklist** for manual testing during the PHP 8.0 migration. It's different from `MIGRATION_GUIDE.md`:
-- **MIGRATION_GUIDE.md** = Technical documentation of WHAT was fixed and HOW (historical record)
-- **TESTING_CHECKLIST.md** = Checklist of WHAT TO TEST (action items for testing)
+This is a **testing checklist** for manual testing during the PHP 8.0 migration. It's different from `MIGRATION.md`:
+- **MIGRATION.md** = Technical documentation of WHAT was fixed and HOW (historical record)
+- **TESTING.md** = Checklist of WHAT TO TEST (action items for testing)
 
 ## Testing Strategy
 This checklist helps ensure systematic, thorough testing of all functionality after PHP 8.0 migration.

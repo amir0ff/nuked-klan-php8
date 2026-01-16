@@ -76,16 +76,18 @@ if ($visiteur >= $level_access && $level_access > -1)
             $_REQUEST['titre'] = mysql_real_escape_string(stripslashes($_REQUEST['titre']));
             $_REQUEST['texte'] = mysql_real_escape_string(stripslashes($_REQUEST['texte']));
 
-            if (!is_numeric($_REQUEST['usersig'])) $_REQUEST['usersig'] = 0;
-            if (!is_numeric($_REQUEST['emailnotify'])) $_REQUEST['emailnotify'] = 0;
+            $usersig_edit = isset($_REQUEST['usersig']) ? $_REQUEST['usersig'] : 0;
+            $emailnotify_edit = isset($_REQUEST['emailnotify']) ? $_REQUEST['emailnotify'] : 0;
+            if (!is_numeric($usersig_edit)) $usersig_edit = 0;
+            if (!is_numeric($emailnotify_edit)) $emailnotify_edit = 0;
 
-            $sql2 = mysql_query("SELECT thread_id FROM " . FORUM_MESSAGES_TABLE . " WHERE id = '" . $mess_id . "'");
+            $sql2 = mysql_query("SELECT thread_id FROM " . FORUM_MESSAGES_TABLE . " WHERE id = '" . mysql_real_escape_string($mess_id) . "'");
             list($thread_id) = mysql_fetch_row($sql2);
 
-            $sql3 = mysql_query("SELECT id FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $thread_id . "' ORDER BY id LIMIT 0, 1");
+            $sql3 = mysql_query("SELECT id FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . mysql_real_escape_string($thread_id) . "' ORDER BY id LIMIT 0, 1");
             list($mid) = mysql_fetch_row($sql3);
 
-            $sql = mysql_query("UPDATE " . FORUM_MESSAGES_TABLE . " SET titre = '" . $_REQUEST['titre'] . "', txt = '" . $_REQUEST['texte'] . "'" . $edition . ", usersig = '" . $_REQUEST['usersig'] . "', emailnotify = '" . $_REQUEST['emailnotify'] . "' WHERE id = '" . $mess_id . "'");
+            $sql = mysql_query("UPDATE " . FORUM_MESSAGES_TABLE . " SET titre = '" . mysql_real_escape_string($_REQUEST['titre']) . "', txt = '" . mysql_real_escape_string($_REQUEST['texte']) . "'" . $edition . ", usersig = '" . (int)$usersig_edit . "', emailnotify = '" . (int)$emailnotify_edit . "' WHERE id = '" . mysql_real_escape_string($mess_id) . "'");
 
             if ($mid == $mess_id)
             {
@@ -339,7 +341,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                     // Liste des threads de l'ancien forum
                     $SQL = "SELECT id FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = " . (int) $_REQUEST['forum_id'] . " ";
                     $req = mysql_query($SQL);
-                    // On vérifie que tous les threads sont lus
+                    // On vÃ©rifie que tous les threads sont lus
                     while ($data = mysql_fetch_assoc($req)) {
                          $oldTMP[$data['id']] = $data['id'];
                     }
@@ -348,7 +350,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                     // Liste des threads du nouveau forum
                     $SQL = "SELECT id FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = " . (int) $_REQUEST['newforum'] . " ";
                     $req = mysql_query($SQL);
-                    // On vérifie que tous les threads sont lus
+                    // On vÃ©rifie que tous les threads sont lus
                     while ($data = mysql_fetch_assoc($req)) {
                          $newTMP[$data['id']] = $data['id'];
                     }
@@ -380,7 +382,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                                    $read = false;
                          }
                          
-                         // Si tout n'est pas lu, et que le forum est présent dans la liste on le retire
+                         // Si tout n'est pas lu, et que le forum est prÃ©sent dans la liste on le retire
                          if ($read === false && strrpos($fid, ',' . $_REQUEST['newforum'] . ',') !== false) {
                               // Nouvelle liste des forums
                               $fid = preg_replace("#," . $_REQUEST['newforum'] . ",#is", ",", $fid);
@@ -656,8 +658,10 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         $autor = mysql_real_escape_string(stripslashes($autor));
 
-        if (!is_numeric($_REQUEST['usersig'])) $_REQUEST['usersig'] = 0;
-        if (!is_numeric($_REQUEST['emailnotify'])) $_REQUEST['emailnotify'] = 0;
+        $usersig_reply = isset($_REQUEST['usersig']) ? $_REQUEST['usersig'] : 0;
+        $emailnotify_reply = isset($_REQUEST['emailnotify']) ? $_REQUEST['emailnotify'] : 0;
+        if (!is_numeric($usersig_reply)) $usersig_reply = 0;
+        if (!is_numeric($emailnotify_reply)) $emailnotify_reply = 0;
 
         $filename = $_FILES['fichiernom']['name'];
         $filesize = $_FILES['fichiernom']['size'] / 1000;
@@ -698,7 +702,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                mysql_query($update) or die(mysql_error());
           }
 
-          mysql_query("INSERT INTO " . FORUM_MESSAGES_TABLE . " ( `id` , `titre` , `txt` , `date` , `edition` , `auteur` , `auteur_id` , `auteur_ip` , `usersig` , `emailnotify` , `thread_id` , `forum_id` , `file` ) VALUES ( '' , '" . $_REQUEST['titre'] . "' , '" . $_REQUEST['texte'] . "' , '" . $date . "' , '' , '" . $autor . "' , '" . $auteur_id . "' , '" . $user_ip . "' , '" . $_REQUEST['usersig'] . "' , '" . $_REQUEST['emailnotify'] . "' , '" . (int) $_REQUEST['thread_id'] . "' , '" . (int) $_REQUEST['forum_id'] . "' , '" . $filename . "' )");
+          mysql_query("INSERT INTO " . FORUM_MESSAGES_TABLE . " ( `titre` , `txt` , `date` , `edition` , `auteur` , `auteur_id` , `auteur_ip` , `usersig` , `emailnotify` , `thread_id` , `forum_id` , `file` ) VALUES ( '" . mysql_real_escape_string($_REQUEST['titre']) . "' , '" . mysql_real_escape_string($_REQUEST['texte']) . "' , '" . (int)$date . "' , '' , '" . mysql_real_escape_string($autor) . "' , '" . (int)$auteur_id . "' , '" . mysql_real_escape_string($user_ip) . "' , '" . (int)$usersig_reply . "' , '" . (int)$emailnotify_reply . "' , '" . (int) $_REQUEST['thread_id'] . "' , '" . (int) $_REQUEST['forum_id'] . "' , '" . mysql_real_escape_string($filename) . "' )");
 
           $notify = mysql_query("SELECT auteur_id FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . (int) $_REQUEST['thread_id'] . "' AND emailnotify = 1 GROUP BY auteur_id");
 		$nbusers = mysql_num_rows($notify);
@@ -850,11 +854,17 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         $autor = mysql_real_escape_string(stripslashes($autor));
 
-        if (!is_numeric($_REQUEST['usersig'])) $_REQUEST['usersig'] = 0;
-        if (!is_numeric($_REQUEST['emailnotify'])) $_REQUEST['emailnotify'] = 0;
-        if (($visiteur < admin_mod("Forum") && $administrator == 0) || !is_numeric($_REQUEST['annonce'])) $_REQUEST['annonce'] = 0;
+        $usersig = isset($_REQUEST['usersig']) ? $_REQUEST['usersig'] : 0;
+        $emailnotify = isset($_REQUEST['emailnotify']) ? $_REQUEST['emailnotify'] : 0;
+        $annonce = isset($_REQUEST['annonce']) ? $_REQUEST['annonce'] : 0;
+        $survey = isset($_REQUEST['survey']) ? $_REQUEST['survey'] : 0;
+        $survey_field = isset($_REQUEST['survey_field']) ? $_REQUEST['survey_field'] : 0;
+        
+        if (!is_numeric($usersig)) $usersig = 0;
+        if (!is_numeric($emailnotify)) $emailnotify = 0;
+        if (($visiteur < admin_mod("Forum") && $administrator == 0) || !is_numeric($annonce)) $annonce = 0;
 
-        if ($_REQUEST['survey'] == 1 && $_REQUEST['survey_field'] > 0 && $visiteur >= $level_poll)
+        if ($survey == 1 && $survey_field > 0 && $visiteur >= $level_poll)
         {
             $sondage = 1;
         }
@@ -863,9 +873,43 @@ if ($visiteur >= $level_access && $level_access > -1)
             $sondage = 0;
         }
 
-        $sql = mysql_query("INSERT INTO " . FORUM_THREADS_TABLE . " ( `id` , `titre` , `date` , `closed` , `auteur` , `auteur_id` , `forum_id` , `last_post` , `view` , `annonce` , `sondage` ) VALUES ( '' , '" . $_REQUEST['titre'] . "' , '" . $date . "' , '' , '" . $autor . "' , '" . $auteur_id . "' , '" . $_REQUEST['forum_id'] . "' , '" . $date . "' , '' , '" . $_REQUEST['annonce'] . "' , '" . $sondage . "' )");
-        $req4 = mysql_query("SELECT MAX(id) FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . $_REQUEST['forum_id'] . "' AND titre = '" . $_REQUEST['titre'] . "' AND date = '" . $date . "' AND auteur = '" . $_REQUEST['auteur'] . "'");
-        $idmax = mysql_result($req4, 0, "MAX(id)");
+        $sql = mysql_query("INSERT INTO " . FORUM_THREADS_TABLE . " ( `titre` , `date` , `closed` , `auteur` , `auteur_id` , `forum_id` , `last_post` , `view` , `annonce` , `sondage` ) VALUES ( '" . mysql_real_escape_string($_REQUEST['titre']) . "' , '" . (int)$date . "' , '0' , '" . mysql_real_escape_string($autor) . "' , '" . (int)$auteur_id . "' , '" . (int)$_REQUEST['forum_id'] . "' , '" . (int)$date . "' , '0' , '" . (int)$annonce . "' , '" . (int)$sondage . "' )");
+        
+        if (!$sql) {
+            echo "<br /><br /><div style=\"text-align: center;\"><big><b>Error: Failed to insert thread! " . mysql_error() . "</b></big></div><br /><br />";
+            closetable();
+            footer();
+            exit();
+        }
+        
+        // Get the last inserted thread ID - use mysql_insert_id() first
+        $idmax = mysql_insert_id();
+        
+        // If mysql_insert_id() returns 0 or false, use fallback method
+        if (!$idmax || $idmax == 0) {
+            // Fallback: get MAX(id) for this forum and author combination
+            $req4 = mysql_query("SELECT MAX(id) FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . (int)$_REQUEST['forum_id'] . "' AND auteur = '" . mysql_real_escape_string($autor) . "' AND auteur_id = '" . (int)$auteur_id . "' ORDER BY id DESC LIMIT 1");
+            if ($req4) {
+                $row = mysql_fetch_array($req4);
+                $idmax = isset($row[0]) ? (int)$row[0] : 0;
+            }
+        }
+        
+        // Final fallback: get the most recent thread for this forum
+        if (!$idmax || $idmax == 0) {
+            $req5 = mysql_query("SELECT id FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . (int)$_REQUEST['forum_id'] . "' ORDER BY id DESC LIMIT 1");
+            if ($req5 && mysql_num_rows($req5) > 0) {
+                $row = mysql_fetch_array($req5);
+                $idmax = isset($row[0]) ? (int)$row[0] : 0;
+            }
+        }
+
+        if (!$idmax || $idmax == 0) {
+            echo "<br /><br /><div style=\"text-align: center;\"><big><b>Error: Could not retrieve thread ID after insertion!</b></big></div><br /><br />";
+            closetable();
+            footer();
+            exit();
+        }
 
         $_REQUEST['thread_id'] = $idmax;
 
@@ -886,7 +930,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             $url_file = "";
         }
 
-        $sql2 = mysql_query("INSERT INTO " . FORUM_MESSAGES_TABLE . " ( `id` , `titre` , `txt` , `date` , `edition` , `auteur` , `auteur_id` , `auteur_ip` , `usersig` , `emailnotify` , `thread_id` , `forum_id` , `file` ) VALUES ( '' , '" . $_REQUEST['titre'] . "' , '" . $_REQUEST['texte'] . "' , '" . $date . "' , '' , '" . $autor . "' , '" . $auteur_id . "' , '" . $user_ip . "' , '" . $_REQUEST['usersig'] . "' , '" . $_REQUEST['emailnotify'] . "' , '" . $_REQUEST['thread_id'] . "' , '" . $_REQUEST['forum_id'] . "' , '" . $filename . "' )");
+        $sql2 = mysql_query("INSERT INTO " . FORUM_MESSAGES_TABLE . " ( `titre` , `txt` , `date` , `edition` , `auteur` , `auteur_id` , `auteur_ip` , `usersig` , `emailnotify` , `thread_id` , `forum_id` , `file` ) VALUES ( '" . mysql_real_escape_string($_REQUEST['titre']) . "' , '" . mysql_real_escape_string($_REQUEST['texte']) . "' , '" . (int)$date . "' , '' , '" . mysql_real_escape_string($autor) . "' , '" . (int)$auteur_id . "' , '" . mysql_real_escape_string($user_ip) . "' , '" . (int)$usersig . "' , '" . (int)$emailnotify . "' , '" . (int)$_REQUEST['thread_id'] . "' , '" . (int)$_REQUEST['forum_id'] . "' , '" . mysql_real_escape_string($filename) . "' )");
           $SQL = "SELECT thread_id, forum_id, user_id FROM " . FORUM_READ_TABLE . "  WHERE thread_id LIKE '%," . (int) $_REQUEST['thread_id'] . ",%' OR forum_id LIKE '%," . (int) $_REQUEST['forum_id'] . ",%' ";
           $req = mysql_query($SQL);
           $update = "";
@@ -914,13 +958,18 @@ if ($visiteur >= $level_access && $level_access > -1)
             $upd = mysql_query("UPDATE " . USER_TABLE . " SET count = '" . $newcount . "' WHERE id = '" . $user[0] . "'");
         }
 
-        if ($_REQUEST['survey'] == 1 && $_REQUEST['survey_field'] > 0 && $visiteur >= $level_poll)
+        // Use the thread_id we just retrieved, not $_REQUEST['thread_id'] which might be 0
+        $thread_id_redirect = $idmax;
+        
+        $survey_check = isset($_REQUEST['survey']) ? $_REQUEST['survey'] : 0;
+        $survey_field_check2 = isset($_REQUEST['survey_field']) ? (int)$_REQUEST['survey_field'] : 0;
+        if ($survey_check == 1 && $survey_field_check2 > 0 && $visiteur >= $level_poll)
         {
-            $url = "index.php?file=Forum&op=add_poll&survey_field=" . $_REQUEST['survey_field'] . "&forum_id=" . $_REQUEST['forum_id'] . "&thread_id=" . $_REQUEST['thread_id'];
+            $url = "index.php?file=Forum&op=add_poll&survey_field=" . urlencode($survey_field_check2) . "&forum_id=" . urlencode($_REQUEST['forum_id']) . "&thread_id=" . urlencode($thread_id_redirect);
         }
         else
         {
-            $url = "index.php?file=Forum&page=viewtopic&forum_id=" . $_REQUEST['forum_id'] . "&thread_id=" . $_REQUEST['thread_id'];
+            $url = "index.php?file=Forum&page=viewtopic&forum_id=" . urlencode($_REQUEST['forum_id']) . "&thread_id=" . urlencode($thread_id_redirect);
         }
 
         echo "<br /><br /><div style=\"text-align: center;\">" . _MESSAGESEND . "</div><br /><br />";
@@ -1061,13 +1110,14 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($user && $user[0] == $auteur_id && $sondage == 1 && $visiteur >= $level_poll)
         {
-            if ($_REQUEST['survey_field'] > $nuked['forum_field_max'])
+            $survey_field_check = isset($_REQUEST['survey_field']) ? (int)$_REQUEST['survey_field'] : 0;
+            if ($survey_field_check > $nuked['forum_field_max'])
             {
                 $max = $nuked['forum_field_max'];
             }
             else
             {
-                $max = $_REQUEST['survey_field'];
+                $max = $survey_field_check;
             }
 
             echo "<br /><div style=\"text-align: center;\"><big><b>" . _POSTSURVEY . "</b></big></div><br />\n"
@@ -1117,7 +1167,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             {
                 $titre = mysql_real_escape_string(stripslashes($titre));
 
-                $add = mysql_query("INSERT INTO " . FORUM_POLL_TABLE . " ( `id` , `thread_id` , `titre` ) VALUES ( '' , '" . $thread_id . "' , '" . $titre . "' )");
+                $add = mysql_query("INSERT INTO " . FORUM_POLL_TABLE . " ( `thread_id` , `titre` ) VALUES ( '" . (int)$thread_id . "' , '" . mysql_real_escape_string($titre) . "' )");
 
                 $sql2 = mysql_query("SELECT id FROM " . FORUM_POLL_TABLE . " WHERE thread_id = '" . $thread_id . "'");
                 list($poll_id) = mysql_fetch_array($sql2);
@@ -1140,7 +1190,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
                     if ($options != "")
                     {
-                        $sql3 = mysql_query("INSERT INTO " . FORUM_OPTIONS_TABLE . " ( `id` , `poll_id` , `option_text` , `option_vote` ) VALUES ( '" . $vid . "' , '" . $poll_id . "' , '" . $options . "' , '' )");
+                        $sql3 = mysql_query("INSERT INTO " . FORUM_OPTIONS_TABLE . " ( `poll_id` , `option_text` , `option_vote` ) VALUES ( '" . (int)$poll_id . "' , '" . mysql_real_escape_string($options) . "' , '' )");
                     }
                     $r++;
                 }

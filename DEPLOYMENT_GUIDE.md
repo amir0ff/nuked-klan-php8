@@ -405,7 +405,7 @@ define('HASHKEY', 'your-hash-key-here');
 ## Support
 
 For issues specific to this patched version:
-- Check `MIGRATION_GUIDE.md` for technical details
+- Check `MIGRATION.md` for technical details
 - Review PHP error logs
 - Verify all files were uploaded correctly
 - Test with PHP 8.0 first (most compatible)

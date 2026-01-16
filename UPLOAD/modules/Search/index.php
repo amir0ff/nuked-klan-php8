@@ -20,25 +20,36 @@ opentable();
 function index(){
     global $nuked, $user, $bgcolor1, $bgcolor2, $bgcolor3;
 
-    $_REQUEST['main'] = stripslashes($_REQUEST['main']);
+    $main = isset($_REQUEST['main']) ? stripslashes($_REQUEST['main']) : '';
+    $searchtype = isset($_REQUEST['searchtype']) ? $_REQUEST['searchtype'] : '';
+    $limit = isset($_REQUEST['limit']) ? $_REQUEST['limit'] : '';
+    $autor = isset($_REQUEST['autor']) ? $_REQUEST['autor'] : '';
     
-    if ($_REQUEST['searchtype'] == "matchor") $checked1 = "checked=\"checked\"";
-    else if ($_REQUEST['searchtype'] == "matchexact") $checked3 = "checked=\"checked\"";
+    // Initialize all checked variables
+    $checked1 = '';
+    $checked2 = '';
+    $checked3 = '';
+    $checked4 = '';
+    $checked5 = '';
+    $checked6 = '';
+    
+    if ($searchtype == "matchor") $checked1 = "checked=\"checked\"";
+    else if ($searchtype == "matchexact") $checked3 = "checked=\"checked\"";
     else $checked2 = "checked=\"checked\"";
 
-    if ($_REQUEST['limit'] == 10) $checked4 = "checked=\"checked\"";
-    else if ($_REQUEST['limit'] == 100) $checked6 = "checked=\"checked\"";
+    if ($limit == 10) $checked4 = "checked=\"checked\"";
+    else if ($limit == 100) $checked6 = "checked=\"checked\"";
     else $checked5 = "checked=\"checked\"";
 
 	echo "<br /><form method=\"post\" action=\"index.php?file=Search&amp;op=mod_search\">\n"
 			. "<table style=\"background: " . $bgcolor3 . ";\" width=\"100%\" border=\"0\" cellspacing=\"1\" cellpadding=\"3\">\n"
 			. "<tr style=\"background: " . $bgcolor3 . ";\"><td colspan=\"2\" align=\"center\"><big><b>" . _SEARCHFOR . "</b></big></td></tr>\n"
 			. "<tr style=\"background: " . $bgcolor2 . ";\"><td><b>" . _KEYWORDS . " :</b></td>\n"
-			. "<td>&nbsp;<input type=\"text\" name=\"main\" size=\"30\" value=\"" . printSecuTags($_REQUEST['main']) . "\" /><br />\n"
+			. "<td>&nbsp;<input type=\"text\" name=\"main\" size=\"30\" value=\"" . printSecuTags($main) . "\" /><br />\n"
 			. "<input type=\"radio\" class=\"checkbox\" name=\"searchtype\" value=\"matchor\" " . $checked1 . " />" . _MATCHOR . "<br />\n"
 			. "<input type=\"radio\" class=\"checkbox\" name=\"searchtype\" value=\"matchand\" " . $checked2 . " />" . _MATCHAND . "<br />\n"
 			. "<input type=\"radio\" class=\"checkbox\" name=\"searchtype\" value=\"matchexact\" " . $checked3 . " />" . _MATCHEXACT . "</td></tr>\n"
-			. "<tr style=\"background: " . $bgcolor2 . ";\"><td><b>" . _AUTHOR . " :</b></td><td>&nbsp;<input type=\"text\" size=\"30\" id=\"autor\" name=\"autor\"  value=\"" . printSecuTags($_REQUEST['autor']) . "\" /></td></tr>\n"
+			. "<tr style=\"background: " . $bgcolor2 . ";\"><td><b>" . _AUTHOR . " :</b></td><td>&nbsp;<input type=\"text\" size=\"30\" id=\"autor\" name=\"autor\"  value=\"" . printSecuTags($autor) . "\" /></td></tr>\n"
 			. "<tr style=\"background: " . $bgcolor2 . ";\"><td><b>" . _COLUMN . " :</b> </td><td>&nbsp;<select name=\"module\"><option value=\"\">" . _SALL . "</option>\n";
 
     $path = "modules/Search/rubriques/";
@@ -66,7 +77,8 @@ function index(){
 	
     foreach($modules as $value){
 		$temp = explode("|", $value);
-		if ($temp[1] == $_REQUEST['module']) $selected = "selected=\"selected\"";
+		$module_check = isset($_REQUEST['module']) ? $_REQUEST['module'] : '';
+		if ($temp[1] == $module_check) $selected = "selected=\"selected\"";
 		else $selected = "";
 		echo "<option value=\"" . $temp[1] . "\" " . $selected . ">" . $temp[0] . "</option>\n";
     }
@@ -177,9 +189,14 @@ function mod_search($module, $main, $autor, $limit, $searchtype){
     } 
 } 
 
-switch ($_REQUEST['op']){
+switch (isset($_REQUEST['op']) ? $_REQUEST['op'] : ''){
     case "mod_search":
-    mod_search($_REQUEST['module'], $_REQUEST['main'], $_REQUEST['autor'], $_REQUEST['limit'], $_REQUEST['searchtype']);
+    $module = isset($_REQUEST['module']) ? $_REQUEST['module'] : '';
+    $main = isset($_REQUEST['main']) ? $_REQUEST['main'] : '';
+    $autor = isset($_REQUEST['autor']) ? $_REQUEST['autor'] : '';
+    $limit = isset($_REQUEST['limit']) ? $_REQUEST['limit'] : '';
+    $searchtype = isset($_REQUEST['searchtype']) ? $_REQUEST['searchtype'] : '';
+    mod_search($module, $main, $autor, $limit, $searchtype);
     break;
 
     default:

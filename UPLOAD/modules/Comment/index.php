@@ -631,33 +631,54 @@ function edit_comment($cid){
     }
 }
 
-switch ($_REQUEST['op']){
+switch (isset($_REQUEST['op']) ? $_REQUEST['op'] : ''){
     case"del_comment":
-        del_comment($_REQUEST['cid']);
+        del_comment(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
         break;
 
     case"modif_comment":
-        modif_comment($_REQUEST['cid'], $_REQUEST['titre'], $_REQUEST['texte'], $_REQUEST['module'], $_REQUEST['im_id']);
+        modif_comment(
+            isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '',
+            isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+            isset($_REQUEST['texte']) ? $_REQUEST['texte'] : '',
+            isset($_REQUEST['module']) ? $_REQUEST['module'] : '',
+            isset($_REQUEST['im_id']) ? $_REQUEST['im_id'] : ''
+        );
         break;
 
     case "com_index":
-        com_index($_REQUEST['im'], $_REQUEST['im_id']);
+        com_index(
+            isset($_REQUEST['im']) ? $_REQUEST['im'] : '',
+            isset($_REQUEST['im_id']) ? $_REQUEST['im_id'] : ''
+        );
         break;
 
     case "post_com":
-        post_com($_REQUEST['module'], $_REQUEST['im_id']);
+        post_com(
+            isset($_REQUEST['module']) ? $_REQUEST['module'] : '',
+            isset($_REQUEST['im_id']) ? $_REQUEST['im_id'] : ''
+        );
         break;
 
     case "view_com":
-        view_com($_REQUEST['module'], $_REQUEST['im_id']);
+        view_com(
+            isset($_REQUEST['module']) ? $_REQUEST['module'] : '',
+            isset($_REQUEST['im_id']) ? $_REQUEST['im_id'] : ''
+        );
         break;
 
     case "post_comment":
-        post_comment($_REQUEST['im_id'], $_REQUEST['module'], $_REQUEST['titre'], $_REQUEST['texte'], $_REQUEST['pseudo']);
+        post_comment(
+            isset($_REQUEST['im_id']) ? $_REQUEST['im_id'] : '',
+            isset($_REQUEST['module']) ? $_REQUEST['module'] : '',
+            isset($_REQUEST['titre']) ? $_REQUEST['titre'] : '',
+            isset($_REQUEST['texte']) ? $_REQUEST['texte'] : '',
+            isset($_REQUEST['pseudo']) ? $_REQUEST['pseudo'] : ''
+        );
         break;
 
     case "edit_comment":
-        edit_comment($_REQUEST['cid']);
+        edit_comment(isset($_REQUEST['cid']) ? $_REQUEST['cid'] : '');
         break;
 
     default:

@@ -123,7 +123,8 @@ function session_check() {
 
 // initialise avec les microsecondes
 function make_seed() {
-  list($usec, $sec) = explode(' ', microtime());
+  $microtime_str = microtime();
+  list($usec, $sec) = explode(' ', $microtime_str);
   return (float) $sec + ((float) $usec * 100000);
 }
 
