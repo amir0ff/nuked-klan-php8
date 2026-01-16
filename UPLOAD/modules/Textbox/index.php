@@ -53,6 +53,7 @@ function index()
         echo "<table style=\"margin-left: auto;margin-right: auto;text-align: left;background: " . $bgcolor2 . ";border: 1px solid " . $bgcolor3 . ";\" width=\"100%\" cellpadding=\"3\" cellspacing=\"1\">\n";
 
         $sql2 = mysql_query("SELECT id, auteur, ip, texte, date FROM " . TEXTBOX_TABLE . " ORDER BY id DESC LIMIT " . $start . ", " . $nb_mess."");
+        $j = 0; // Initialize row counter for alternating colors
         while (list($mid, $auteur, $ip, $texte, $date) = mysql_fetch_array($sql2))
         {
             $texte = printSecuTags($texte);

@@ -91,6 +91,7 @@ function index(){
         }
         else{
             $iforum = 0;
+            $j = 0; // Initialize row counter for alternating colors
             $sql_forum = mysql_query("SELECT id, titre, date, thread_id, forum_id FROM " . FORUM_MESSAGES_TABLE . " WHERE auteur_id = '" . $user[0] . "' ORDER BY id DESC LIMIT 0, 10");
             while (list($mid, $subject, $date, $tid, $fid) = mysql_fetch_array($sql_forum)){
                 $subject = nkHtmlEntities($subject);

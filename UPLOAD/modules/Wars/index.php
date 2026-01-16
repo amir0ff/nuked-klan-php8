@@ -79,6 +79,7 @@ if ($visiteur >= $level_access && $level_access > -1){
                     $count = mysql_num_rows($sql6);
 
                     $sql4 = mysql_query('SELECT warid, adversaire, url_adv, pays_adv, type, style, game, date_jour, date_mois, date_an, tscore_team, tscore_adv FROM '.WARS_TABLE.' WHERE etat = 1 AND team = '.$team.' ORDER BY date_an DESC, date_mois DESC, date_jour DESC LIMIT 0, 10');
+                    $j = 0; // Initialize row counter for alternating colors
                     while (list($war_id, $adv_name, $adv_url, $pays_adv, $type, $style, $game, $jour, $mois, $an, $score_team, $score_adv) = mysql_fetch_array($sql4)){
                         $adv_name = printSecuTags($adv_name);
                         $type = printSecuTags($type);
@@ -262,6 +263,7 @@ if ($visiteur >= $level_access && $level_access > -1){
                 <td style="width: 10%;text-align:center;"><b>' . _DETAILS . '</b></td></tr>';
 
                 $sql4 = mysql_query('SELECT warid, adversaire, url_adv, pays_adv, type, style, game, date_jour, date_mois, date_an, tscore_team, tscore_adv FROM ' . WARS_TABLE . ' WHERE etat = 1 ' . $and . $order . ' LIMIT ' . $start . ',' . $nb_wars.' ');
+                $j = 0; // Initialize row counter for alternating colors
                 while (list($war_id, $adv_name, $adv_url, $pays_adv, $type, $style, $game, $jour, $mois, $an, $score_team, $score_adv) = mysql_fetch_array($sql4)){
                     $adv_name = printSecuTags($adv_name);
                     $type = printSecuTags($type);
@@ -362,6 +364,7 @@ if ($visiteur >= $level_access && $level_access > -1){
                         <td style="width: 15%;text-align:center;"><b>' . _DETAILS2 . '</b></td>';
 
                 $sql4x = mysql_query('SELECT warid, adversaire, url_adv, pays_adv, type, style, game, date_jour, date_mois, date_an, tscore_team, tscore_adv FROM ' . WARS_TABLE . ' WHERE etat = 0 ' . $and . $order . ' LIMIT ' . $start . ',' . $nb_wars.' ');
+                $j = 0; // Initialize row counter for alternating colors
                 while (list($war_id, $adv_name, $adv_url, $pays_adv, $type, $style, $game, $jour, $mois, $an, $score_team, $score_adv) = mysql_fetch_array($sql4x)){
                     $adv_name = printSecuTags($adv_name);
                     $type = printSecuTags($type);

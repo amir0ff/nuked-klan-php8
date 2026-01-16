@@ -214,6 +214,7 @@ if ($visiteur >= $level_access && $level_access > -1)
         . "<td style=\"width: 70%;\" align=\"center\"><b>" . _COMMENT . "</b></td></tr>\n";
 
         $sql2 = mysql_query("SELECT id, name, comment, email, url, date, host FROM " . GUESTBOOK_TABLE . " ORDER BY id DESC LIMIT " . $start . ", " . $nb_mess_guest."");
+        $j = 0; // Initialize row counter for alternating colors
         while (list($id, $name, $comment, $email, $url, $date, $ip) = mysql_fetch_array($sql2))
         {
             $date = nkDate($date);

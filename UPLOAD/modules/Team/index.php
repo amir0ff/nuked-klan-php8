@@ -73,6 +73,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             $nb_members = mysql_num_rows($sql2);
             if ($nb_members > 0)
             {
+                $j = 0; // Initialize row counter for alternating colors
                 while (list($id_user, $pseudo, $email, $icq, $msn, $aim, $yim, $rang, $country) = mysql_fetch_array($sql2))
                 {
                     list ($pays, $ext) = explode ('.', $country);
@@ -324,7 +325,7 @@ if ($visiteur >= $level_access && $level_access > -1)
         echo "&nbsp;</div>\n";
         }
 
-            $a = "ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ";
+            $a = "Ã€ÃÃ‚ÃƒÃ„Ã…Ã Ã¡Ã¢Ã£Ã¤Ã¥Ã’Ã“Ã”Ã•Ã–Ã˜Ã²Ã³Ã´ÃµÃ¶Ã¸ÃˆÃ‰ÃŠÃ‹Ã¨Ã©ÃªÃ«Ã‡Ã§ÃŒÃÃŽÃÃ¬Ã­Ã®Ã¯Ã™ÃšÃ›ÃœÃ¹ÃºÃ»Ã¼Ã¿Ã‘Ã±";
             $b = "AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn";
             $flash_autor = @nkHtmlEntityDecode($autor);
             $flash_autor = strtr($flash_autor, $a, $b);
@@ -343,42 +344,42 @@ if ($visiteur >= $level_access && $level_access > -1)
                 echo "<table style=\"background: " . $bgcolor2 . ";border: 1px solid " . $bgcolor3 . ";\" width=\"100%\" cellpadding=\"2\" cellspacing=\"1\">\n"
                 . "<tr style=\"background: " . $bgcolor3 . ";\"><td style=\"height: 20px\" colspan=\"2\" align=\"center\"><big><b>" . _INFOPERSO . "</b></big></td></tr>\n"
                 . "<tr style=\"background: " . $bgcolor1 . ";\"><td style=\"width: 100%\"><table cellpadding=\"1\" cellspacing=\"0\">\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _NICK . " :</b></td><td>" . $autor . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _LASTNAME . " :</b></td><td>" . $prenom . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _AGE . " :</b></td><td>" . $age . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _SEXE . " :</b></td><td>" . $sex . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _CITY . " :</b></td><td>" . $ville . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _COUNTRY . " :</b></td><td>" . $pays . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _MAIL . " :</b></td><td>" . $mail . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _URL . " :</b></td><td>\n";
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _NICK . " :</b></td><td>" . $autor . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _LASTNAME . " :</b></td><td>" . $prenom . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _AGE . " :</b></td><td>" . $age . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _SEXE . " :</b></td><td>" . $sex . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _CITY . " :</b></td><td>" . $ville . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _COUNTRY . " :</b></td><td>" . $pays . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _MAIL . " :</b></td><td>" . $mail . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _URL . " :</b></td><td>\n";
 
                 if ($url != "" && preg_match("`http://`i", $url))
                 {
                     echo "<a href=\"" . $url . "\" onclick=\"window.open(this.href); return false;\">" . $url . "</a>";
                 }
 
-                echo "</td></tr><tr><td><b>&nbsp;&nbsp;» " . _ICQ . " :</b></td><td>\n";
+                echo "</td></tr><tr><td><b>&nbsp;&nbsp;Â» " . _ICQ . " :</b></td><td>\n";
 
                 if ($icq != "")
                 {
                     echo "<a href=\"http://web.icq.com/whitepages/add_me?uin=" . $icq . "&amp;action=add\">" . $icq . "</a>";
                 }
 
-                echo "</td></tr><tr><td><b>&nbsp;&nbsp;» " . _MSN . " :</b></td><td>\n";
+                echo "</td></tr><tr><td><b>&nbsp;&nbsp;Â» " . _MSN . " :</b></td><td>\n";
 
                 if ($msn != "")
                 {
                     echo"<a href=\"mailto:" . $msn . "\">" . $msn . "</a>";
                 }
 
-                echo "</td></tr><tr><td><b>&nbsp;&nbsp;» " . _AIM . " :</b></td><td>\n";
+                echo "</td></tr><tr><td><b>&nbsp;&nbsp;Â» " . _AIM . " :</b></td><td>\n";
 
                 if ($aim != "")
                 {
                     echo "<a href=\"aim:goim?screenname=" . $aim . "&amp;message=Hi+" . $aim . "+Are+you+there+?\">" . $aim . "</a>";
                 }
 
-                echo "</td></tr><tr><td><b>&nbsp;&nbsp;» " . _YIM . " :</b></td><td>\n";
+                echo "</td></tr><tr><td><b>&nbsp;&nbsp;Â» " . _YIM . " :</b></td><td>\n";
 
                 if ($yim != "")
                 {
@@ -399,25 +400,25 @@ if ($visiteur >= $level_access && $level_access > -1)
                 echo "</td></tr>\n"
                 . "<tr style=\"background: " . $bgcolor3 . ";\"><td colspan=\"2\" style=\"height: 20px\" align=\"center\"><big><b>" . _HARDCONFIG . "</b></big></td></tr>\n"
                 . "<tr style=\"background: " . $bgcolor1 . ";\"><td style=\"width: 100%\" colspan=\"2\"><table cellpadding=\"1\" cellspacing=\"0\">\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _PROCESSOR . " : </b></td><td>" . $cpu . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _MEMORY . " : </b></td><td>" . $ram . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _MOTHERBOARD . " : </b></td><td>" . $motherboard . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _VIDEOCARD . " : </b></td><td>" . $video . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _RESOLUTION . " : </b></td><td>" . $resolution . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _SOUNDCARD . " : </b></td><td>" . $sons . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _MOUSE . " : </b></td><td>" . $souris . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _KEYBOARD . " : </b></td><td>" . $clavier . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _MONITOR . " : </b></td><td>" . $ecran . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _SYSTEMOS . " : </b></td><td>" . $osystem . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . _CONNECT . " :</b></td><td>" . $connexion . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _PROCESSOR . " : </b></td><td>" . $cpu . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _MEMORY . " : </b></td><td>" . $ram . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _MOTHERBOARD . " : </b></td><td>" . $motherboard . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _VIDEOCARD . " : </b></td><td>" . $video . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _RESOLUTION . " : </b></td><td>" . $resolution . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _SOUNDCARD . " : </b></td><td>" . $sons . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _MOUSE . " : </b></td><td>" . $souris . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _KEYBOARD . " : </b></td><td>" . $clavier . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _MONITOR . " : </b></td><td>" . $ecran . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _SYSTEMOS . " : </b></td><td>" . $osystem . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . _CONNECT . " :</b></td><td>" . $connexion . "</td></tr>\n"
                 . "</table></td></tr>"
                 . "<tr style=\"background: " . $bgcolor3 . ";\"><td colspan=\"2\" style=\"height: 20px\" align=\"center\"><big><b>" . $titre . " :</b></big></td></tr>\n"
                 . "<tr style=\"background: " . $bgcolor1 . ";\"><td colspan=\"2\"><table cellpadding=\"1\" cellspacing=\"0\">\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . $pref_1 . " :</b></td><td>" . $gpref1 . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . $pref_2 . " :</b></td><td>" . $gpref2 . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . $pref_3 . " :</b></td><td>" . $gpref3 . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . $pref_4 . " :</b></td><td>" . $gpref4 . "</td></tr>\n"
-                . "<tr><td><b>&nbsp;&nbsp;» " . $pref_5 . " :</b></td><td>" . $gpref5 . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . $pref_1 . " :</b></td><td>" . $gpref1 . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . $pref_2 . " :</b></td><td>" . $gpref2 . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . $pref_3 . " :</b></td><td>" . $gpref3 . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . $pref_4 . " :</b></td><td>" . $gpref4 . "</td></tr>\n"
+                . "<tr><td><b>&nbsp;&nbsp;Â» " . $pref_5 . " :</b></td><td>" . $gpref5 . "</td></tr>\n"
                 . "</table></td></tr></table><br />";
             }
             else

@@ -31,6 +31,7 @@ if ($visiteur >= $level_access && $level_access > -1) {
                . "<tr><td align=\"center\">" . $row['description'] . "</td></tr></table>\n";
 
             $test = 0;
+            $j = 0; // Initialize row counter for alternating colors
             $sql2 = mysql_query("SELECT sid, game, ip, port, pass FROM " . SERVER_TABLE . " WHERE cat = '" . $row['cid'] . "' ORDER BY sid");
             while($raw = mysql_fetch_assoc($sql2)) {
                 $test++;
@@ -375,6 +376,7 @@ if ($visiteur >= $level_access && $level_access > -1) {
             } 
             $result .= "</tr>";
 
+            $j = 0; // Initialize row counter for alternating colors
             foreach ($players as $player) {
                 if ($j == 0) {
                     $bg = $bgcolor2;

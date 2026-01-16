@@ -352,6 +352,58 @@ This document provides complete technical documentation of the migration of Nuke
   - Initialized `$checked1 = ""` and `$checked2 = ""` at start of `main_pref()` function
   - Both variables now always defined before use
 
+---
+
+### 18. Members Module PHP 8.0 Compatibility Fixes (January 15, 2026)
+**Problem:** Multiple PHP 8.0 compatibility issues in Members module.
+
+**Files Modified:**
+- `modules/Members/index.php` (lines 29, 32, 42, 56, 74, 174, 180-184, 401-412)
+  - **Undefined array key "letter":** Added `isset()` check and stored in `$letter` variable
+  - **Undefined array key "p":** Added `isset()` check with type casting: `$p = isset($_REQUEST['p']) ? (int)$_REQUEST['p'] : 1;`
+  - **Fatal error: `each()` function:** Replaced `while (list(, $lettre) = each($alpha))` with `foreach ($alpha as $lettre)`
+    - `each()` was removed in PHP 8.0
+    - Added missing `$counter++` increment
+  - **Switch statement:** Added `isset()` checks for all `$_REQUEST` parameters
+  - **SQL security:** Added `mysql_real_escape_string()` for letter filtering
+
+---
+
+### 19. Undefined Variable $j (Row Counter) Fixes (January 15, 2026)
+**Problem:** Variable `$j` used for alternating row colors without initialization, causing "Undefined variable" warnings.
+
+**Files Modified:**
+- `modules/Members/index.php` (line 90)
+  - Initialized `$j = 0;` before while loop
+  
+- `modules/User/index.php` (line 94)
+  - Initialized `$j = 0;` before while loop
+  
+- `modules/Comment/index.php` (line 146)
+  - Initialized `$j = 0;` before while loop
+  
+- `modules/Stats/index.php` (line 134)
+  - Added `if (!isset($j)) $j = 0;` check (used in loop that may be called multiple times)
+  
+- `modules/Team/index.php` (line 76)
+  - Initialized `$j = 0;` before while loop
+  
+- `modules/Wars/index.php` (lines 82, 266, 366)
+  - Initialized `$j = 0;` before each while loop (3 locations)
+  
+- `modules/Guestbook/index.php` (line 217)
+  - Initialized `$j = 0;` before while loop
+  
+- `modules/Textbox/index.php` (line 56)
+  - Initialized `$j = 0;` before while loop
+  
+- `modules/Server/index.php` (lines 34, 378)
+  - Initialized `$j = 0;` before while loop and foreach loop (2 locations)
+
+**Pattern Applied:**
+- Initialize `$j = 0;` immediately before the loop that uses it
+- For loops that may be called multiple times, use `if (!isset($j)) $j = 0;`
+
 - `modules/Wars/admin.php` (lines 108, 143, 146)
   - Fixed undefined variable `$status` used in "add" branch (only defined in "edit" branch)
   - Fixed undefined array key `$_REQUEST['nbr']` without isset check
@@ -416,7 +468,11 @@ This document provides complete technical documentation of the migration of Nuke
 - `themes/Impact_Nk/theme.php` - Fixed undefined array keys (User, News), undefined constant (titre), all display functions
 - `modules/User/index.php` - Fixed undefined array keys, file upload handling, avatar synchronization between tables
 
-**Total Files Modified:** 67+ files (updated from 65+)
+**Total Files Modified:** 76+ files (updated from 67+)
+
+**Recent Additions (January 15, 2026):**
+- Members module: Fixed `each()`, undefined array keys, and `$j` variable
+- 9 frontend modules: Fixed undefined `$j` variable for row coloring
 
 ---
 

@@ -131,6 +131,8 @@ if ($visiteur >= $level_access && $level_access > -1) {
 
             $etat = round(($count * 100) / $counter);
 
+            // Initialize $j if not set (for first iteration)
+            if (!isset($j)) $j = 0;
             if ($j == 0) {
                 $bg = $bgcolor2;
                 $j++;
