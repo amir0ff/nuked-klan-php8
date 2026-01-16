@@ -146,7 +146,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($visiteur >= admin_mod("Forum") || $administrator == 1)
         {
-            if ($_REQUEST['confirm'] == _YES)
+            if (isset($_REQUEST['confirm']) && $_REQUEST['confirm'] == _YES)
             {
                 // SECURITY FIX: Escape user input to prevent SQL injection
                 $thread_id_escaped = mysql_real_escape_string($_REQUEST['thread_id']);
@@ -198,7 +198,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                 redirect($url, 2);
             }
 
-            else if ($_REQUEST['confirm'] == _NO)
+            else if (isset($_REQUEST['confirm']) && $_REQUEST['confirm'] == _NO)
             {
                 $url = "index.php?file=Forum&page=viewtopic&forum_id=" . $_REQUEST['forum_id'] . "&thread_id=" . $_REQUEST['thread_id'];
                 echo "<br /><br /><div style=\"text-align: center;\">" . _DELCANCEL . "</div><br /><br />";
@@ -207,10 +207,13 @@ if ($visiteur >= $level_access && $level_access > -1)
 
             else
             {
+                // XSS FIX: Encode numeric IDs in hidden fields
+                $forum_id_encoded = isset($_REQUEST['forum_id']) ? nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) : '';
+                $thread_id_encoded = isset($_REQUEST['thread_id']) ? nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) : '';
                 echo "<form method=\"post\" action=\"index.php?file=Forum&amp;op=del\">\n"
                 . "<div style=\"text-align: center;\"><br /><br />" . _CONFIRMDELMESS . "<br />\n"
-                . "<input type=\"hidden\" name=\"forum_id\" value=\"" . $_REQUEST['forum_id'] . "\" />\n"
-                . "<input type=\"hidden\" name=\"thread_id\" value=\"" . $_REQUEST['thread_id'] . "\" />\n"
+                . "<input type=\"hidden\" name=\"forum_id\" value=\"" . $forum_id_encoded . "\" />\n"
+                . "<input type=\"hidden\" name=\"thread_id\" value=\"" . $thread_id_encoded . "\" />\n"
                 . "<input type=\"hidden\" name=\"mess_id\" value=\"" . $mess_id . "\" />\n"
                 . "<input type=\"submit\" name=\"confirm\" value=\"" . _YES . "\" />"
                 . "&nbsp;<input type=\"submit\" name=\"confirm\" value=\"" . _NO . "\" /></div></form><br />\n";
@@ -248,7 +251,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($visiteur >= admin_mod("Forum") || $administrator == 1)
         {
-            if ($_REQUEST['confirm'] == _YES)
+            if (isset($_REQUEST['confirm']) && $_REQUEST['confirm'] == _YES)
             {
                 $sql = mysql_query("SELECT sondage FROM " . FORUM_THREADS_TABLE . " WHERE id = '" . $thread_id . "'");
                 list($sondage) = mysql_fetch_row($sql);
@@ -287,7 +290,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                 redirect($url, 2);
             }
 
-            else if ($_REQUEST['confirm'] == _NO)
+            else if (isset($_REQUEST['confirm']) && $_REQUEST['confirm'] == _NO)
             {
                 $url = "index.php?file=Forum&page=viewtopic&forum_id=" . $_REQUEST['forum_id'] . "&thread_id=" . $thread_id;
                 echo "<br /><br /><div style=\"text-align: center;\">" . _DELCANCEL . "</div><br /><br />";
@@ -296,9 +299,11 @@ if ($visiteur >= $level_access && $level_access > -1)
 
             else
             {
+                // XSS FIX: Encode forum_id in hidden field
+                $forum_id_encoded = isset($_REQUEST['forum_id']) ? nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) : '';
                 echo "<form method=\"post\" action=\"index.php?file=Forum&amp;op=del_topic\">\n"
                 . "<div style=\"text-align: center;\"><br /><br />" . _CONFIRMDELTOPIC . "<br />\n"
-                . "<input type=\"hidden\" name=\"forum_id\" value=\"" . $_REQUEST['forum_id'] . "\" />\n"
+                . "<input type=\"hidden\" name=\"forum_id\" value=\"" . $forum_id_encoded . "\" />\n"
                 . "<input type=\"hidden\" name=\"thread_id\" value=\"" . $thread_id . "\" />\n"
                 . "<input type=\"submit\" name=\"confirm\" value=\"" . _YES . "\" />"
                 . "&nbsp;<input type=\"submit\" name=\"confirm\" value=\"" . _NO . "\" /></div></form><br />\n";
@@ -337,7 +342,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($visiteur >= admin_mod("Forum") || $administrator == 1)
         {
-            if ($_REQUEST['confirm'] == _YES && $_REQUEST['newforum'] != "")
+            if (isset($_REQUEST['confirm']) && $_REQUEST['confirm'] == _YES && isset($_REQUEST['newforum']) && $_REQUEST['newforum'] != "")
             {
                 echo"<br /><br /><div style=\"text-align: center;\">" . _TOPICMOVED . "</div><br /><br />";
 
@@ -417,7 +422,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
                     $url = "index.php?file=Forum&page=viewtopic&forum_id=" . $_REQUEST['newforum'] . "&thread_id=" . (int) $_REQUEST['thread_id'];
                     redirect($url, 2);
-               } else if ($_REQUEST['confirm'] == _NO) {
+               } else if (isset($_REQUEST['confirm']) && $_REQUEST['confirm'] == _NO) {
                 echo "<br /><br /><div style=\"text-align: center;\">" . _DELCANCEL . "</div><br /><br />";
 
                 $url = "index.php?file=Forum&page=viewtopic&forum_id=" . $_REQUEST['forum_id'] . "&thread_id=" . $_REQUEST['thread_id'];
@@ -445,10 +450,13 @@ if ($visiteur >= $level_access && $level_access > -1)
                     }
                 }
 
+                // XSS FIX: Encode IDs in hidden fields
+                $forum_id_encoded = isset($_REQUEST['forum_id']) ? nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) : '';
+                $thread_id_encoded = isset($_REQUEST['thread_id']) ? nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) : '';
                 echo "</select><br /><br /><input type=\"submit\" name=\"confirm\" value=\"" . _YES . "\" />"
                 . "&nbsp;<input type=\"submit\" name=\"confirm\" value=\"" . _NO . "\" />\n"
-                . "<input type=\"hidden\" name=\"forum_id\" value=\"".$_REQUEST['forum_id']."\" />\n"
-                . "<input type=\"hidden\" name=\"thread_id\" value=\"".$_REQUEST['thread_id']."\" /></div></form><br />\n";
+                . "<input type=\"hidden\" name=\"forum_id\" value=\"".$forum_id_encoded."\" />\n"
+                . "<input type=\"hidden\" name=\"thread_id\" value=\"".$thread_id_encoded."\" /></div></form><br />\n";
             }
         }
         else
@@ -1158,8 +1166,11 @@ if ($visiteur >= $level_access && $level_access > -1)
 
             }
 
-            echo "<tr><td>&nbsp;<input type=\"hidden\" name=\"thread_id\" value=\"" . $_REQUEST['thread_id'] . "\" />\n"
-            . "<input type=\"hidden\" name=\"forum_id\" value=\"" . $_REQUEST['forum_id'] . "\" />\n"
+            // XSS FIX: Encode IDs in hidden fields
+            $thread_id_encoded = isset($_REQUEST['thread_id']) ? nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) : '';
+            $forum_id_encoded = isset($_REQUEST['forum_id']) ? nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) : '';
+            echo "<tr><td>&nbsp;<input type=\"hidden\" name=\"thread_id\" value=\"" . $thread_id_encoded . "\" />\n"
+            . "<input type=\"hidden\" name=\"forum_id\" value=\"" . $forum_id_encoded . "\" />\n"
             . "<input type=\"hidden\" name=\"max_option\" value=\"" . $max . "\" /></td></tr>\n"
             . "<tr><td align=\"center\"><input type=\"submit\" value=\"" . _ADDTHISPOLL . "\" /></td></tr></table></form><br />\n";
         }
@@ -1318,7 +1329,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($user && $user[0] == $auteur_id || $visiteur >= admin_mod("Forum") || $administrator == 1)
         {
-            if ($_REQUEST['confirm'] == _YES)
+            if (isset($_REQUEST['confirm']) && $_REQUEST['confirm'] == _YES)
             {
                 $del1 = mysql_query("DELETE FROM " . FORUM_POLL_TABLE . " WHERE id = '" . $poll_id . "'");
                 $del2 = mysql_query("DELETE FROM " . FORUM_OPTIONS_TABLE . " WHERE poll_id = '" . $poll_id . "'");
@@ -1329,7 +1340,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                 $url = "index.php?file=Forum&page=viewtopic&forum_id=" . $forum_id . "&thread_id=" . $thread_id;
                 redirect($url, 2);
             }
-            else if ($_REQUEST['confirm'] == _NO)
+            else if (isset($_REQUEST['confirm']) && $_REQUEST['confirm'] == _NO)
             {
                 echo "<br /><br /><br><center>" . _CONFIRMDELPOLL . "" . _DELCANCEL . "</div><br /><br />";
                 $url = "index.php?file=Forum&page=viewtopic&forum_id=" . $forum_id . "&thread_id=" . $thread_id;
@@ -1401,10 +1412,13 @@ if ($visiteur >= $level_access && $level_access > -1)
 
             $r++;
 
+            // XSS FIX: Encode IDs in hidden fields
+            $thread_id_encoded = isset($_REQUEST['thread_id']) ? nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) : '';
+            $forum_id_encoded = isset($_REQUEST['forum_id']) ? nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) : '';
             echo "<tr><td align=\"right\">" . _OPTION . "&nbsp;" . $r . " : <input type=\"text\" name=\"newoption\" size=\"40\" /></td></tr>\n"
             . "<tr><td>&nbsp;<input type=\"hidden\" name=\"poll_id\" value=\"" . $poll_id . "\" />\n"
-            . "<input type=\"hidden\" name=\"thread_id\" value=\"" . $_REQUEST['thread_id'] . "\" />\n"
-            . "<input type=\"hidden\" name=\"forum_id\" value=\"" . $_REQUEST['forum_id'] . "\" /></td></tr>\n"
+            . "<input type=\"hidden\" name=\"thread_id\" value=\"" . $thread_id_encoded . "\" />\n"
+            . "<input type=\"hidden\" name=\"forum_id\" value=\"" . $forum_id_encoded . "\" /></td></tr>\n"
             . "<tr><td align=\"center\"><input type=\"submit\" value=\"" . _MODIFTHISPOLL . "\" /></td></tr></table></form><br />\n";
 
         }

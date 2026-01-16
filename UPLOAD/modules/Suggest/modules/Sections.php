@@ -18,12 +18,15 @@ function form($content, $sug_id)
 
     translate("modules/Sections/lang/" . $language . ".lang.php");
 
-    if ($content != "")
+    // Fix: Check if $content is an array and has required elements
+    $is_content_array = is_array($content) && count($content) >= 5;
+    
+    if ($is_content_array && !empty($content[0]))
     {
         $titre = "<big><b>" . _VALIDART . "</b></big>";
         $action = "index.php?file=Suggest&amp;page=admin&amp;op=valid_suggest&amp;module=Sections";
-        $autor = $content[3];
-        $autor_id = $content[4];
+        $autor = isset($content[3]) ? $content[3] : '';
+        $autor_id = isset($content[4]) ? $content[4] : '';
 
     echo "<script type=\"text/javascript\">\n"
     . "<!--\n"
@@ -55,10 +58,15 @@ function form($content, $sug_id)
     $refuse = "</div></form><br />\n";
     }
 
+    // Fix: Safely access $content array elements
+    $content_title = ($is_content_array && isset($content[0])) ? $content[0] : '';
+    $content_secid = ($is_content_array && isset($content[1])) ? $content[1] : '';
+    $content_texte = ($is_content_array && isset($content[2])) ? $content[2] : '';
+    
     echo "<br /><div style=\"text-align: center;\">" . $titre . "</div><br />\n"
     . "<form method=\"post\" action=\"$action\">\n"
     . "<table style=\"margin: auto; width: 98%; text-align: left;\" cellspacing=\"0\" cellpadding=\"2\"border=\"0\">\n"
-    . "<tr><td><b>" . _TITLE . "</b> : <input type=\"text\" name=\"title\" size=\"45\" value=\"" . $content[0] . "\" /></td></tr>\n"
+    . "<tr><td><b>" . _TITLE . "</b> : <input type=\"text\" name=\"title\" size=\"45\" value=\"" . nkHtmlEntities($content_title, ENT_QUOTES) . "\" /></td></tr>\n"
     . "<tr><td><b>" . _CAT . " :</b> <select name=\"secid\"><option value=\"0\">* " . _NONE . "</option>\n";
 
     $sql = mysql_query("SELECT secid, secname FROM " . SECTIONS_CAT_TABLE . " WHERE parentid = 0 ORDER BY position, secname");
@@ -66,9 +74,9 @@ function form($content, $sug_id)
     {
         $titre = printSecuTags($titre);
 
-        if ($content)
+        if ($is_content_array && isset($content[1]))
         {
-            if ($secid == $content[1]) $selected = "selected=\"selected\"";
+            if ($secid == $content_secid) $selected = "selected=\"selected\"";
             else $selected = "";
         }
         echo "<option value=\"" . $secid . "\" " . $selected . ">* " . $titre . "</option>\n";
@@ -78,9 +86,9 @@ function form($content, $sug_id)
         {
             $s_titre = printSecuTags($s_titre);
 
-            if ($content)
+            if ($is_content_array && isset($content[1]))
             {
-                if ($s_cid == $content[1]) $selected1 = "selected=\"selected\"";
+                if ($s_cid == $content_secid) $selected1 = "selected=\"selected\"";
                 else $selected = "";
             }
             echo "<option value=\"" . $s_cid . "\" " . $selected1 . ">&nbsp;&nbsp;&nbsp;" . $s_titre . "</option>\n";
@@ -92,9 +100,9 @@ function form($content, $sug_id)
     echo "<tr><td><b>" . _TEXT . "</b></td></tr>\n"
     . "<tr><td><textarea ";
 
-    echo $_REQUEST['page'] == 'admin' ? 'class="editor" ' : 'id="e_advanced" ';
+    echo isset($_REQUEST['page']) && $_REQUEST['page'] == 'admin' ? 'class="editor" ' : 'id="e_advanced" ';
 
-    echo "name=\"texte\" cols=\"65\" rows=\"12\">" .  $content[2] . "</textarea></td></tr>\n"
+    echo "name=\"texte\" cols=\"65\" rows=\"12\">" .  nkHtmlEntities($content_texte, ENT_QUOTES) . "</textarea></td></tr>\n"
         . "<tr><td>&nbsp;<input type=\"hidden\" name=\"sug_id\" value=\"" . $sug_id . "\" />\n"
         . "<input type=\"hidden\" name=\"auteur\" value=\"" . $autor . "\" />\n"
         . "<input type=\"hidden\" name=\"auteur_id\" value=\"" . $autor_id . "\" />";

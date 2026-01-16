@@ -301,7 +301,9 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             echo "<option value=\"" . $filename . "\" " . $checked5 . ">" . $country . "</option>\n";
         } 
 
-        echo "</select><input type=\"hidden\" name=\"game\" value=\"".$_REQUEST['game']."\"/></td></tr></table>\n"
+        // XSS FIX: Encode user input in hidden field
+        $game_encoded = isset($_REQUEST['game']) ? nkHtmlEntities($_REQUEST['game'], ENT_QUOTES) : '';
+        echo "</select><input type=\"hidden\" name=\"game\" value=\"".$game_encoded."\"/></td></tr></table>\n"
         . "<table style=\"margin-left: auto;margin-right: auto;text-align: left;\"><tr><td>&nbsp;</td></tr>\n"
         . "<tr><td align=\"center\"><big>" . _MATCH . "</big></td></tr>\n"
         . "<tr><td><b>" . _TYPE . " : </b><input type=\"text\" name=\"type\" maxlength=\"100\" size=\"20\" value=\"" . $type . "\" />&nbsp;&nbsp;<b>" . _STYLE . " : </b><input type=\"text\" name=\"style\" maxlength=\"100\" size=\"20\" value=\"" . $style . "\" /></td></tr>\n"

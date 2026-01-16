@@ -286,7 +286,9 @@ if ($visiteur >= $level_access && $level_access > -1){
         echo "<tr style=\"background: " . $bgcolor1 . ";\"><td style=\"border: 1px dashed " . $bgcolor3 . ";\">";
 
         if ($pageno > 1){
-            echo _PAGE . " : " . $_REQUEST['p'] . "/" . $pageno . "<br /><br />";
+            // XSS FIX: Encode page number in output
+            $p_encoded = isset($_REQUEST['p']) ? nkHtmlEntities($_REQUEST['p'], ENT_QUOTES) : '1';
+            echo _PAGE . " : " . $p_encoded . "/" . $pageno . "<br /><br />";
         } 
         else {
             echo "<br />";
@@ -359,19 +361,21 @@ if ($visiteur >= $level_access && $level_access > -1){
         } 
 
         $nb_max = $nuked['max_sections'];
-        if (!$_REQUEST['p']) $_REQUEST['p'] = 1;
+        // Fix: Add isset() check for $_REQUEST['p']
+        if (!isset($_REQUEST['p']) || !$_REQUEST['p']) $_REQUEST['p'] = 1;
         $start = $_REQUEST['p'] * $nb_max - $nb_max;
 
         if ($sid != "") $where = "WHERE S.secid = '" . $sid . "'";
         else $where = "";
 
-        if ($_REQUEST['orderby'] == "name"){
+        // Fix: Add isset() checks for $_REQUEST['orderby']
+        if (isset($_REQUEST['orderby']) && $_REQUEST['orderby'] == "name"){
             $order = "ORDER BY S.title";
         } 
-        else if ($_REQUEST['orderby'] == "count"){
+        else if (isset($_REQUEST['orderby']) && $_REQUEST['orderby'] == "count"){
             $order = "ORDER BY S.counter DESC";
         } 
-        else if ($_REQUEST['orderby'] == "note"){
+        else if (isset($_REQUEST['orderby']) && $_REQUEST['orderby'] == "note"){
             $order = "ORDER BY note DESC";
         } 
         else{
@@ -494,12 +498,12 @@ if ($visiteur >= $level_access && $level_access > -1){
 
         $text = str_replace("&quot;", "\"", $text);
         $text = str_replace("&#039;", "'", $text);
-        $text = str_replace("&agrave;", "à", $text);
-        $text = str_replace("&acirc;", "â", $text);
-        $text = str_replace("&eacute;", "é", $text);
-        $text = str_replace("&egrave;", "è", $text);
-        $text = str_replace("&ecirc;", "ê", $text);
-        $text = str_replace("&ucirc;", "û", $text);
+        $text = str_replace("&agrave;", "ï¿½", $text);
+        $text = str_replace("&acirc;", "ï¿½", $text);
+        $text = str_replace("&eacute;", "ï¿½", $text);
+        $text = str_replace("&egrave;", "ï¿½", $text);
+        $text = str_replace("&ecirc;", "ï¿½", $text);
+        $text = str_replace("&ucirc;", "ï¿½", $text);
 
         $text = preg_replace('#\r\n\t#', '', $text);
         $text = str_replace('<div style="page-break-after: always;"><span style="display: none;">&nbsp;</span></div>', '</page><page>', $text);
@@ -534,7 +538,10 @@ if ($visiteur >= $level_access && $level_access > -1){
             break;
         case "classe":
             opentable();
-            classe($_REQUEST['sid'], $_REQUEST['nb_subcat']);
+            // Fix: Add isset() checks for $_REQUEST parameters
+            $sid_param = isset($_REQUEST['sid']) ? $_REQUEST['sid'] : '';
+            $nb_subcat_param = isset($_REQUEST['nb_subcat']) ? $_REQUEST['nb_subcat'] : 0;
+            classe($sid_param, $nb_subcat_param);
             closetable();
             break;
         case "categorie":

@@ -692,9 +692,11 @@ if ($visiteur == 9)
             echo "</td></tr>\n";
         }
 
-        if ($count == 0 && $_REQUEST['query'] != "")
+        if ($count == 0 && isset($_REQUEST['query']) && $_REQUEST['query'] != "")
         {
-            echo "<tr><td colspan=\"5\" align=\"center\">" . _NORESULTFOR . " <b><i>" . $_REQUEST['query'] . "</i></b></td></tr>\n";
+            // XSS FIX: Encode user input before output
+            $query_encoded = nkHtmlEntities($_REQUEST['query'], ENT_QUOTES);
+            echo "<tr><td colspan=\"5\" align=\"center\">" . _NORESULTFOR . " <b><i>" . $query_encoded . "</i></b></td></tr>\n";
         }
         else if ($count == 0)
         {

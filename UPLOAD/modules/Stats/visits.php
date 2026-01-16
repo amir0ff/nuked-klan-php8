@@ -92,7 +92,7 @@ if ($visiteur >= $nuked['level_analys'] && $nuked['level_analys']!= -1) {
 
                     $v_hours = nk_strftime('%H:%M', $v_date);
                     $v_osname = ($v_os == 'Autres') ? _OTHERS : $v_os;
-                    $v_browsername = ($v_browser == 'Autres') ? _OTHERS : ($v_browser == 'Moteurs de recherche') ? _SEARCHENGINE : $v_browser;
+                    $v_browsername = ($v_browser == 'Autres') ? _OTHERS : (($v_browser == 'Moteurs de recherche') ? _SEARCHENGINE : $v_browser);
 
                     if ($j == 0) {
                         $bg = $bgcolor2;
@@ -123,8 +123,12 @@ if ($visiteur >= $nuked['level_analys'] && $nuked['level_analys']!= -1) {
 
                 echo '</table>'."\n";
                 if ($imembers >= 10) {
+                    // XSS FIX: Encode date parameters for JavaScript URL
+                    $oday_js = isset($_REQUEST['oday']) ? addslashes($_REQUEST['oday']) : '';
+                    $omonth_js = isset($_REQUEST['omonth']) ? addslashes($_REQUEST['omonth']) : '';
+                    $oyear_js = isset($_REQUEST['oyear']) ? addslashes($_REQUEST['oyear']) : '';
                     echo '<table style="margin: auto" width="80%" cellpadding="0" cellspacing="0"><tr>'."\n"
-                    . '<td align="right"><a href="#" onclick="javascript:window.open(\'index.php?file=Stats&amp;nuked_nude=visits&amp;op=view_all&amp;oday=' . $_REQUEST['oday'] . '&amp;omonth=' . $_REQUEST['omonth'] . '&amp;oyear=' . $_REQUEST['oyear'] . '\',\'visitors\',\'toolbar=no,location=no,directories=no,status=no,scrollbars=yes,resizable=yes,copyhistory=no,width=1000,height=700,top=30,left=0\')">' . _VIEWALL . '</a></td></tr></table>'."\n";
+                    . '<td align="right"><a href="#" onclick="javascript:window.open(\'index.php?file=Stats&amp;nuked_nude=visits&amp;op=view_all&amp;oday=' . $oday_js . '&amp;omonth=' . $omonth_js . '&amp;oyear=' . $oyear_js . '\',\'visitors\',\'toolbar=no,location=no,directories=no,status=no,scrollbars=yes,resizable=yes,copyhistory=no,width=1000,height=700,top=30,left=0\')">' . _VIEWALL . '</a></td></tr></table>'."\n";
                 }
             }
             // End last visitors
@@ -150,7 +154,7 @@ if ($visiteur >= $nuked['level_analys'] && $nuked['level_analys']!= -1) {
 
                 $and = empty($where) ? "WHERE browser = '" . $browser . "'" : $where . " AND browser = '" . $browser . "'";
 
-                $browsername = ($browser == 'Autres') ? _OTHERS : ($browser == 'Moteurs de recherche') ? _SEARCHENGINE : $browser;
+                $browsername = ($browser == 'Autres') ? _OTHERS : (($browser == 'Moteurs de recherche') ? _SEARCHENGINE : $browser);
 
                 $sql3 = mysql_query("SELECT id FROM " . STATS_VISITOR_TABLE . " " . $and);
                 $bcount = mysql_num_rows($sql3);
@@ -455,7 +459,7 @@ function view_all() {
         $hours = nk_strftime("%H:%M", $date);
 
         $osname = ($os == 'Autres') ? _OTHERS : $os;
-        $browsername = ($browser == 'Autres') ? _OTHERS : ($browser == 'Moteurs de recherche') ? _SEARCHENGINE : $browser;
+        $browsername = ($browser == 'Autres') ? _OTHERS : (($browser == 'Moteurs de recherche') ? _SEARCHENGINE : $browser);
 
         $referant = preg_replace("`http://`i", "", $referer);
         $referant = is_string($referant) ? $referant : (string)$referant;

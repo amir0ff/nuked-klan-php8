@@ -336,10 +336,14 @@ if ($visiteur == 9)
 
         if ($_REQUEST['niveau'] != "")
         {
-            if ($_REQUEST['b'] == 1) $_REQUEST['title'] = "<b>" . $_REQUEST['title'] . "</b>";
-            if ($_REQUEST['i'] == 1) $_REQUEST['title'] = "<i>" . $_REQUEST['title'] . "</i>";
-            if ($_REQUEST['u'] == 1) $_REQUEST['title'] = "<span style=\"text-decoration: underline;\">" . $_REQUEST['title'] . "</span>";
-            if ($_REQUEST['color'] != "") $_REQUEST['title'] = "<span style=\"color: #" . $_REQUEST['color']. ";\">" . $_REQUEST['title'] . "</span>";
+            // XSS FIX: Encode user input before applying formatting
+            $title_safe = isset($_REQUEST['title']) ? nkHtmlEntities($_REQUEST['title'], ENT_QUOTES) : '';
+            $color_safe = isset($_REQUEST['color']) ? nkHtmlEntities($_REQUEST['color'], ENT_QUOTES) : '';
+            if (isset($_REQUEST['b']) && $_REQUEST['b'] == 1) $title_safe = "<b>" . $title_safe . "</b>";
+            if (isset($_REQUEST['i']) && $_REQUEST['i'] == 1) $title_safe = "<i>" . $title_safe . "</i>";
+            if (isset($_REQUEST['u']) && $_REQUEST['u'] == 1) $title_safe = "<span style=\"text-decoration: underline;\">" . $title_safe . "</span>";
+            if ($color_safe != "") $title_safe = "<span style=\"color: #" . $color_safe . ";\">" . $title_safe . "</span>";
+            $_REQUEST['title'] = $title_safe;
 
             if ($_REQUEST['puce'] != "" && $puce != "none.gif") $_REQUEST['title'] = "<img src=\"images/puces/" . $_REQUEST['puce'] . "\" style=\"border: 0;\" alt=\"\" />" . $_REQUEST['title'];
 
@@ -811,12 +815,14 @@ if ($visiteur == 9)
         . "<td style=\"width: 15px;height:15px;background: #000000;\"><a href=\"javascript:setcolor('#000000')\"><img style=\"border: 0;\" src=\"images/pixel.gif\" alt=\"\" height=\"15\" width=\"15\" /></a></td>\n"
         . "</tr></table>\n"
         . "</td></tr></table>\n"
-        . "</td></tr></table>\n"
-        . "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n"
+        . "</td></tr></table>\n";
+        // XSS FIX: Encode color value in form fields
+        $color_encoded = isset($_REQUEST['color']) ? nkHtmlEntities($_REQUEST['color'], ENT_QUOTES) : '';
+        echo "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n"
         . "<tr><td style=\"width: 100%;\">&nbsp;</td></tr>\n"
         . "<tr><td style=\"width: 100%;\">\n"
-        . "<input id=\"hex\" name=\"hexvalue\" value=\"#" . $_REQUEST['color'] . "\" size=\"10\" class=\"hexfield\" onchange=\"shouldset(this.value)\" type=\"text\" />"
-        . "&nbsp;<input id=\"sel\" style=\"background-color: " . $_REQUEST['color'] . ";\" name=\"selcolor\" size=\"24\" type=\"text\" />"
+        . "<input id=\"hex\" name=\"hexvalue\" value=\"#" . $color_encoded . "\" size=\"10\" class=\"hexfield\" onchange=\"shouldset(this.value)\" type=\"text\" />"
+        . "&nbsp;<input id=\"sel\" style=\"background-color: " . $color_encoded . ";\" name=\"selcolor\" size=\"24\" type=\"text\" />"
         . "&nbsp;<input type=\"button\" value=\"" . _OK . "\" onclick=\"addcolor()\" /></td></tr></table>\n"
         . "<div style=\"text-align: center;\"><br /><br /><a href=\"#\" onclick=\"javascript:window.close()\"><b>" . _CLOSEWINDOW . "</b></a></div></body></html>";
 

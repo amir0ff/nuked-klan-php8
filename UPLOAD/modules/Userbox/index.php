@@ -48,7 +48,9 @@ function post_message(){
 	if (!empty($_REQUEST['message'])){
 		$_REQUEST['message'] = secu_html(nkHtmlEntityDecode($_REQUEST['message']));
 		$_REQUEST['message'] = stripslashes($_REQUEST['message']);
-		$reply = '<br /><table style="background:'.$bgcolor3.';" cellpadding="3" cellspacing="1" width="100%" border="0"><tr><td style="background: #FFF;color: #000"><b>'.$pseudo.' :</b><br />'.$_REQUEST['message'].'</td></tr></table><br />';
+		// XSS FIX: Encode user input before output
+		$message_encoded = isset($_REQUEST['message']) ? nkHtmlEntities($_REQUEST['message'], ENT_QUOTES) : '';
+		$reply = '<br /><table style="background:'.$bgcolor3.';" cellpadding="3" cellspacing="1" width="100%" border="0"><tr><td style="background: #FFF;color: #000"><b>'.$pseudo.' :</b><br />'.$message_encoded.'</td></tr></table><br />';
 	}
 	
 	echo '<br /><form method="post" action="index.php?file=Userbox&amp;op=send_message">
@@ -58,7 +60,9 @@ function post_message(){
             <tr><td><b>'._USERFOR.' :</b> ';
 	
 	if (!empty($_REQUEST['for']) && !empty($pseudo)){
-		echo '<i>'.$pseudo.'</i><input type="hidden" name="user_for" value="'.$_REQUEST['for'].'" />';
+		// XSS FIX: Encode user input in hidden field
+		$for_encoded = nkHtmlEntities($_REQUEST['for'], ENT_QUOTES);
+		echo '<i>'.$pseudo.'</i><input type="hidden" name="user_for" value="'.$for_encoded.'" />';
 	}else{
 		echo '<select name="user_for" >';
 		select_user();

@@ -180,8 +180,10 @@ function index()
             $name = printSecuTags($name);
             $code = printSecuTags($code);
 
-            echo " <tr><td align=\"center\"><a href=\"javascript:eff();PopupinsertAtCaret('" . $_REQUEST['textarea'] . "', ' " . $code . " ', '')\" title=\"" . $name . "\">" . $code . "</a></td>\n"
-            . "<td align=\"center\"><a href=\"javascript:eff();PopupinsertAtCaret('" . $_REQUEST['textarea'] . "', ' " . $code . " ')\"><img style=\"border: 0;\" src=\"images/icones/" . $url . "\" alt=\"\" title=\"" . $name . "\" /></a></td></tr>\n";
+            // XSS FIX: Escape JavaScript string for textarea parameter
+            $textarea_escaped = isset($_REQUEST['textarea']) ? addslashes($_REQUEST['textarea']) : '';
+            echo " <tr><td align=\"center\"><a href=\"javascript:eff();PopupinsertAtCaret('" . $textarea_escaped . "', ' " . $code . " ', '')\" title=\"" . $name . "\">" . $code . "</a></td>\n"
+            . "<td align=\"center\"><a href=\"javascript:eff();PopupinsertAtCaret('" . $textarea_escaped . "', ' " . $code . " ')\"><img style=\"border: 0;\" src=\"images/icones/" . $url . "\" alt=\"\" title=\"" . $name . "\" /></a></td></tr>\n";
         } 
 
         echo "</table><div style=\"text-align: center;\"><br /><a href=\"#\" onclick=\"javascript:window.close()\"><b>" . _CLOSEWINDOW . "</b></a></div></body></html>";
