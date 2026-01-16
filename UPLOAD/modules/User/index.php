@@ -920,6 +920,7 @@ function reg($pseudo, $mail, $email, $pass_reg, $pass_conf, $game, $country){
         exit();
     }
 
+    $pseudo = is_string($pseudo) ? $pseudo : (string)$pseudo;
     if (strlen($pseudo) > 30){
         echo "<br /><br /><div style=\"text-align: center;\">" . _NICKTOLONG . "</div><br /><br />";
         redirect("index.php?file=User&op=reg_screen", 2);
@@ -956,7 +957,8 @@ function reg($pseudo, $mail, $email, $pass_reg, $pass_conf, $game, $country){
         $lettres = "abCdefGhijklmNopqrstUvwXyz0123456789";
         srand(time());
         for ($i = 0;$i < 5;$i++){
-            $rand_pass .= substr($lettres, (rand() % (strlen($lettres))), 1);
+            $lettres_str = is_string($lettres) ? $lettres : (string)$lettres;
+            $rand_pass .= substr($lettres_str, (rand() % (strlen($lettres_str))), 1);
         }
         $pass_reg = $rand_pass;
         $pass_conf = $rand_pass;
@@ -1005,7 +1007,7 @@ function reg($pseudo, $mail, $email, $pass_reg, $pass_conf, $game, $country){
 
     if ($nbtopics > 0) {
         while (list($thread_id, $forum_id) = mysql_fetch_row($result)) {
-            $sql = mysql_query("INSERT INTO " . FORUM_READ_TABLE . " ( `id` , `user_id` , `thread_id` , `forum_id` ) VALUES ( '' , '" . $user_id . "' , '" . $thread_id . "' , '" . $forum_id . "' )");
+            $sql = mysql_query("INSERT INTO " . FORUM_READ_TABLE . " ( `user_id` , `thread_id` , `forum_id` ) VALUES ( '" . $user_id . "' , '" . $thread_id . "' , '" . $forum_id . "' )");
         }
     }
     // End
@@ -1263,6 +1265,7 @@ function update($nick, $pass, $mail, $email, $url, $pass_reg, $pass_conf, $pass_
             $sql2 = mysql_query("SELECT pseudo FROM " . USER_TABLE . " WHERE pseudo = '" . $nick . "' AND id != '" . $user[0] . "'");
             $reserved_name = mysql_num_rows($sql2);
 
+            $nick = is_string($nick) ? $nick : (string)$nick;
             if (!$nick || ($nick == "") || (preg_match("`[\$\^\(\)'\"?%#<>,;:]`", $nick))){
                 echo "<br /><br /><div style=\"text-align: center;\">" . _BADUSERNAME . "</div><br /><br />";
                 redirect("index.php?file=User&op=edit_account", 2);
@@ -1578,7 +1581,7 @@ function update_pref($prenom, $jour, $mois, $an, $sexe, $ville, $motherboard, $c
                 $upd2 = mysql_query("UPDATE " . GAMES_PREFS_TABLE . " SET pref_1 = '" . $pref1[0] . "', pref_2 = '" . $pref2[0] . "', pref_3 = '" . $pref3[0] . "', pref_4 = '" . $pref4[0] . "', pref_5 = '" . $pref5[0] . "' WHERE user_id = '" . $user[0] . "' AND game = '" . $game_id[0] . "'");
             }
             else{
-                $sql1 = mysql_query("INSERT INTO " . GAMES_PREFS_TABLE . " ( `id` , `game` , `user_id` , `pref_1` , `pref_2` , `pref_3` , `pref_4` , `pref_5` ) VALUES( '' , '" . $game_id[0] . "' , '" . $user[0] . "' , '" . $pref1[0] . "' , '" . $pref2[0] . "' , '" . $pref3[0] . "' , '" . $pref4[0] . "' , '" . $pref5[0] . "' )");
+                $sql1 = mysql_query("INSERT INTO " . GAMES_PREFS_TABLE . " ( `game` , `user_id` , `pref_1` , `pref_2` , `pref_3` , `pref_4` , `pref_5` ) VALUES( '" . $game_id[0] . "' , '" . $user[0] . "' , '" . $pref1[0] . "' , '" . $pref2[0] . "' , '" . $pref3[0] . "' , '" . $pref4[0] . "' , '" . $pref5[0] . "' )");
             }
 
             if ($game_id[0] == $game){
@@ -1606,7 +1609,7 @@ function update_pref($prenom, $jour, $mois, $an, $sexe, $ville, $motherboard, $c
                 $upd4 = mysql_query("UPDATE " . GAMES_PREFS_TABLE . " SET pref_1 = '" . $pref1[1] . "', pref_2 = '" . $pref2[1] . "', pref_3 = '" . $pref3[1] . "', pref_4 = '" . $pref4[1] . "', pref_5 = '" . $pref5[1] . "' WHERE user_id = '" . $user[0] . "' AND game='" . $game_id[1] . "'");
             }
             else{
-                $sql2 = mysql_query("INSERT INTO " . GAMES_PREFS_TABLE . " ( `id` , `game` , `user_id` , `pref_1` , `pref_2` , `pref_3` , `pref_4` , `pref_5` ) VALUES( '' , '" . $game_id[1] . "' , '" . $user[0] . "' , '" . $pref1[1] . "' , '" . $pref2[1] . "' , '" . $pref3[1] . "' , '" . $pref4[1] . "' , '" . $pref5[1] . "' )");
+                $sql2 = mysql_query("INSERT INTO " . GAMES_PREFS_TABLE . " ( `game` , `user_id` , `pref_1` , `pref_2` , `pref_3` , `pref_4` , `pref_5` ) VALUES( '" . $game_id[1] . "' , '" . $user[0] . "' , '" . $pref1[1] . "' , '" . $pref2[1] . "' , '" . $pref3[1] . "' , '" . $pref4[1] . "' , '" . $pref5[1] . "' )");
             }
 
             if ($game_id[1] == $game){
@@ -1634,7 +1637,7 @@ function update_pref($prenom, $jour, $mois, $an, $sexe, $ville, $motherboard, $c
                 $upd6 = mysql_query("UPDATE " . GAMES_PREFS_TABLE . " SET pref_1 = '" . $pref1[2] . "', pref_2 = '" . $pref2[2] . "', pref_3 = '" . $pref3[2] . "', pref_4 = '" . $pref4[2] . "', pref_5 = '" . $pref5[2] . "' WHERE user_id = '" . $user[0] . "' AND game = '" . $game_id[2] . "'");
             }
             else{
-                $sql3 = mysql_query("INSERT INTO " . GAMES_PREFS_TABLE . " ( `id` , `game` , `user_id` , `pref_1` , `pref_2` , `pref_3` , `pref_4` , `pref_5` ) VALUES( '' , '" . $game_id[2] . "' , '" . $user[0] . "' , '" . $pref1[2] . "' , '" . $pref2[2] . "' , '" . $pref3[2] . "' , '" . $pref4[2] . "' , '" . $pref5[2] . "' )");
+                $sql3 = mysql_query("INSERT INTO " . GAMES_PREFS_TABLE . " ( `game` , `user_id` , `pref_1` , `pref_2` , `pref_3` , `pref_4` , `pref_5` ) VALUES( '" . $game_id[2] . "' , '" . $user[0] . "' , '" . $pref1[2] . "' , '" . $pref2[2] . "' , '" . $pref3[2] . "' , '" . $pref4[2] . "' , '" . $pref5[2] . "' )");
             }
 
             if ($game_id[2] == $game){
@@ -1847,7 +1850,7 @@ function show_avatar(){
 function change_theme(){
     global $nuked, $cookie_theme;
 
-    $cookietheme = $_COOKIE[$cookie_theme];
+    $cookietheme = isset($cookie_theme) && isset($_COOKIE[$cookie_theme]) ? $_COOKIE[$cookie_theme] : '';
 
     echo "<br /><div style=\"text-align: center;\"><big><b>" . _YOURACCOUNT . "</b></big></div><br />\n"
             . "<div style=\"text-align: center;\"><b><a href=\"index.php?file=User\">" . _INFO . "</a> | "

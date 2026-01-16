@@ -31,9 +31,13 @@ function post_message(){
 	define('EDITOR_CHECK', 1);
 	
 	if (!empty($_REQUEST['for']) && preg_match("`^[a-zA-Z0-9]+$`", $_REQUEST['for'])){
-		$sql = mysql_query("SELECT pseudo FROM ".USER_TABLE." WHERE id = '{$_REQUEST['for']}'");
+		$user_id = isset($_REQUEST['for']) ? intval($_REQUEST['for']) : 0;
+		$sql = mysql_query("SELECT pseudo FROM ".USER_TABLE." WHERE id = '" . mysql_real_escape_string($user_id) . "'");
 		list($pseudo) = mysql_fetch_array($sql);
 	}
+	
+	$title = ''; // Initialize title variable
+	$reply = ''; // Initialize reply variable
 	
 	if (!empty($_REQUEST['titre'])){
 		$_REQUEST['titre'] = stripslashes($_REQUEST['titre']);
@@ -124,7 +128,8 @@ function show_message($mid){
         
         $row['date'] = nkDate($row['date']);
         
-        if(strlen($row['titre']) >= 50) $row['titre'] = substr($row['titre'], 0, 47)."...";
+        $row_titre = is_string($row['titre']) ? $row['titre'] : (string)$row['titre'];
+        if(strlen($row_titre) >= 50) $row['titre'] = substr($row_titre, 0, 47)."...";
         
         $sql_member = mysql_query("SELECT pseudo FROM " . USER_TABLE . " WHERE id = '{$row['user_from']}'");
         list($pseudo) = mysql_fetch_array($sql_member);
@@ -211,7 +216,7 @@ function del_message_form($mid, $del_oui){
 				$sql_member = mysql_query("SELECT pseudo FROM " . USER_TABLE . " WHERE id = '{$row['user_from']}'");
                 list($pseudo) = mysql_fetch_array($sql_member);
 				
-				echo '<b><big>·</big></b>&nbsp;'._OF.'&nbsp;'.$pseudo.' ( '.$row['date'].' )<br />
+				echo '<b><big>ï¿½</big></b>&nbsp;'._OF.'&nbsp;'.$pseudo.' ( '.$row['date'].' )<br />
 				<input type="hidden" name="mid[]" value="'.$titi.'" />';
 			}
 		}
@@ -257,7 +262,8 @@ function index(){
 				$j = 0;
 			}
 			
-			if(strlen($row['titre']) >= 50) $row['titre'] = substr($row['titre'], 0, 47)."...";
+			$row_titre = is_string($row['titre']) ? $row['titre'] : (string)$row['titre'];
+			if(strlen($row_titre) >= 50) $row['titre'] = substr($row_titre, 0, 47)."...";
 			
 			echo '<tr style="background:'.$bg.';">
                     <td><input id="box'.$i.'" type="checkbox" class="checkbox" name="mid[]" value="'.$row['mid'].'" /></td>

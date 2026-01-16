@@ -190,7 +190,7 @@ if ($visiteur == 9)
             $filename = $url;
         }
 
-        $sql = mysql_query("INSERT INTO " . SMILIES_TABLE . " ( `id` , `code` , `url` , `name` ) VALUES ( '' , '" . $code . "' , '" . $filename . "' , '" . $nom . "')");
+        $sql = mysql_query("INSERT INTO " . SMILIES_TABLE . " ( `code` , `url` , `name` ) VALUES ( '" . $code . "' , '" . $filename . "' , '" . $nom . "')");
         // Action
         $texteaction = "". _ACTIONADDSMILEY .": ".$nom."";
         $acdate = time();

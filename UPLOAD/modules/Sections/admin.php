@@ -149,6 +149,7 @@ if ($visiteur >= $level_admin && $level_admin > -1){
                 $categorie = printSecuTags($categorie);
             } 
 
+            $titre = is_string($titre) ? $titre : (string)$titre;
             if (strlen($titre) > 25){
                 $title = "<span style=\"cursor: hand\" title=\"" . printSecuTags($titre) . "\">" . printSecuTags(substr($titre, 0, 25)) . "...</span>";
             } 
@@ -230,7 +231,7 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             $auteur = $user[2];
             $auteur_id = $user[0];
         
-            $sql = mysql_query("INSERT INTO " . SECTIONS_TABLE . " ( `artid` , `secid` , `title` , `content` , `autor` , `autor_id`, `counter` , `date`) VALUES ( '' , '" . $cat . "' , '" . $titre . "' , '" . $texte . "' , '" . $auteur . "' , '" . $auteur_id . "' , '' , '" . $date . "' )");
+            $sql = mysql_query("INSERT INTO " . SECTIONS_TABLE . " ( `secid` , `title` , `content` , `autor` , `autor_id`, `counter` , `date`) VALUES ( '" . $cat . "' , '" . $titre . "' , '" . $texte . "' , '" . $auteur . "' , '" . $auteur_id . "' , '' , '" . $date . "' )");
             // Action
             $texteaction = "". _ACTIONADDSEC .": ". $titre .".";
             $acdate = time();

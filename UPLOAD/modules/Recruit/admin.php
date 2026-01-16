@@ -52,7 +52,7 @@ if ($visiteur >= $level_admin && $level_admin > -1)
         $count = mysql_num_rows($sql);
         while (list($rid, $pseudo, $prenom, $mail, $game, $date) = mysql_fetch_array($sql))
         {
-            $date = strftime("%x", $date);
+            $date = nk_strftime("%x", $date);
 
             $sql2 = mysql_query("SELECT name FROM " . GAMES_TABLE . " WHERE id='$game'");
             list($game_name) = mysql_fetch_array($sql2);

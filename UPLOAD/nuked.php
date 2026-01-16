@@ -716,7 +716,7 @@ function secu_args($matches){
         foreach ($args[1] as $id=>$attribute){
             $RetStr .= ' ' . $attribute . '="' . $args[2][$id] . '"';
         }
-        if ($matches[3] == '/'){
+        if (isset($matches[3]) && $matches[3] == '/'){
             $RetStr .= ' />';
         }
         else{
@@ -754,8 +754,10 @@ function secu_html($texte){
     $bad = false;
     $size = count($Tags);
     for($i=0; $i<$size; $i++){
-        $TagName = $Tags[$i][3] == ''?$Tags[$i][2].$Tags[$i][4]:$Tags[$i][2];
-        if ($Tags[$i][1] == '/'){
+        $tag3 = isset($Tags[$i][3]) ? $Tags[$i][3] : '';
+        $tag4 = isset($Tags[$i][4]) ? $Tags[$i][4] : '';
+        $TagName = $tag3 == '' ? (isset($Tags[$i][2]) ? $Tags[$i][2] : '') . $tag4 : (isset($Tags[$i][2]) ? $Tags[$i][2] : '');
+        if (isset($Tags[$i][1]) && $Tags[$i][1] == '/'){
             $bad = $bad | array_pop($TagList) != $TagName;
         }
         else{
@@ -997,7 +999,7 @@ function visits(){
 
         $browser = getBrowser();
         $os = getOS();
-        $sql2 = mysql_query("INSERT INTO " . STATS_VISITOR_TABLE . " ( `id` , `user_id` , `ip` , `host` , `browser` , `os` , `referer` , `day` , `month` , `year` , `hour` , `date` ) VALUES ( '' , '" . $user[0] . "' , '" . $user_ip . "' , '" . $host . "' , '" . $browser . "' , '" . $os . "' , '" . $user_referer . "' , '" . $day . "' , '" . $month . "' , '" . $year . "' , '" . $hour . "' , '" . $limite . "' )");
+        $sql2 = mysql_query("INSERT INTO " . STATS_VISITOR_TABLE . " ( `user_id` , `ip` , `host` , `browser` , `os` , `referer` , `day` , `month` , `year` , `hour` , `date` ) VALUES ( '" . $user[0] . "' , '" . $user_ip . "' , '" . $host . "' , '" . $browser . "' , '" . $os . "' , '" . $user_referer . "' , '" . $day . "' , '" . $month . "' , '" . $year . "' , '" . $hour . "' , '" . $limite . "' )");
     }
 }
 

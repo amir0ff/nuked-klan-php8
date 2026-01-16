@@ -185,7 +185,7 @@ function do_vote($vid, $module, $vote) {
                . "<div style=\"text-align: center;\"><br /><br /><br />"  . _ALREADYVOTE .  "<br /><br /><br />\n"
                . "<a href=\"#\" onclick=\"javascript:window.close();\"><b>" . _CLOSEWINDOWS . "</b></a></b></div></body></html>";
         } else {
-            $sql = mysql_query("INSERT INTO " . VOTE_TABLE . " ( `id` , `module` , `vid` , `ip` , `vote` ) VALUES ( '' , '" . $module . "' , '" . $vid . "' , '" . $user_ip . "' , '" . $vote . "' )");
+            $sql = mysql_query("INSERT INTO " . VOTE_TABLE . " ( `module` , `vid` , `ip` , `vote` ) VALUES ( '" . $module . "' , '" . $vid . "' , '" . $user_ip . "' , '" . $vote . "' )");
 
             echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
                . "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\">\n"

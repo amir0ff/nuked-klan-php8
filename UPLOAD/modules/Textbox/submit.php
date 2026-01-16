@@ -92,7 +92,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
     else if ($_REQUEST['texte'] != "")
     {
-        $sql = mysql_query("INSERT INTO " . TEXTBOX_TABLE . " ( `id` , `auteur` , `ip` , `texte` , `date` ) VALUES ( '' , '" . $pseudo . "' ,'" . $user_ip . "' , '" . $_REQUEST['texte'] . "' , '" . $date . "' )");
+        $sql = mysql_query("INSERT INTO " . TEXTBOX_TABLE . " ( `auteur` , `ip` , `texte` , `date` ) VALUES ( '" . $pseudo . "' ,'" . $user_ip . "' , '" . $_REQUEST['texte'] . "' , '" . $date . "' )");
         echo "<br /><br /><div id=\"ajax_message\" style=\"text-align: center;\">" . nkHtmlEntities(_SHOUTSUCCES) . "</div><br /><br />";
         redirect($redirection, 2);
     }

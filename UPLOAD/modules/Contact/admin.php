@@ -58,6 +58,7 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             $day = nkDate($date);
             $l++;
 
+            $titre = is_string($titre) ? $titre : (string)$titre;
             if (strlen($titre) > 45) $title = substr($titre, 0, 45) . '...';
             else $title = $titre;
 
@@ -117,6 +118,20 @@ if ($visiteur >= $level_admin && $level_admin > -1){
         global $nuked, $user;
 
         $sql = mysql_query('DELETE FROM ' . CONTACT_TABLE . ' WHERE id = ' . $mid);
+
+        // Check if there are any contact messages left
+        $sql_check = mysql_query('SELECT COUNT(*) FROM ' . CONTACT_TABLE);
+        $count = mysql_result($sql_check, 0);
+        
+        // Delete all contact notifications (type 1) - they will be recreated if messages exist
+        // This ensures notifications are always in sync with actual messages
+        mysql_query('DELETE FROM ' . $nuked['prefix'] . '_notification WHERE type = \'1\'');
+        
+        // If messages still exist, recreate the notification
+        if ($count > 0) {
+            $time = time();
+            mysql_query("INSERT INTO ". $nuked['prefix'] ."_notification  (`date` , `type` , `texte`)  VALUES ('".$time."', '1', '"._NOTCON.": [<a href=\"index.php?file=Contact&page=admin\">lien</a>].')");
+        }
 
         // Action
         $texteaction = _ACTIONDELCONTACT;

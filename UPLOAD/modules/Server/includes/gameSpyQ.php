@@ -70,7 +70,7 @@ class gameSpyQ extends gsQuery
       $keys = explode("\x00", $playerData[0]);
 
       // manual currying
-      $removeLastChar = create_function('$x', 'return substr($x, 0, -1);');
+      $removeLastChar = function($x) { return substr($x, 0, -1); };
 
       // removing last char from all keys (last char is an underscore)
       $keys = array_map($removeLastChar, $keys);

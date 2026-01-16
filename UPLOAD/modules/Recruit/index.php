@@ -218,7 +218,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             $exp = nkHtmlEntities($exp);
             $dispo = nkHtmlEntities($dispo);
 
-            $sql = mysql_query("INSERT INTO " . RECRUIT_TABLE . " ( `id` , `date` , `pseudo` , `prenom` , `age` , `mail` , `icq` , `country` , `game` , `connection` , `experience` , `dispo` , `comment` ) VALUES ( '' , '" . $date . "' , '" . $pseudo . "' , '" . $prenom . "' , '" . $age . "' , '" . $mail . "' , '" . $icq . "' , '" . $country . "' , '" . $game . "' , '" . $connex . "' , '" . $exp . "' , '" . $dispo . "' , '" . $comment. "' )");
+            $sql = mysql_query("INSERT INTO " . RECRUIT_TABLE . " ( `date` , `pseudo` , `prenom` , `age` , `mail` , `icq` , `country` , `game` , `connection` , `experience` , `dispo` , `comment` ) VALUES ( '" . $date . "' , '" . $pseudo . "' , '" . $prenom . "' , '" . $age . "' , '" . $mail . "' , '" . $icq . "' , '" . $country . "' , '" . $game . "' , '" . $connex . "' , '" . $exp . "' , '" . $dispo . "' , '" . $comment. "' )");
 			$upd2 = mysql_query("INSERT INTO ". $nuked['prefix'] ."_notification  (`date` , `type` , `texte`)  VALUES ('".$date."', '1', '"._NOTDEM.": [<a href=\"index.php?file=Recruit&page=admin\">lien</a>].')");
 
             $subject = _RECRUIT . ", " . $date2;

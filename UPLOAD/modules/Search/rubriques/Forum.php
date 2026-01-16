@@ -55,13 +55,14 @@ if ($nb_mess > 0){
 
         $sql_page = mysql_query("SELECT id FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $tid . "'");
         $nb_rep = mysql_num_rows($sql_page);
+        $search_string = isset($main) ? $main : '';
         if ($nb_rep > $nuked['mess_forum_page']){
             $topicpages = $nb_rep / $nuked['mess_forum_page'];
             $topicpages = ceil($topicpages);
-            $link_post = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $fid . "&amp;thread_id=" . $tid . "&amp;p=" . $topicpages . "&amp;highlight=" . urlencode($string). "#" . $mid;
+            $link_post = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $fid . "&amp;thread_id=" . $tid . "&amp;p=" . $topicpages . "&amp;highlight=" . urlencode($search_string). "#" . $mid;
         }
         else{
-            $link_post = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $fid . "&amp;thread_id=" . $tid . "&amp;highlight=" . urlencode($string). "#" . $mid;
+            $link_post = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $fid . "&amp;thread_id=" . $tid . "&amp;highlight=" . urlencode($search_string). "#" . $mid;
         }
 
         $tab['module'][] = $modname;

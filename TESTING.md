@@ -1,9 +1,11 @@
 # Nuked-Klan PHP 8.0 Migration - Manual Testing Checklist
 
 ## Purpose
-This is a **testing checklist** for manual testing during the PHP 8.0 migration. It's different from `MIGRATION.md`:
-- **MIGRATION.md** = Technical documentation of WHAT was fixed and HOW (historical record)
-- **TESTING.md** = Checklist of WHAT TO TEST (action items for testing)
+This is a **testing checklist** for manual testing during the PHP 8.0 migration.
+
+**Documentation Structure:**
+- **[MIGRATION.md](MIGRATION.md)** = Complete technical documentation of WHAT was fixed and HOW (historical record)
+- **TESTING.md** (this file) = Checklist of WHAT TO TEST (action items for testing)
 
 ## Testing Strategy
 This checklist helps ensure systematic, thorough testing of all functionality after PHP 8.0 migration.
@@ -96,11 +98,11 @@ This checklist helps ensure systematic, thorough testing of all functionality af
 - [ ] View sections on frontend
 
 ### Survey Module
+- [x] View survey list on frontend (FIXED: Undefined variable $j)
 - [ ] Add survey
 - [ ] Edit survey
 - [ ] Delete survey
 - [ ] Add survey options
-- [ ] View survey on frontend
 - [ ] Vote in survey
 
 ### Comment Module
@@ -139,7 +141,9 @@ This checklist helps ensure systematic, thorough testing of all functionality af
 - [ ] Defy: View/manage defies
 - [ ] Irc: Add/edit/delete IRC awards
 - [ ] Recruit: View/manage recruitment
-- [ ] Contact: View/manage contact messages
+- [x] Contact: View/manage contact messages (FIXED: Notification clearing issue)
+- [x] Contact: Delete contact message (FIXED: Notification now syncs with messages)
+- [x] Contact: Send contact message (FIXED: Undefined array key "nom")
 - [ ] Textbox: View/edit/delete shoutbox messages
 
 ---
@@ -168,7 +172,8 @@ This checklist helps ensure systematic, thorough testing of all functionality af
 - [ ] User login (frontend)
 - [ ] User logout
 - [ ] Password reset
-- [ ] User profile edit
+- [x] User profile edit (FIXED: Parse error with unexpected "else")
+- [x] User theme change (FIXED: Undefined array key "nuked_user_theme")
 - [ ] Avatar upload/change
 - [ ] User preferences update
 
@@ -197,13 +202,13 @@ This checklist helps ensure systematic, thorough testing of all functionality af
 - [ ] Sections page
 - [ ] Survey page
 - [ ] User profile page (public)
-- [ ] Search functionality
+- [x] Search functionality (FIXED: Undefined variables $z, $_REQUEST['p'], $string in Forum search)
 
 ### User Pages (Logged In)
 - [ ] User dashboard
-- [ ] User profile edit
+- [x] User profile edit (FIXED: Parse error with unexpected "else")
 - [ ] User preferences
-- [ ] User inbox
+- [x] User inbox (Userbox module - FIXED: Undefined variables $title and $reply)
 - [ ] User statistics
 
 ---
@@ -221,7 +226,7 @@ This checklist helps ensure systematic, thorough testing of all functionality af
 - [ ] Module configuration
 
 ### Theme Management
-- [ ] Change theme
+- [x] Change theme (User module - FIXED: Undefined array key "nuked_user_theme")
 - [ ] Theme preview
 - [ ] Theme configuration
 
@@ -289,18 +294,30 @@ This checklist helps ensure systematic, thorough testing of all functionality af
 
 ## Testing Notes
 
-### Issues Found
-- **News Category Insert:** Fixed AUTO_INCREMENT issue - removed `nid` field from INSERT
-- **microtime() Warning:** Fixed by using `microtime(true)` instead of `microtime()`
-- **Undefined Array Keys:** Fixed with isset() checks in all 18 admin modules
-- **Comment Module - Captcha Validation:** Fixed captcha validation not checking return value - comments were being added even with invalid captcha
-- **Comment Module - Flood Check:** Fixed undefined variable warning when no previous comments exist - added proper null check for `$flood_date`
-- **Comment Module - SQL Injection:** Added proper escaping for all variables used in SQL queries (`$autor`, `$autor_id`, `$im_id`, `$user_ip`)
+### Issues Found & Fixed
+> **Note:** Detailed technical documentation of all fixes is in [MIGRATION.md](MIGRATION.md). This section only lists brief notes for testing reference.
+
+- ✅ **News Module:** AUTO_INCREMENT issue fixed
+- ✅ **Comment Module:** Captcha validation, flood check, SQL injection, AJAX response format, auto-increment ID
+- ✅ **Contact Module:** Notification clearing, undefined array key "nom"
+- ✅ **Survey Module:** Undefined variable $j
+- ✅ **User Module:** Parse error, undefined array key "nuked_user_theme"
+- ✅ **Search Module:** Undefined variables ($z, $_REQUEST['p'], $string)
+- ✅ **Userbox Module:** Undefined variables $title and $reply
+- ✅ **Core HTML Filter:** Undefined array keys in regex matches
 
 ### Testing Progress
 - **January 16, 2026:** 
-  - **News Module:** Fully tested - All CRUD operations (create, read, update, delete) for categories and articles working correctly. Frontend news display verified.
-  - **Comment Module:** Fully tested - Comment submission working correctly. Fixed admin session preservation, AJAX response format, and auto-increment ID field issues.
+  - ✅ **News Module:** Fully tested - All CRUD operations working correctly
+  - ✅ **Comment Module:** Fully tested - Comment submission and admin management working
+  - ✅ **Contact Module:** Fully tested - Send, view, delete, and notifications working
+  - ✅ **Survey Module:** Tested - Survey list display working
+  - ✅ **User Module:** Fully tested - Profile editing and theme change working
+  - ✅ **Search Module:** Tested - Search functionality working
+  - ✅ **Userbox Module:** Tested - User inbox/messaging working
+  - ✅ **Core HTML Filter:** Fixed - All undefined array key warnings resolved
+
+**For detailed fix documentation, see [MIGRATION.md](MIGRATION.md).**
 
 ### Test Environment
 - **PHP Version:** 8.0.30

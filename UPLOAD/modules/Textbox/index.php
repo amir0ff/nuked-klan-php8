@@ -226,6 +226,7 @@ function index()
         $sql = mysql_query("SELECT id, auteur, ip, texte, date FROM " . TEXTBOX_TABLE . " ORDER BY id DESC LIMIT 0, 20");
         while (list($id, $auteur, $ip, $texte, $date) = mysql_fetch_array($sql)) {
             // On coupe le texte si trop long
+            $texte = is_string($texte) ? $texte : (string)$texte;
             if (strlen($texte) > $mess_max) $texte = substr($texte, 0, $mess_max) . '...';
 
             $date = nkDate($date);
@@ -237,7 +238,8 @@ function index()
             for($i = 0;$i < count($text);$i++) {
                 $text[$i] = " " . $text[$i];
 
-                if (strlen($text[$i]) > $max_chars && !preg_match("`http:`i", $text[$i]) && !preg_match("`www\.`i", $text[$i]) && !preg_match("`@`i", $text[$i]) && !preg_match("`ftp\.`i", $text[$i]))
+                $text_item = is_string($text[$i]) ? $text[$i] : (string)$text[$i];
+                if (strlen($text_item) > $max_chars && !preg_match("`http:`i", $text_item) && !preg_match("`www\.`i", $text_item) && !preg_match("`@`i", $text_item) && !preg_match("`ftp\.`i", $text_item))
                 $text[$i] = '<span title="' . $text[$i] . '">' . substr($text[$i], 0, $max_chars) . '...</span>';
 
                 $text[$i] = preg_replace_callback('`((https?|ftp)://\S+)`', cesure_href,$text[$i]); 
@@ -247,6 +249,7 @@ function index()
             $texte = nkHtmlEntities($texte, ENT_NOQUOTES);
             $texte = nk_CSS($texte);
 
+            $auteur = is_string($auteur) ? $auteur : (string)$auteur;
             if (strlen($auteur) > $pseudo_max)
             {
                 $auteurDisplay = '<span title="' . nk_CSS($auteur) . '">' . nk_CSS(substr($auteur, 0, $pseudo_max)) . '...</span>';

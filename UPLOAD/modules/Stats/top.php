@@ -47,6 +47,7 @@ if ($visiteur >= $level_access && $level_access > -1) {
                 }
 
                 $dl_titre = str_replace(array('&lt;','&gt;','&amp;'), array('<','>','&'), $dl_titre);
+                $dl_titre = is_string($dl_titre) ? $dl_titre : (string)$dl_titre;
                 $dl_titre = (strlen($dl_titre) > 40) ? substr($dl_titre, 0, 40) . '...' : $dl_titre;
 
                 echo '<tr style="background: ' . $bg . '">'."\n"
@@ -89,6 +90,7 @@ if ($visiteur >= $level_access && $level_access > -1) {
                 }
 
                 $link_titre = str_replace(array('&lt;','&gt;','&amp;'), array('<','>','&'), $link_titre);
+                $link_titre = is_string($link_titre) ? $link_titre : (string)$link_titre;
                 $link_titre = (strlen($link_titre) > 40) ? substr($link_titre, 0, 40) . '...' : $link_titre;
 
                 echo '<tr style="background: ' . $bg1 . '">'."\n"
@@ -131,6 +133,7 @@ if ($visiteur >= $level_access && $level_access > -1) {
                 }
 
                 $art_titre = str_replace(array('&lt;','&gt;','&amp;'), array('<','>','&'), $art_titre);
+                $art_titre = is_string($art_titre) ? $art_titre : (string)$art_titre;
                 $art_titre = (strlen($art_titre) > 40) ? substr($art_titre, 0, 40) . '...' : $art_titre;
 
                 echo '<tr style="background: ' . $bg2 . '">'."\n"
@@ -173,6 +176,7 @@ if ($visiteur >= $level_access && $level_access > -1) {
                 }
 
                 $topic_titre = str_replace(array('&lt;','&gt;','&amp;'), array('<','>','&'), $topic_titre);
+                $topic_titre = is_string($topic_titre) ? $topic_titre : (string)$topic_titre;
                 $topic_titre = (strlen($topic_titre) > 40) ? substr($topic_titre, 0, 40) . '...' : $topic_titre;
 
                 echo '<tr style="background: ' . $bg3 . '">'."\n"

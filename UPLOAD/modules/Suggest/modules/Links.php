@@ -148,7 +148,7 @@ function send($data){
     $data['description'] = mysql_real_escape_string(stripslashes($data['description']));
     $data['webmaster'] = mysql_real_escape_string(stripslashes($data['webmaster']));
 
-    $upd = mysql_query("INSERT INTO " . LINKS_TABLE . " ( `id` , `date` , `titre` , `description` , `url` , `cat` , `webmaster`, `country`, `count` ) VALUES ( '' , '" . $date . "' , '" . $data['titre'] . "' , '" . $data['description'] . "' , '" . $data['url'] . "' , '" . $data['cat'] . "' , '" . $data['webmaster'] . "' , ' " . $data['country'] . "' , '' )");
+    $upd = mysql_query("INSERT INTO " . LINKS_TABLE . " ( `date` , `titre` , `description` , `url` , `cat` , `webmaster`, `country`, `count` ) VALUES ( '" . $date . "' , '" . $data['titre'] . "' , '" . $data['description'] . "' , '" . $data['url'] . "' , '" . $data['cat'] . "' , '" . $data['webmaster'] . "' , ' " . $data['country'] . "' , '' )");
     $sql = mysql_query("SELECT id FROM " . LINKS_TABLE . " WHERE titre = '" . $data['titre'] . "' AND date='".$date."'");
     list($link_id) = mysql_fetch_array($sql);
     echo "<script>\n"

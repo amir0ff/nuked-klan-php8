@@ -236,7 +236,7 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
     function send_serveur($ip_serv, $port, $game, $pass, $cat) {
         global $nuked, $user;
 
-        $sql = mysql_query("INSERT INTO " . SERVER_TABLE . " ( `sid` , `game` , `ip` , `port` , `pass` , `cat` ) VALUES ( '' , '" . $game . "' , '" . $ip_serv . "' , '" . $port . "' , '" . $pass . "' , '" . $cat . "' )");
+        $sql = mysql_query("INSERT INTO " . SERVER_TABLE . " ( `game` , `ip` , `port` , `pass` , `cat` ) VALUES ( '" . $game . "' , '" . $ip_serv . "' , '" . $port . "' , '" . $pass . "' , '" . $cat . "' )");
         // Action
         $texteaction = _ACTIONADDSER . '.';
         $acdate = time();

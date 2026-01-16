@@ -88,10 +88,10 @@ if ($visiteur >= $level_admin && $level_admin > -1)
     {
         global $language;
 
-        $jour = strftime("%d", time());
-        $mois = strftime("%m", time());
-        $an = strftime("%Y", time());
-        $heure = strftime("%H:%M", time());
+        $jour = nk_strftime("%d", time());
+        $mois = nk_strftime("%m", time());
+        $an = nk_strftime("%Y", time());
+        $heure = nk_strftime("%H:%M", time());
 
         echo "<div class=\"content-box\">\n" //<!-- Start Content Box -->
         . "<div class=\"content-box-header\"><h3>" . _ADMINCAL . "</h3>\n"
@@ -122,7 +122,7 @@ if ($visiteur >= $level_admin && $level_admin > -1)
         $description = mysql_real_escape_string(stripslashes($description));
         $titre = mysql_real_escape_string(stripslashes($titre));
         
-        $sql = mysql_query("INSERT INTO " . CALENDAR_TABLE . " ( `id` , `titre` , `description` , `date_jour` , `date_mois` , `date_an` , `heure` , `auteur` ) VALUES ( '' , '" . $titre . "' , '" . $description . "' , '" . $date_jour . "' , '" . $date_mois . "' , '" . $date_an . "' , '" . $heure . "' , '" . $user[2] . "' )");
+        $sql = mysql_query("INSERT INTO " . CALENDAR_TABLE . " ( `titre` , `description` , `date_jour` , `date_mois` , `date_an` , `heure` , `auteur` ) VALUES ( '" . $titre . "' , '" . $description . "' , '" . $date_jour . "' , '" . $date_mois . "' , '" . $date_an . "' , '" . $heure . "' , '" . $user[2] . "' )");
        // Action
         $texteaction = "". _ACTIONADDCAL .": ".$titre."";
         $acdate = time();

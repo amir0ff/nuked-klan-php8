@@ -90,11 +90,11 @@ if ($visiteur >= $level_access && $level_access > -1){
             redirect("index.php", 3);
         }
         else{
-            $nom = trim($_REQUEST['nom']);
+            $nom = isset($_REQUEST['nom']) ? trim($_REQUEST['nom']) : '';
             $mail = trim($_REQUEST['mail']);
             $sujet = trim($_REQUEST['sujet']);
             $corps = $_REQUEST['corps'];
-            if($user) $nom = $user[2];
+            if($user && isset($user[2])) $nom = $user[2];
             
             $subjet = stripslashes($sujet) . ", " . $date;
             $corp = $corps . "<p><em>IP : " . $user_ip . "</em><br />" . $nuked['name'] . " - " . $nuked['slogan'] . "</p>";
@@ -113,7 +113,7 @@ if ($visiteur >= $level_access && $level_access > -1){
             $text = secu_html(nkHtmlEntityDecode($corps, ENT_QUOTES));
             if($user) $name = $user[2];
             
-            $add = mysql_query("INSERT INTO " . CONTACT_TABLE . " ( `id` , `titre` , `message` , `email` , `nom` , `ip` , `date` ) VALUES ( '' , '" . $subject . "' , '" . $text . "' , '" . $email . "' , '" . $name . "' , '" . $user_ip . "' , '" . $time . "' )");
+            $add = mysql_query("INSERT INTO " . CONTACT_TABLE . " ( `titre` , `message` , `email` , `nom` , `ip` , `date` ) VALUES ( '" . $subject . "' , '" . $text . "' , '" . $email . "' , '" . $name . "' , '" . $user_ip . "' , '" . $time . "' )");
             $upd = mysql_query("INSERT INTO ". $nuked['prefix'] ."_notification  (`date` , `type` , `texte`)  VALUES ('".$time."', '1', '"._NOTCON.": [<a href=\"index.php?file=Contact&page=admin\">lien</a>].')");
 
             echo '<div style="text-align: center; padding: 20px 0">' . _SENDCMAIL . '</div>';

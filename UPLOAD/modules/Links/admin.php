@@ -87,7 +87,7 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             $url = "http://" . $url;
         } 
 
-        $sql = mysql_query("INSERT INTO " . LINKS_TABLE . " ( `id` , `date` , `titre` , `description` , `url` , `cat` , `webmaster`, `country`, `count` , `broke` ) VALUES ( '' , '" . $date . "' , '" . $titre . "' , '" . $description . "' , '" . $url . "' , '" . $cat . "' , '" . $webmaster ."' , '" . $country . "' , '' , '' )");
+        $sql = mysql_query("INSERT INTO " . LINKS_TABLE . " ( `date` , `titre` , `description` , `url` , `cat` , `webmaster`, `country`, `count` , `broke` ) VALUES ( '" . $date . "' , '" . $titre . "' , '" . $description . "' , '" . $url . "' , '" . $cat . "' , '" . $webmaster ."' , '" . $country . "' , '' , '' )");
         // Action
         $texteaction = _ACTIONADDLINK . ': ' . $titre;
         $acdate = time();
@@ -318,6 +318,7 @@ if ($visiteur >= $level_admin && $level_admin > -1){
                 $categorie = printSecuTags($categorie);
             } 
 
+            $titre = is_string($titre) ? $titre : (string)$titre;
             if (strlen($titre) > 25)
                 $title = "<a href=\"" . $url . "\" title=\"" . $url . "\" onclick=\"window.open(this.href); return false;\">" . printSecuTags(substr($titre, 0, 25)) . "</a>...";
             else

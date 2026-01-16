@@ -129,7 +129,7 @@ if ($visiteur == 9)
         $nivo = mysql_real_escape_string(stripslashes($nivo));
         $pages = mysql_real_escape_string(stripslashes($pages));
 
-        $sql = mysql_query("INSERT INTO " . BLOCK_TABLE . " ( `bid` , `active` , `position` , `module` , `titre` , `content` , `type` , `nivo` , `page` ) VALUES ( '' , '0' , '' , '" . $module . "' , '" . $titre . "' , '' , '" . $type . "' , '" . $nivo . "' , '" . $pages . "' )");
+        $sql = mysql_query("INSERT INTO " . BLOCK_TABLE . " ( `active` , `position` , `module` , `titre` , `content` , `type` , `nivo` , `page` ) VALUES ( '0' , '' , '" . $module . "' , '" . $titre . "' , '' , '" . $type . "' , '" . $nivo . "' , '" . $pages . "' )");
 
         $sql2 = mysql_query("SELECT bid FROM " . BLOCK_TABLE . " WHERE titre = '" . $titre . "' AND type = '" . $type . "'");
         list($bid) = mysql_fetch_array($sql2);

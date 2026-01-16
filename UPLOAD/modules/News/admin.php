@@ -141,6 +141,7 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
 				$auteur_display = $autor;
 			}
 
+			$titre = is_string($titre) ? $titre : (string)$titre;
 			if (strlen($titre) > 25) {
 				$title = "<span style=\"cursor: hand\" title=\"" . printSecuTags($titre) . "\">" . printSecuTags(substr($titre, 0, 25)) . "...</span>";
 			} else {

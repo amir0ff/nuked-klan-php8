@@ -129,7 +129,7 @@ if ($visiteur >= $level_access && $level_access > -1){
             $author = $user_ip;
         }
 
-        $sql = mysql_query("INSERT INTO " . SUGGEST_TABLE . " ( `id` , `module` , `user_id` , `proposition` , `date` ) VALUES ( '' , '" . $_REQUEST['module'] . "' , '" . $author . "' , '" . $content . "' , '" . $date . "' )");
+        $sql = mysql_query("INSERT INTO " . SUGGEST_TABLE . " ( `module` , `user_id` , `proposition` , `date` ) VALUES ( '" . $_REQUEST['module'] . "' , '" . $author . "' , '" . $content . "' , '" . $date . "' )");
         $upd2 = mysql_query("INSERT INTO ". $nuked['prefix'] ."_notification  (`date` , `type` , `texte`)  VALUES ('" . $date . "', '1', '" . _NOTSUG . " : [<a href=\"index.php?file=Suggest&page=admin\">lien</a>].')");
         echo '<br /><br /><div style="text-align: center">' . _YOURSUGGEST . '<br />' . _THXPART . '</div><br /><br />';
 

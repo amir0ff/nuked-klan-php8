@@ -113,6 +113,8 @@ function mod_search($module, $main, $autor, $limit, $searchtype){
     $autor = trim($autor);
 
     if ($main != "" || $autor!=""){
+        $main = is_string($main) ? $main : (string)$main;
+        $autor = is_string($autor) ? $autor : (string)$autor;
         if (strlen($main) < 3 && strlen($autor) < 3){
             echo "<div style=\"text-align: center;\"><br />" . _3CHARSMIN . "</div><br /><br />\n";
             closetable();
@@ -148,7 +150,7 @@ function mod_search($module, $main, $autor, $limit, $searchtype){
         } 
         $l = count($tab['module']);
 
-        if (!$_REQUEST['p']) $_REQUEST['p'] = 1;
+        if (!isset($_REQUEST['p']) || !$_REQUEST['p']) $_REQUEST['p'] = 1;
         $start = $_REQUEST['p'] * $limit - $limit;
         $end = $start + $limit;
         if ($end > $l) $end = $l;
@@ -162,6 +164,7 @@ function mod_search($module, $main, $autor, $limit, $searchtype){
 
         echo "<table style=\"background: " . $bgcolor2 . ";border: 1px solid " . $bgcolor3 . ";\" width=\"100%\" cellspacing=\"2\" cellpadding=\"3\" border=\"0\">\n";
 
+        $z = 0; // Initialize row counter for alternating colors
         for($a = $start;$a < $end;$a++){
             if ($z == 0){
                 $bg = $bgcolor2;

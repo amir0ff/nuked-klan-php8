@@ -508,6 +508,7 @@ function post_comment($im_id, $module, $titre, $texte, $pseudo) {
         $texte = stripslashes($texte);
         $module = mysql_real_escape_string(stripslashes($module));
 
+        $titre = is_string($titre) ? $titre : (string)$titre;
         if (strlen($titre) > 40){
              $titre = substr($titre, 0, 40) . "...";
         }

@@ -93,7 +93,7 @@ else{
     $sql = mysql_query("SELECT artid, title, date FROM " . SECTIONS_TABLE . " ORDER BY date DESC LIMIT 0, 10");
     while (list($id, $titre, $date) = mysql_fetch_array($sql)){
         $titre = printSecuTags($titre);
-        $date = strftime("%x", $date);
+        $date = nk_strftime("%x", $date);
         $i++;
 
         echo "<div><b>" . $i . " . <a href=\"index.php?file=Sections&amp;op=article&amp;artid=" . $id . "\">" . $titre . "</a></b> (" . $date . ")</div>\n";

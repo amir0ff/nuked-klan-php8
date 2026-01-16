@@ -54,7 +54,7 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
         $time = time();
         $titre = mysql_real_escape_string(stripslashes($titre));
 
-        $sql = mysql_query("INSERT INTO " . SURVEY_TABLE . " ( `sid` , `titre` , `date` , `niveau` ) VALUES ( '' , '" . $titre . "' , '" . $time . "' , '" . $niveau . "' )");
+        $sql = mysql_query("INSERT INTO " . SURVEY_TABLE . " ( `titre` , `date` , `niveau` ) VALUES ( '" . $titre . "' , '" . $time . "' , '" . $niveau . "' )");
         $sql2 = mysql_query("SELECT sid FROM " . SURVEY_TABLE . " WHERE titre = '" . $titre . "'");
         list($poll_id) = mysql_fetch_array($sql2);
 

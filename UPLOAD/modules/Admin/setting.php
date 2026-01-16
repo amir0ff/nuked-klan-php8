@@ -118,7 +118,7 @@ if ($visiteur == 9)
                 $day = time();
                 date_default_timezone_set($nuked['datezone']);
                 // iconv pour �viter les caract�re sp�ciaux dans la date
-                $echo = iconv('UTF-8','ISO-8859-1',strftime($key, $day));
+                $echo = iconv('UTF-8','ISO-8859-1',nk_strftime($key, $day));
                 echo "<option value=\"" . $key . "\" " . $checked . ">" . $echo . "</option>\n";
             }
     }

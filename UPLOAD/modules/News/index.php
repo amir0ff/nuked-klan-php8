@@ -29,9 +29,11 @@ if ($visiteur >= $level_access && $level_access > -1) {
         $day = time();
 
         if ($_REQUEST['op'] == 'categorie') {
-            $where = "WHERE cat = '{$_REQUEST['cat_id']}' AND $day >= date";
+            $cat_id = isset($_REQUEST['cat_id']) ? intval($_REQUEST['cat_id']) : 0;
+            $where = "WHERE cat = '" . mysql_real_escape_string($cat_id) . "' AND $day >= date";
         } elseif ($_REQUEST['op'] == 'suite' || $_REQUEST['op'] == 'index_comment') {
-            $where = "WHERE id = '{$_REQUEST['news_id']}' AND $day >= date";
+            $news_id = isset($_REQUEST['news_id']) ? intval($_REQUEST['news_id']) : 0;
+            $where = "WHERE id = '" . mysql_real_escape_string($news_id) . "' AND $day >= date";
         } else {
             $where = "WHERE $day >= date";
         }
@@ -44,9 +46,11 @@ if ($visiteur >= $level_access && $level_access > -1) {
         $start = (int)$_REQUEST['p'] * (int)$max_news - (int)$max_news;
 
         if ($_REQUEST['op'] == 'categorie') {
-            $WhereNews = "WHERE cat = '{$_REQUEST['cat_id']}' AND $day >= date ORDER BY date DESC LIMIT $start, $max_news";
+            $cat_id = isset($_REQUEST['cat_id']) ? intval($_REQUEST['cat_id']) : 0;
+            $WhereNews = "WHERE cat = '" . mysql_real_escape_string($cat_id) . "' AND $day >= date ORDER BY date DESC LIMIT $start, $max_news";
         } elseif ($_REQUEST['op'] == 'suite' || $_REQUEST['op'] == 'index_comment') {
-            $WhereNews = "WHERE id = '{$_REQUEST['news_id']}'";
+            $news_id = isset($_REQUEST['news_id']) ? intval($_REQUEST['news_id']) : 0;
+            $WhereNews = "WHERE id = '" . mysql_real_escape_string($news_id) . "'";
         } else {
             $WhereNews = "WHERE $day >= date ORDER BY date DESC LIMIT $start, $max_news";
         }
@@ -60,14 +64,17 @@ if ($visiteur >= $level_access && $level_access > -1) {
         while ($TabNews = mysql_fetch_assoc($sql)) {
             $TabNews['titre'] = printSecuTags($TabNews['titre']);
 
-            $sql2 = mysql_query("SELECT im_id FROM ".COMMENT_TABLE." WHERE im_id = '{$TabNews['id']}' AND module = 'news'");
+            $news_id_escaped = isset($TabNews['id']) ? intval($TabNews['id']) : 0;
+            $sql2 = mysql_query("SELECT im_id FROM ".COMMENT_TABLE." WHERE im_id = '" . mysql_real_escape_string($news_id_escaped) . "' AND module = 'news'");
             $nb_comment = mysql_num_rows($sql2);
 
-            $sql3 = mysql_query("SELECT titre, image FROM ".NEWS_CAT_TABLE." WHERE nid = '{$TabNews['cat']}'");
+            $cat_id_escaped = isset($TabNews['cat']) ? intval($TabNews['cat']) : 0;
+            $sql3 = mysql_query("SELECT titre, image FROM ".NEWS_CAT_TABLE." WHERE nid = '" . mysql_real_escape_string($cat_id_escaped) . "'");
             $TabCat = mysql_fetch_assoc($sql3);
 
             if (!empty($autor_id)) {
-                $sql4 = mysql_query("SELECT pseudo FROM ".USER_TABLE." WHERE id = '{$TabNews['auteur_id']}'");
+                $auteur_id_escaped = isset($TabNews['auteur_id']) ? intval($TabNews['auteur_id']) : 0;
+                $sql4 = mysql_query("SELECT pseudo FROM ".USER_TABLE." WHERE id = '" . mysql_real_escape_string($auteur_id_escaped) . "'");
                 $test = mysql_num_rows($sql4);
             }
 
@@ -208,7 +215,7 @@ if ($visiteur >= $level_access && $level_access > -1) {
         $sql = mysql_query("SELECT auteur, auteur_id, date, titre, texte, suite FROM ".NEWS_TABLE." WHERE id = '$news_id'");
         $row = mysql_fetch_assoc($sql);
 
-        $heure = strftime("%H:%M", $row['date']);
+        $heure = nk_strftime("%H:%M", $row['date']);
         $text = $row['texte'].'<br><br>'.$row['suite'];
 
         if (!empty($row['auteur_id'])) {

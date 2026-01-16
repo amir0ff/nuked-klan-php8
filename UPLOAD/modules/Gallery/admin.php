@@ -154,7 +154,7 @@ if ($visiteur >= $level_admin && $level_admin > -1)
                 $auteur = mysql_real_escape_string(stripslashes($auteur));
                 $date = time();
 
-                $sql = mysql_query("INSERT INTO " . GALLERY_TABLE . " ( `sid` , `titre` , `description` , `url` , `url2` , `url_file` , `cat` , `date` , `autor` ) VALUES ( '' , '" . $titre . "' , '" . $description . "' , '" . $url . "' , '" . $url2 . "' , '" . $url_file . "' , '" . $cat . "' , '" . $date . "' , '" . $auteur . "')");
+                $sql = mysql_query("INSERT INTO " . GALLERY_TABLE . " ( `titre` , `description` , `url` , `url2` , `url_file` , `cat` , `date` , `autor` ) VALUES ( '" . $titre . "' , '" . $description . "' , '" . $url . "' , '" . $url2 . "' , '" . $url_file . "' , '" . $cat . "' , '" . $date . "' , '" . $auteur . "')");
                 
                 // Action
                 $texteaction = "". _ACTIONADDGAL .": ".$titre."";

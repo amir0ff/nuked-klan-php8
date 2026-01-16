@@ -386,7 +386,7 @@ if ($visiteur >= $level_admin && $level_admin > -1){
             $url_league = "http://" . $url_league;
         }
         
-        $add = mysql_query("INSERT INTO " . WARS_TABLE . " ( `warid` , `etat` , `team` , `game` , `adversaire` , `url_adv` , `pays_adv` , `type` , `style` , `date_jour` , `date_mois` , `date_an` , `heure` , `map` ,  `score_team` , `score_adv` , `tscore_team` , `tscore_adv` , `report` , `auteur` , `url_league` , `dispo` , `pas_dispo` ) VALUES ( '' , '" . $etat . "' , '" . $team . "' , '" . $game . "' , '" . $adversaire . "' , '" . $url_adv . "' , '" . $country ."' , '" . $type. "' , '" . $style . "' , '" . $jour . "' , '" . $mois . "' , '" . $annee . "' , '" . $heure . "' , '" . $map . "' , '" . $score_team . "' , '" . $score_adv . "' , '" . $tscore_team . "' , '" . $tscore_adv . "' , '" . $report . "' , '" . $autor . "' , '" . $url_league . "' , '' , '' )");
+        $add = mysql_query("INSERT INTO " . WARS_TABLE . " ( `etat` , `team` , `game` , `adversaire` , `url_adv` , `pays_adv` , `type` , `style` , `date_jour` , `date_mois` , `date_an` , `heure` , `map` ,  `score_team` , `score_adv` , `tscore_team` , `tscore_adv` , `report` , `auteur` , `url_league` , `dispo` , `pas_dispo` ) VALUES ( '" . $etat . "' , '" . $team . "' , '" . $game . "' , '" . $adversaire . "' , '" . $url_adv . "' , '" . $country ."' , '" . $type. "' , '" . $style . "' , '" . $jour . "' , '" . $mois . "' , '" . $annee . "' , '" . $heure . "' , '" . $map . "' , '" . $score_team . "' , '" . $score_adv . "' , '" . $tscore_team . "' , '" . $tscore_adv . "' , '" . $report . "' , '" . $autor . "' , '" . $url_league . "' , '' , '' )");
         admintop();
         // Action
         $texteaction = "". _ACTIONADDWAR .".";
@@ -644,7 +644,7 @@ if ($visiteur >= $level_admin && $level_admin > -1){
                     $file_url = $url_file;
                 }
         
-                $add = mysql_query("INSERT INTO " . WARS_FILES_TABLE . " ( `id` , `module` , `im_id` , `type` , `url` ) VALUES ( '' , 'Wars' , '" . $im_id . "' , '" . $file_type . "' , '" . $file_url . "' )");
+                $add = mysql_query("INSERT INTO " . WARS_FILES_TABLE . " ( `module` , `im_id` , `type` , `url` ) VALUES ( 'Wars' , '" . $im_id . "' , '" . $file_type . "' , '" . $file_url . "' )");
     
                 echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
                         . "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\">\n"

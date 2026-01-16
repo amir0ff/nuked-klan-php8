@@ -90,6 +90,8 @@ if ($visiteur >= $level_access && $level_access > -1)
             $req = "SELECT M.id, M.auteur, M.auteur_id, M.titre, M.txt, M.thread_id, M.forum_id, M.date FROM " . FORUM_MESSAGES_TABLE . " " . $where . " M.date > '" . (int)$date_max . "' ORDER BY M.date DESC";
             $result = mysql_query($req);
         } 
+        $query = is_string($query) ? $query : (string)$query;
+        $autor = is_string($autor) ? $autor : (string)$autor;
         else if (($query != "" && strlen($query) < 3) || ($autor != "" && strlen($autor) < 3))
         {
             echo "<br /><br /><div style=\"text-align: center;\">" . _3CHARSMIN . "</div><br /><br />";
@@ -215,6 +217,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                         $texte = _NOTEXTRESUME;
                     } 
 
+                    $texte = is_string($texte) ? $texte : (string)$texte;
                     if (strlen($texte) > 150)
                     {
                         $texte = substr($texte, 0, 150) . "...";
@@ -237,6 +240,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                         $page_num = "#" . $mess_id;
                     } 
 
+                    $titre = is_string($titre) ? $titre : (string)$titre;
                     if (strlen($titre) > 30)
                     {
                         $titre_topic = "<a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $forum_id . "&amp;thread_id=" . $thread_id . "&amp;highlight=" . urlencode($_REQUEST['query']) . $page_num . "\" onmouseover=\"AffBulle('" . $title . "', '" . $texte . "', 320)\" onmouseout=\"HideBulle()\"><b>" . nkHtmlEntities(substr($titre, 0, 30)) . "...</b></a>";

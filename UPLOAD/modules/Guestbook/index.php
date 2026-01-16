@@ -171,7 +171,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                 $url = "http://" . mysql_real_escape_string(stripslashes($url));
             }
 
-            $sql = mysql_query("INSERT INTO " . GUESTBOOK_TABLE . " ( `id` , `name` , `email` , `url` , `date` , `host` , `comment` ) VALUES ( '' , '" . $pseudo . "' , '" . $email . "' , '" . $url . "' , '" . $date . "' , '" . $user_ip . "' , '" . $comment . "' )");
+            $sql = mysql_query("INSERT INTO " . GUESTBOOK_TABLE . " ( `name` , `email` , `url` , `date` , `host` , `comment` ) VALUES ( '" . $pseudo . "' , '" . $email . "' , '" . $url . "' , '" . $date . "' , '" . $user_ip . "' , '" . $comment . "' )");
             echo "<br /><br /><div style=\"text-align: center;\">" . _POSTADD . "</div><br /><br />";
             redirect("index.php?file=Guestbook", 2);
             closetable();
@@ -227,6 +227,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
             $comment = icon($comment);
 
+            $name = is_string($name) ? $name : (string)$name;
             if (strlen($name) > 30)
             {
                 $name = substr($name, 0, 30) . "...";

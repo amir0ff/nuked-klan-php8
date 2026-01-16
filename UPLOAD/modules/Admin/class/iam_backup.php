@@ -3,7 +3,7 @@
  *  IAM_Backup A class for backing up an entire Database and send the dump to the browser or download it as a file
  *  @desc IAM_Backup A class for backing up an entire Database and send the dump to the browser or download it as a file.
  *  @package iam_backup
- *  @author     Iván Ariel Melgrati <phpclasses@imelgrat.mailshell.com>
+ *  @author     Ivï¿½n Ariel Melgrati <phpclasses@imelgrat.mailshell.com>
  *  @version 1.2
  *
  *  Requires PHP v 4.0+ and MySQL 3.23+
@@ -146,7 +146,7 @@ class iam_backup
         $result = mysql_connect("$this->host","$this->dbuser","$this->dbpass");
         if(!$result)     // If no connection can be obtained, return empty string
         {
-        return "Error. Can´t connect to Database: $this->dbname";
+        return "Error. Canï¿½t connect to Database: $this->dbname";
         }
 
         if(!mysql_select_db("$this->dbname"))  // If db can't be set, return empty string
@@ -236,7 +236,7 @@ class iam_backup
           $index[$kname][] = $row[Column_name];
         }
 
-        while(list($x, $columns) = @each($index))
+        foreach($index as $x => $columns)
         {
           $def .= ",$this->newline";
           if($x == "PRIMARY") $def .= "   PRIMARY KEY (" . implode($columns, ", ") . ")";

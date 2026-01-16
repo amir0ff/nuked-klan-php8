@@ -114,7 +114,7 @@ if ($visiteur >= $level_admin && $level_admin > -1)
 
         $nom = mysql_real_escape_string(stripslashes($nom));
 
-        $sql = mysql_query("INSERT INTO " . FORUM_CAT_TABLE . " ( `id` , `nom` , `ordre` , `niveau` ) VALUES ( '' , '" . $nom . "' , '" . $ordre . "' , '" . $niveau . "' )");
+        $sql = mysql_query("INSERT INTO " . FORUM_CAT_TABLE . " ( `nom` , `ordre` , `niveau` ) VALUES ( '" . $nom . "' , '" . $ordre . "' , '" . $niveau . "' )");
         // Action
         $texteaction = "". _ACTIONADDCATFO .": ".$nom."";
         $acdate = time();
@@ -319,7 +319,7 @@ if ($visiteur >= $level_admin && $level_admin > -1)
         $titre = mysql_real_escape_string(stripslashes($titre));
         $description = mysql_real_escape_string(stripslashes($description));
 
-        $sql = mysql_query("INSERT INTO " . FORUM_TABLE . " ( `id` , `cat` , `nom` , `comment` , `moderateurs` , `niveau` , `level` , `ordre` , `level_poll` , `level_vote` ) VALUES ( '' , '" . $cat . "' , '" . $titre . "' , '" . $description . "' , '" . $modo . "' , '" . $niveau . "' , '" . $level . "' , '" . $ordre . "' , '" . $level_poll . "' , '" . $level_vote . "' )");
+        $sql = mysql_query("INSERT INTO " . FORUM_TABLE . " ( `cat` , `nom` , `comment` , `moderateurs` , `niveau` , `level` , `ordre` , `level_poll` , `level_vote` ) VALUES ( '" . $cat . "' , '" . $titre . "' , '" . $description . "' , '" . $modo . "' , '" . $niveau . "' , '" . $level . "' , '" . $ordre . "' , '" . $level_poll . "' , '" . $level_vote . "' )");
         // Action
         $texteaction = "". _ACTIONADDFO .": ".$titre."";
         $acdate = time();
@@ -715,7 +715,7 @@ if ($visiteur >= $level_admin && $level_admin > -1)
 
         $nom = mysql_real_escape_string(stripslashes($nom));
 
-        $sql = mysql_query("INSERT INTO " . FORUM_RANK_TABLE . " ( `id` , `nom` , `type` , `post` , `image` ) VALUES ( '' , '" . $nom . "' , '" . $type . "' , '" . $post . "' , '" . $image . "' )");
+        $sql = mysql_query("INSERT INTO " . FORUM_RANK_TABLE . " ( `nom` , `type` , `post` , `image` ) VALUES ( '" . $nom . "' , '" . $type . "' , '" . $post . "' , '" . $image . "' )");
         // Action
         $texteaction = "". _ACTIONADDRANKFO .": ".$nom."";
         $acdate = time();

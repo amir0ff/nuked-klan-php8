@@ -116,7 +116,7 @@ function send($data){
     $data['titre'] = mysql_real_escape_string(stripslashes($data['titre']));
     $data['texte'] = mysql_real_escape_string(stripslashes($data['texte']));
 
-    $add = mysql_query("INSERT INTO " . NEWS_TABLE . " ( `id` , `cat` , `titre` , `auteur` , `auteur_id` , `texte` , `suite` , `date`) VALUES ( '' , '" . $data['cat'] . "' , '" . $data['titre'] . "' , '" . $autor . "' , '" . $autor_id . "' , '" . $data['texte'] . "' , '' , '" . $data['date'] . "')");
+    $add = mysql_query("INSERT INTO " . NEWS_TABLE . " ( `cat` , `titre` , `auteur` , `auteur_id` , `texte` , `suite` , `date`) VALUES ( '" . $data['cat'] . "' , '" . $data['titre'] . "' , '" . $autor . "' , '" . $autor_id . "' , '" . $data['texte'] . "' , '' , '" . $data['date'] . "')");
     $sqls = mysql_query("SELECT id FROM " . NEWS_TABLE . " WHERE titre = '" . $data['titre'] . "' AND date = '".$data['date']."'");
     list($news_id) = mysql_fetch_array($sqls);
     echo "<script>\n"

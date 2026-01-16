@@ -171,7 +171,7 @@ if ($visiteur == 9)
         $pref5 = mysql_real_escape_string(stripslashes($pref5));
 		$maps = mysql_real_escape_string(stripslashes($maps));
 
-        $sql = mysql_query("INSERT INTO " . GAMES_TABLE . " ( `id` , `name` , `titre` , `icon` , `pref_1` , `pref_2` , `pref_3` , `pref_4` , `pref_5`, `map` ) VALUES ( '' , '" . $nom . "' , '" . $titre . "' , '" . $icon . "' , '" . $pref1 . "' , '" . $pref2 . "' , '" . $pref3 . "' , '" . $pref4 . "' , '" . $pref5 . "', '" . $maps . "')");
+        $sql = mysql_query("INSERT INTO " . GAMES_TABLE . " ( `name` , `titre` , `icon` , `pref_1` , `pref_2` , `pref_3` , `pref_4` , `pref_5`, `map` ) VALUES ( '" . $nom . "' , '" . $titre . "' , '" . $icon . "' , '" . $pref1 . "' , '" . $pref2 . "' , '" . $pref3 . "' , '" . $pref4 . "' , '" . $pref5 . "', '" . $maps . "')");
         // Action
 		$texteaction = _ACTIONADDGAME . ': ' . $nom;
 		$acdate = time();

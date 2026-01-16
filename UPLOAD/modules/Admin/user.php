@@ -821,7 +821,7 @@ if ($visiteur == 9)
         $tag = mysql_real_escape_string(stripslashes($tag));
         $tag2 = mysql_real_escape_string(stripslashes($tag2));
 
-        $sql = mysql_query("INSERT INTO " . TEAM_TABLE . " ( `cid` , `titre`, `tag` , `tag2` , `ordre` , `game`) VALUES ( '' , '" . $titre . "' , '" . $tag . "' , '" . $tag2 . "' , '" . $ordre . "' , '" . $game . "')");
+        $sql = mysql_query("INSERT INTO " . TEAM_TABLE . " ( `titre`, `tag` , `tag2` , `ordre` , `game`) VALUES ( '" . $titre . "' , '" . $tag . "' , '" . $tag2 . "' , '" . $ordre . "' , '" . $game . "')");
         // Action
         $texteaction = "". _ACTIONADDCATUSER .": ".$titre."";
         $acdate = time();
@@ -1057,7 +1057,7 @@ if ($visiteur == 9)
         $texte = mysql_real_escape_string(stripslashes($texte));
         if($dure == 0 || $dure ==86400 ||$dure ==604800 ||$dure ==2678400 ||$dure == 31708800)
         {
-            $sql = mysql_query("INSERT INTO " . BANNED_TABLE . " ( `id` , `ip` , `pseudo` , `email` ,`date` ,`dure` , `texte` ) VALUES ( '' , '" . $ip . "' , '" . $pseudo . "' , '" . $email . "', '" . time() . "' , '" . $dure . "' , '" . $texte . "' )");
+            $sql = mysql_query("INSERT INTO " . BANNED_TABLE . " ( `ip` , `pseudo` , `email` ,`date` ,`dure` , `texte` ) VALUES ( '" . $ip . "' , '" . $pseudo . "' , '" . $email . "', '" . time() . "' , '" . $dure . "' , '" . $texte . "' )");
         }
         else
         {
@@ -1229,7 +1229,7 @@ if ($visiteur == 9)
 
         $titre = mysql_real_escape_string(stripslashes($titre));
 
-        $sql = mysql_query("INSERT INTO " . TEAM_RANK_TABLE . " VALUES ( '' , '" . $titre . "' , '" . $ordre . "' )");
+        $sql = mysql_query("INSERT INTO " . TEAM_RANK_TABLE . " ( `titre` , `ordre` ) VALUES ( '" . $titre . "' , '" . $ordre . "' )");
         // Action
         $texteaction = "". _ACTIONADDRANK .": ".$titre."";
         $acdate = time();

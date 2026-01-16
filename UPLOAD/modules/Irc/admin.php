@@ -52,6 +52,7 @@ if ($visiteur >= $level_admin && $level_admin > -1){
         while (list($irc_id, $date, $text) = mysql_fetch_array($sql)){
             $date = nkDate($date);
 
+            $text = is_string($text) ? $text : (string)$text;
             if (strlen($text) > 50){
                 $texte = substr($text, 0, 50) . "...";
 				$texte = nkHtmlEntities($texte);
@@ -101,7 +102,7 @@ if ($visiteur >= $level_admin && $level_admin > -1){
 		$text = nkHtmlEntityDecode($text);
         $text = mysql_real_escape_string(stripslashes($text));
 
-        $sql = mysql_query("INSERT INTO " . IRC_AWARDS_TABLE . " ( `id` , `text` , `date` ) VALUES ( '' , '" . $text . "' , '" . $date . "' )");
+        $sql = mysql_query("INSERT INTO " . IRC_AWARDS_TABLE . " ( `text` , `date` ) VALUES ( '" . $text . "' , '" . $date . "' )");
 		
 		// Action
 		$texteaction = "". _ACTIONADDIRC .".";

@@ -161,6 +161,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                 $texte = _NOTEXTRESUME;
             }
 
+            $texte = is_string($texte) ? $texte : (string)$texte;
             if (strlen($texte) > 150)
             {
                 $texte = substr($texte, 0, 150) . "...";
@@ -171,6 +172,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
             $title = nkHtmlEntities(printSecuTags($titre));
 
+            $titre = is_string($titre) ? $titre : (string)$titre;
             if (strlen($titre) > 30)
             {
                 $titre_topic = "<a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . urlencode($forum_id) . "&amp;thread_id=" . urlencode($thread_id) . "\" onmouseover=\"AffBulle('" . mysql_real_escape_string(stripslashes($title)) . "', '" . mysql_real_escape_string(stripslashes($texte)) . "', 400)\" onmouseout=\"HideBulle()\"><b>" . printSecuTags(substr($titre, 0, 30)) . "...</b></a>";
@@ -307,8 +309,8 @@ if ($visiteur >= $level_access && $level_access > -1)
             . "<td style=\"width: 8%;\" align=\"center\">" . $nb_rep . "</td>\n"
             . "<td style=\"width: 8%;\" align=\"center\">" . $nb_read . "</td>\n";
 
-            if (strftime("%d %m %Y", time()) ==  strftime("%d %m %Y", $last_date)) $last_date = _FTODAY . "&nbsp;" . strftime("%H:%M", $last_date);
-            else if (strftime("%d", $last_date) == (strftime("%d", time()) - 1) && strftime("%m %Y", time()) == strftime("%m %Y", $last_date)) $last_date = _FYESTERDAY . "&nbsp;" . strftime("%H:%M", $last_date);
+            if (nk_strftime("%d %m %Y", time()) ==  nk_strftime("%d %m %Y", $last_date)) $last_date = _FTODAY . "&nbsp;" . nk_strftime("%H:%M", $last_date);
+            else if (nk_strftime("%d", $last_date) == (nk_strftime("%d", time()) - 1) && nk_strftime("%m %Y", time()) == nk_strftime("%m %Y", $last_date)) $last_date = _FYESTERDAY . "&nbsp;" . nk_strftime("%H:%M", $last_date);
             else $last_date = nkDate($last_date);
 
             

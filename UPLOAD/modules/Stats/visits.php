@@ -28,9 +28,9 @@ if ($visiteur >= $nuked['level_analys'] && $nuked['level_analys']!= -1) {
         opentable();
 
         $time = time();
-        $month = strftime('%m', $time);
-        $year = strftime('%Y', $time);
-        $day = strftime('%d', $time);
+        $month = nk_strftime('%m', $time);
+        $year = nk_strftime('%Y', $time);
+        $day = nk_strftime('%d', $time);
 
         echo '<br /><div style="text-align: center"><h2><b>' . _ANALYS . '</b></h2>'."\n"
         . '[ <a href="index.php?file=Stats&amp;page=visits&amp;oday=' . $day . '&amp;omonth=' . $month . '&amp;oyear=' . $year . '">' . _ODAY . '</a> | '
@@ -90,7 +90,7 @@ if ($visiteur >= $nuked['level_analys'] && $nuked['level_analys']!= -1) {
                 while (list($v_ip, $v_user_id, $v_browser, $v_os, $v_date) = mysql_fetch_array($sql_last)) {
                     $imembers++;
 
-                    $v_hours = strftime('%H:%M', $v_date);
+                    $v_hours = nk_strftime('%H:%M', $v_date);
                     $v_osname = ($v_os == 'Autres') ? _OTHERS : $v_os;
                     $v_browsername = ($v_browser == 'Autres') ? _OTHERS : ($v_browser == 'Moteurs de recherche') ? _SEARCHENGINE : $v_browser;
 
@@ -261,6 +261,7 @@ if ($visiteur >= $nuked['level_analys'] && $nuked['level_analys']!= -1) {
                     $bg2 = $bgcolor1;
                     $j2 = 0;
                 }
+                $host = is_string($host) ? $host : (string)$host;
                 $hostname = (strlen($host) > 15) ? substr($host, 0, 15) . '...' : $host;
                 $host = empty($host) ? _UNKNOWN : '<a href="' . $host . '" onclick="window.open(this.href); return false;">' . nkHtmlEntities($hostname) . '</a>';
 
@@ -321,6 +322,7 @@ if ($visiteur >= $nuked['level_analys'] && $nuked['level_analys']!= -1) {
 
                 $referant = preg_replace('`http://`i', '', $referer);
 
+                $referant = is_string($referant) ? $referant : (string)$referant;
                 $ref = (strlen($referant) > 15) ? nkHtmlEntities(substr($referant, 0, 15)) . '...' : nkHtmlEntities($referant);
                 $user_ref = (!empty($referer) && !is_int(strpos($referer, 'login'))) ? '<a href="' . $referer . '" onclick="window.open(this.href); return false;" title="' . $referant .'">' . $ref . '</a>' : _UNKNOWN;
 
@@ -443,12 +445,13 @@ function view_all() {
 
         $host = nkHtmlEntities($host);
         $i++;
-        $hours = strftime("%H:%M", $date);
+        $hours = nk_strftime("%H:%M", $date);
 
         $osname = ($os == 'Autres') ? _OTHERS : $os;
         $browsername = ($browser == 'Autres') ? _OTHERS : ($browser == 'Moteurs de recherche') ? _SEARCHENGINE : $browser;
 
         $referant = preg_replace("`http://`i", "", $referer);
+        $referant = is_string($referant) ? $referant : (string)$referant;
         $ref = (strlen($referant) > 20) ? nkHtmlEntities(substr($referant, 0, 20)) . '...' : nkHtmlEntities($referant);
         $uref_ref = (!empty($referer) && !is_int(strpos($referer, 'login'))) ? '<a href="' . $referer . '" onclick="window.open(this.href); return false;" title="' . $referer .'">' . $ref . '</a>' : _UNKNOWN;
 
@@ -553,6 +556,7 @@ function view_referer()
         }
 
         $referant = preg_replace('`http://`i', '', $referer);
+        $referant = is_string($referant) ? $referant : (string)$referant;
         $ref = (strlen($referant) > 40) ? substr($referant, 0, 40) : $referant;
         $user_ref = (empty($referer) && is_int(strpos($referer, 'login'))) ? _UNKNOWN : '<a href="' . $referer . '" onclick="window.open(this.href); return false;" title="' . $referer .'">' . nkHtmlEntities($ref) . '</a>';
 

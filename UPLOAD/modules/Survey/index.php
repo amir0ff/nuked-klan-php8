@@ -214,6 +214,7 @@ if ($visiteur >= $level_access && $level_access > -1) {
            . "<td align=\"center\"><b>&nbsp;</b></td></tr>\n";
 
         $sql = mysql_query('SELECT sid, titre, date FROM ' . SURVEY_TABLE . ' ORDER BY date DESC');
+        $j = 0; // Initialize row counter for alternating colors
         while (list($poll_id, $titre, $date) = mysql_fetch_array($sql)) {
             $titre = printSecuTags($titre);
             $date = nkDate($date);

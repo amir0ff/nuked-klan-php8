@@ -189,7 +189,7 @@ if ($visiteur >= $level_access && $level_access > -1){
         $type = printSecuTags($type);
         $map = printSecuTags($map);
 
-        $sql = mysql_query("INSERT INTO " . DEFY_TABLE . " ( `id` , `send` , `pseudo` , `clan` , `mail` , `icq` , `irc` , `url` , `pays` , `date` , `heure` , `serveur` , `game` , `type` , `map` , `comment` ) VALUES ( '' , '" . $time . "' , '" . $pseudo . "' , '" . $clan . "' , '" . $mail . "' , '" . $icq . "' , '" . $irc . "' , '" . $url . "' , '" . $country . "' , '" . $date . "' , '" . $heure . "' , '" . $serveur . "' , '" . $game . "' , '" . $type . "' , '" . $map . "' , '" . $comment . "' )");
+        $sql = mysql_query("INSERT INTO " . DEFY_TABLE . " ( `send` , `pseudo` , `clan` , `mail` , `icq` , `irc` , `url` , `pays` , `date` , `heure` , `serveur` , `game` , `type` , `map` , `comment` ) VALUES ( '" . $time . "' , '" . $pseudo . "' , '" . $clan . "' , '" . $mail . "' , '" . $icq . "' , '" . $irc . "' , '" . $url . "' , '" . $country . "' , '" . $date . "' , '" . $heure . "' , '" . $serveur . "' , '" . $game . "' , '" . $type . "' , '" . $map . "' , '" . $comment . "' )");
 
         $upd = mysql_query("INSERT INTO ". $nuked['prefix'] ."_notification  (`date` , `type` , `texte`)  VALUES ('".$time."', '1', '"._NOTDEF.": [<a href=\"index.php?file=Defy&page=admin\">lien</a>].')");
         $subject = _DEFY . ', ' .$date2;
@@ -205,7 +205,7 @@ if ($visiteur >= $level_access && $level_access > -1){
         }
         
         if (!empty($inbox)){
-            $sql2 = mysql_query("INSERT INTO " . USERBOX_TABLE . " ( `mid` , `user_from` , `user_for` , `titre` , `message` , `date` , `status` ) VALUES ( '' , '" . $inbox . "' , '" . $inbox . "' , '" . $subject . "' , '" . $corps . "' , '" . $time . "' , '0' )");
+            $sql2 = mysql_query("INSERT INTO " . USERBOX_TABLE . " ( `user_from` , `user_for` , `titre` , `message` , `date` , `status` ) VALUES ( '" . $inbox . "' , '" . $inbox . "' , '" . $subject . "' , '" . $corps . "' , '" . $time . "' , '0' )");
         }
 
         echo '<br /><br /><div style="text-align: center;">' . _SENDMAIL . '</div><br /><br />';

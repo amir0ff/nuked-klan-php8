@@ -1444,7 +1444,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                 list($option_id) = mysql_fetch_array($sql2);
                 $s = $option_id + 1;
 
-                $sql3 = mysql_query("INSERT INTO " . FORUM_OPTIONS_TABLE . " ( `id` , `poll_id` , `option_text` , `option_vote` ) VALUES ( '" . $s . "' , '" . $poll_id . "' , '" . $newoption . "', '0')");
+                $sql3 = mysql_query("INSERT INTO " . FORUM_OPTIONS_TABLE . " ( `poll_id` , `option_text` , `option_vote` ) VALUES ( '" . $poll_id . "' , '" . $newoption . "', '0')");
             }
 
             echo "<br /><br /><div style=\"text-align: center;\">" . _POLLMODIF . "</div><br /><br />";
