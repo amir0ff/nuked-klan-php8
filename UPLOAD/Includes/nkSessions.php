@@ -52,9 +52,10 @@ function secure(){
         $sql = mysql_query("SELECT date, ip, last_used FROM " . SESSIONS_TABLE . " WHERE id = '" . $id_de_session . "' AND user_id = '" . $id_user . "'");
         $secu_user = mysql_num_rows($sql);
         $row = mysql_fetch_assoc($sql);
-        if ($row['date'] > $time - $timesession && $row['ip'] != $user_ip)
+        // Fix: Check if $row is not null before accessing array offsets (PHP 8.0 compatibility)
+        if ($row && isset($row['date']) && isset($row['ip']) && $row['date'] > $time - $timesession && $row['ip'] != $user_ip)
             $secu_user = 0;
-        if ($secu_user  == 1) {
+        if ($secu_user  == 1 && $row && isset($row['last_used'])) {
             $last_used = $row['last_used'];
             $sql2 = mysql_query("SELECT niveau, pseudo FROM " . USER_TABLE . " WHERE id = '" . $id_user . "'");
             list($user_type, $user_name) = mysql_fetch_array($sql2);
@@ -123,8 +124,9 @@ function session_check() {
 
 // initialise avec les microsecondes
 function make_seed() {
-  $microtime_str = microtime();
-  list($usec, $sec) = explode(' ', $microtime_str);
+  $microtime_float = microtime(true);
+  $sec = floor($microtime_float);
+  $usec = ($microtime_float - $sec);
   return (float) $sec + ((float) $usec * 100000);
 }
 

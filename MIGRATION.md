@@ -552,7 +552,12 @@ This document provides complete technical documentation of the migration of Nuke
 
 **Includes/nkSessions.php:**
 - Fixed `microtime()` non-numeric value warning
-  - Changed `list($usec, $sec) = explode(' ', microtime());` to `$microtime_str = microtime(); list($usec, $sec) = explode(' ', $microtime_str);` to avoid passing `microtime()` directly to `explode()`
+  - Changed `microtime()` to `microtime(true)` to return float instead of string
+  - Updated calculation: `$microtime_float = microtime(true); $sec = floor($microtime_float); $usec = ($microtime_float - $sec);`
+- Fixed array offset on null warning (January 19, 2026)
+  - Added `isset()` checks and null checks before accessing `$row` array offsets (lines 55-58)
+  - Prevents "Trying to access array offset on value of type null" warnings when database queries return no results
+  - Pattern: `if ($row && isset($row['date']) && isset($row['ip']) && ...)` instead of `if ($row['date'] > ...)`
 
 **Includes/nkCaptcha.php:**
 - Fixed `microtime()` non-numeric value warning
@@ -1489,6 +1494,36 @@ echo "javascript:function('" . $js_param . "')";
 
 ---
 
+### Fix #13: nkSessions.php Array Access Safety (January 19, 2026)
+
+**Problem:** `nkSessions.php` accessed `$row` array offsets without checking if `$row` is not null, causing "Trying to access array offset on value of type null" warnings in PHP 8.0 when database queries return no results.
+
+**File:** `Includes/nkSessions.php` (lines 55-58)
+
+**Solution:** Added `isset()` checks and null checks before accessing array offsets.
+
+**Example Fix:**
+```php
+// BEFORE (PHP 8.0 warnings):
+$row = mysql_fetch_assoc($sql);
+if ($row['date'] > $time - $timesession && $row['ip'] != $user_ip)
+    $secu_user = 0;
+if ($secu_user  == 1) {
+    $last_used = $row['last_used'];
+
+// AFTER (PHP 8.0 compatible):
+$row = mysql_fetch_assoc($sql);
+// Fix: Check if $row is not null before accessing array offsets (PHP 8.0 compatibility)
+if ($row && isset($row['date']) && isset($row['ip']) && $row['date'] > $time - $timesession && $row['ip'] != $user_ip)
+    $secu_user = 0;
+if ($secu_user  == 1 && $row && isset($row['last_used'])) {
+    $last_used = $row['last_used'];
+```
+
+**Result:** ✅ No more "array offset on null" warnings in session management.
+
+---
+
 **Remaining Security Considerations:**
 - ⚠️ CSRF protection: No tokens implemented yet - recommended for future enhancement
 - ⚠️ Password hashing: Still uses SHA1/MD5 - migration to `password_hash()` recommended for future enhancement
@@ -1500,19 +1535,20 @@ echo "javascript:function('" . $js_param . "')";
 ## Summary
 
 **Migration Status:** ✅ **COMPLETE** - Website and Admin Panel fully functional on PHP 8.0  
-**Total Fixes Applied:** 150+ issues across 64+ files  
+**Total Fixes Applied:** 151+ issues across 64+ files  
 **Codebase Scanned:** 84+ PHP files  
-**Last Updated:** January 16, 2026
+**Last Updated:** January 19, 2026
 
 ### Fix Categories:
 1. **Initial Migration Fixes (22 fixes):** MySQLi compatibility, deprecated functions, undefined variables, etc.
 2. **Comprehensive Audit Fixes (87+ fixes):** Auto-increment IDs, SQL injection, strftime(), strlen(), deprecated functions
 3. **Testing Bug Fixes (15 fixes):** Comment module, Contact notifications, Survey, User, Search, Userbox, HTML filter
 4. **Security Audit Fixes (26+ fixes):** RCE via eval(), command execution via system(), SQL injection, LFI/RFI, session security
+5. **Post-Deployment Fixes (1 fix):** nkSessions.php array access safety (January 19, 2026)
 
 ### Issue Statistics:
-- **Total Issues Found:** ~250+ potential issues
-- **Critical/High Priority Fixed:** 113+ issues (87 compatibility + 26 security)
+- **Total Issues Found:** ~251+ potential issues
+- **Critical/High Priority Fixed:** 114+ issues (88 compatibility + 26 security)
 - **Files Modified:** 64+ files (50 compatibility + 14 security)
 - **Remaining Lower Priority:** ~100+ issues (XSS in some outputs, CSRF tokens, password hashing migration - can be addressed as needed)
 

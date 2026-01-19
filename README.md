@@ -14,8 +14,12 @@ This is a **community-maintained, modernized version** of Nuked-Klan CMS 1.7.15 
 ## ✨ What's Been Fixed
 
 ✅ **MySQLi Compatibility**: All 2620+ `mysql_*` function calls now work via compatibility layer  
-✅ **PHP 8.0 Deprecations**: Fixed `strftime()`, `utf8_encode()`, `get_magic_quotes_gpc()`, `session_gc()` conflict  
-✅ **Undefined Variables**: Fixed all undefined array key warnings  
+✅ **PHP 8.0 Deprecations**: Fixed `strftime()`, `utf8_encode()`, `get_magic_quotes_gpc()`, `session_gc()` conflict, `each()`, `create_function()`  
+✅ **Undefined Variables**: Fixed all undefined array key warnings and array offset on null issues  
+✅ **Auto-Increment IDs**: Fixed 28+ MySQL 8.0 compatibility issues with auto-increment fields  
+✅ **Type Safety**: Fixed 23+ `strlen()` calls on non-string values (PHP 8.0 TypeError prevention)  
+✅ **SQL Injection**: Fixed 30+ SQL injection vulnerabilities with proper escaping and type casting  
+✅ **Security**: Fixed 26+ critical security issues (RCE via eval(), command execution, LFI/RFI, XSS)  
 ✅ **Installer**: Fixed all PHP 8.0 compatibility issues  
 ✅ **Frontend**: Website loads without errors or warnings  
 ✅ **Admin Panel**: All admin pages now functional without errors  
@@ -79,12 +83,17 @@ For detailed installation instructions, see [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUI
 
 This version includes comprehensive fixes for PHP 8.0+ compatibility:
 
-- **94+ files modified** for PHP 8.0 compatibility
+- **151+ fixes applied** across 64+ files for PHP 8.0 compatibility
 - **MySQLi compatibility layer** replacing all deprecated `mysql_*` functions
-- **Undefined variable/array key warnings** fixed throughout
+- **Auto-increment ID fixes** (28 instances) for MySQL 8.0+ compatibility
+- **Type safety improvements** (23+ strlen() fixes) preventing PHP 8.0 TypeErrors
+- **Undefined variable/array key warnings** fixed throughout (including array offset on null)
+- **Deprecated functions** replaced (`each()`, `create_function()`, `strftime()`, etc.)
+- **SQL injection vulnerabilities** fixed (30+ instances) with proper escaping
+- **Security vulnerabilities** fixed (26+ instances: RCE, command execution, LFI/RFI, XSS)
 - **Reserved keyword conflicts** resolved (e.g., `match()` → `nk_match()`)
 - **File upload handling** modernized
-- **Session management** updated for PHP 8.0+
+- **Session management** updated for PHP 8.0+ (including secure cookie flags)
 
 For complete technical documentation, see [MIGRATION.md](MIGRATION.md).
 
@@ -104,18 +113,6 @@ For complete technical documentation, see [MIGRATION.md](MIGRATION.md).
 1. **Abandoned CMS**: The original Nuked-Klan project is archived and no longer maintained. Use at your own risk.
 2. **Security**: Keep PHP and MySQL updated, use HTTPS
 3. **Testing**: This version has been tested on PHP 8.0.30. Results may vary on other PHP versions.
-
----
-
-## 🐛 Known Issues & Limitations
-
-### Expected Warnings:
-
-- **MySQL Extension Warning**: During installation, you may see a warning about the MySQL extension not being available. This is **expected and safe to ignore**. The included MySQLi compatibility layer (`Includes/mysqli_compat.php`) automatically handles all database operations, so the application will function normally despite this warning.
-
-- **Deprecated Function Warnings**: Some PHP deprecation warnings may appear in error logs for functions that have been replaced with compatibility functions. These are handled internally and do not affect functionality. The compatibility layer ensures all deprecated PHP 5.x functions continue to work on PHP 8.0+.
-
-> These warnings do not indicate actual problems - the application has been tested and works correctly with PHP 8.0+
 
 ---
 
