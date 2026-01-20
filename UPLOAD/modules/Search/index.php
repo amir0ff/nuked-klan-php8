@@ -18,7 +18,7 @@ compteur("Search");
 opentable();
 
 function index(){
-    global $nuked, $user, $bgcolor1, $bgcolor2, $bgcolor3;
+    global $nuked, $user, $visiteur, $bgcolor1, $bgcolor2, $bgcolor3;
 
     $main = isset($_REQUEST['main']) ? stripslashes($_REQUEST['main']) : '';
     $searchtype = isset($_REQUEST['searchtype']) ? $_REQUEST['searchtype'] : '';
@@ -55,6 +55,7 @@ function index(){
     $path = "modules/Search/rubriques/";
     $modules = array();
     $handle = opendir($path);
+    $i = 0;
 	
     while ($mod = readdir($handle)){
         if ($mod != "." && $mod != ".." && $mod != "index.html"){
@@ -63,7 +64,7 @@ function index(){
             $perm = nivo_mod($mod);
             if (!$perm) $perm = 0;
 			
-            if ($user[1] >= $perm && $perm > -1){
+            if ($visiteur >= $perm && $perm > -1){
                 $umod = strtoupper($mod);
                 $modname = "_S" . $umod;
                 if (defined($modname)) $modname = constant($modname);
@@ -92,7 +93,7 @@ function index(){
 }
 
 function mod_search($module, $main, $autor, $limit, $searchtype){
-    global $nuked, $user, $bgcolor1, $bgcolor2, $bgcolor3;
+    global $nuked, $user, $visiteur, $bgcolor1, $bgcolor2, $bgcolor3;
 
     if (preg_match("`%20union%20`i", $main) ||preg_match("`union`i ", $main) || preg_match("`\*union\*`i", $main) || preg_match("`\+union\+`i", $main) || preg_match("`\*`i", $main)){
 		echo "<br /><br /><div style=\"text-align: center;\"><big>What are you trying to do ?</big></div><br /><br />";
@@ -128,6 +129,7 @@ function mod_search($module, $main, $autor, $limit, $searchtype){
         $autor = mysql_real_escape_string(stripslashes($autor));
         $search = explode(" ", $main);
         $i = 0;
+        $tab = array('module' => array(), 'title' => array(), 'link' => array());
 
         $path = "modules/Search/rubriques/";
         $handle = opendir($path);
@@ -139,7 +141,7 @@ function mod_search($module, $main, $autor, $limit, $searchtype){
                 $perm = nivo_mod($mod);
                 if (!$perm) $perm = 0;
 				
-                if ($user[1] >= $perm && $perm > -1 && ($module == $mod || $module == "")){
+                if ($visiteur >= $perm && $perm > -1 && ($module == $mod || $module == "")){
                     $umod = strtoupper($mod);
                     $modname = "_S" . $umod;
                     if (defined($modname)) $modname = constant($modname);

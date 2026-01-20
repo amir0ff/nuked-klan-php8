@@ -9,7 +9,7 @@
 // -------------------------------------------------------------------------//
 if (!defined("INDEX_CHECK")) exit('You can\'t run this file alone.');
 
-global $nuked, $language, $user;
+global $nuked, $language, $user, $visiteur;
 translate("modules/Search/lang/" . $language . ".lang.php");
 
 $sql2 = mysql_query("SELECT active FROM " . BLOCK_TABLE . " WHERE bid = '" . $bid . "'");
@@ -25,6 +25,7 @@ if ($active == 3 || $active == 4){
     $path = "modules/Search/rubriques/";
     $modules = array();
     $handle = opendir($path);
+    $i = 0;
 	
     while ($mod = readdir($handle)){
         if ($mod != "." && $mod != ".." && $mod != "index.html"){
@@ -33,7 +34,7 @@ if ($active == 3 || $active == 4){
             $perm = nivo_mod($mod);
             if (!$perm) $perm = 0;
 			
-            if ($user[1] >= $perm && $perm > -1){
+            if ($visiteur >= $perm && $perm > -1){
                 $umod = strtoupper($mod);
                 $modname = "_S" . $umod;
                 if (defined($modname)) $modname = constant($modname);

@@ -1532,17 +1532,38 @@ if ($secu_user  == 1 && $row && isset($row['last_used'])) {
 
 ---
 
+### 23. Search Module - Undefined Array Key 1 ($user[1]) (January 20, 2026)
+
+**Problem:** Warning: `Undefined array key 1` in `modules/Search/index.php` on line 142.
+
+**Root Cause:** The code was accessing `$user[1]` directly without checking if the user was logged in. In PHP 8.0+, accessing an undefined array key or index on null/non-array triggers a warning.
+
+**Fix Applied:**
+**Files Modified:**
+- `modules/Search/index.php`
+- `modules/Search/blok.php`
+
+**Changes:**
+- Replaced all `user[1]` direct accesses with the global `$visiteur` variable, which is safely initialized in `index.php`.
+- Initialized `$i = 0` before module listing loops to prevent "Undefined variable" warnings.
+- Initialized `$tab` results array in `mod_search()` to prevent "Undefined variable" warnings when no results are found.
+- Added `$visiteur` to global declarations in `index()`, `mod_search()`, and `blok.php`.
+
+**Result:** ✅ Resolved "Undefined array key 1" warnings and other uninitialized variable issues in the Search module.
+
+---
+
 ## Summary
 
 **Migration Status:** ✅ **COMPLETE** - Website and Admin Panel fully functional on PHP 8.0  
-**Total Fixes Applied:** 151+ issues across 64+ files  
+**Total Fixes Applied:** 152+ issues across 64+ files  
 **Codebase Scanned:** 84+ PHP files  
-**Last Updated:** January 19, 2026
+**Last Updated:** January 20, 2026
 
 ### Fix Categories:
 1. **Initial Migration Fixes (22 fixes):** MySQLi compatibility, deprecated functions, undefined variables, etc.
 2. **Comprehensive Audit Fixes (87+ fixes):** Auto-increment IDs, SQL injection, strftime(), strlen(), deprecated functions
-3. **Testing Bug Fixes (15 fixes):** Comment module, Contact notifications, Survey, User, Search, Userbox, HTML filter
+3. **Testing Bug Fixes (16 fixes):** Comment module, Contact notifications, Survey, User, Search (v1), Userbox, HTML filter, Search (v2 - user level)
 4. **Security Audit Fixes (26+ fixes):** RCE via eval(), command execution via system(), SQL injection, LFI/RFI, session security
 5. **Post-Deployment Fixes (1 fix):** nkSessions.php array access safety (January 19, 2026)
 
