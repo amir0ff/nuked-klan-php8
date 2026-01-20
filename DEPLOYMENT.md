@@ -13,7 +13,6 @@ Complete step-by-step guide for deploying and installing the patched Nuked-Klan 
 - PHP 7.4+ (recommended: PHP 8.0)
 - MySQL 5.7+ or MariaDB 10.2+
 - Nginx or Apache web server
-- ~50MB disk space
 
 ---
 
@@ -31,16 +30,6 @@ Create a MySQL database using your preferred method (phpMyAdmin, command line, o
    - Database name
    - Database username
    - Database password
-
-**Example using MySQL command line:**
-```bash
-mysql -u root -p
-CREATE DATABASE nuked_klan CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-CREATE USER 'nuked_user'@'localhost' IDENTIFIED BY 'your_strong_password';
-GRANT ALL PRIVILEGES ON nuked_klan.* TO 'nuked_user'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
-```
 
 ### 1.2 Set PHP Version
 
@@ -233,20 +222,6 @@ sudo grep "display_errors" /path/to/your/webroot/index.php
 
 ---
 
-## Step 7: Customize Your Installation (Optional)
-
-### Update Theme URLs
-
-If you have custom themes with hardcoded URLs, update them:
-
-```bash
-nano /path/to/your/webroot/themes/YourTheme/theme.php
-```
-
-Search for hardcoded domain names and replace with your domain or use relative paths.
-
----
-
 ## File Structure
 
 ```
@@ -355,61 +330,3 @@ define('HASHKEY', 'your-hash-key-here');
 - [x] Website loads without errors or warnings
 
 ---
-
-## Current Deployment Status
-
-**Successfully Deployed:** January 15, 2026  
-**PHP Version:** 8.0.30 (PHP-FPM)  
-**Database:** your_database_name  
-**Admin Account:** YourUsername (Level 9)  
-**Status:** ✅ **FULLY FUNCTIONAL**
-
-**Completed:**
-- ✅ Files uploaded and deployed
-- ✅ PHP 8.0 configured
-- ✅ MySQL database created
-- ✅ Installation wizard completed
-- ✅ All 57 database tables created
-- ✅ Admin account created
-- ✅ Configuration file generated
-- ✅ Website frontend fully functional
-- ✅ All PHP 8.0 compatibility issues resolved
-- ✅ No errors or warnings
-
----
-
-## Next Steps
-
-1. **Create Content:**
-   - Add news articles
-   - Configure modules
-   - Set up user accounts
-
-2. **Customize:**
-   - Edit theme files if needed
-   - Configure modules
-   - Set up blocks and widgets
-
-3. **Backup:**
-   - Create regular database backups
-   - Backup theme customizations
-   - Document any custom changes
-
-4. **Security:**
-   - Keep PHP and MySQL updated
-   - Monitor error logs
-   - Regular security audits
-
----
-
-## Support
-
-For issues specific to this patched version:
-- Check `MIGRATION.md` for technical details
-- Review PHP error logs
-- Verify all files were uploaded correctly
-- Test with PHP 8.0 first (most compatible)
-
----
-
-**Deployment Complete!** Your Nuked-Klan CMS is now fully functional on PHP 8.0! 🎉

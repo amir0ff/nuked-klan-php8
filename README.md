@@ -21,9 +21,6 @@ This is a **community-maintained, modernized version** of Nuked-Klan CMS 1.7.15 
 ✅ **SQL Injection**: Fixed 30+ SQL injection vulnerabilities with proper escaping and type casting  
 ✅ **Security**: Fixed 26+ critical security issues (RCE via eval(), command execution, LFI/RFI, XSS)  
 ✅ **Installer**: Fixed all PHP 8.0 compatibility issues  
-✅ **Frontend**: Website loads without errors or warnings  
-✅ **Admin Panel**: All admin pages now functional without errors  
-✅ **User Module**: Profile editing, avatar uploads, and preferences fully functional  
 
 ---
 
@@ -75,7 +72,7 @@ This is a **community-maintained, modernized version** of Nuked-Klan CMS 1.7.15 
    - Remove or rename the `INSTALL/` directory for security
    - Configure your site settings in the admin panel
 
-For detailed installation instructions, see [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md).
+For detailed installation instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 
@@ -101,7 +98,7 @@ For complete technical documentation, see [MIGRATION.md](MIGRATION.md).
 
 ## 📚 Documentation
 
-- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Step-by-step deployment and installation instructions (start here!)
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Step-by-step deployment and installation instructions (start here!)
 - **[MIGRATION.md](MIGRATION.md)** - Complete technical documentation of all PHP 8.0 compatibility fixes
 - **[TESTING.md](TESTING.md)** - Manual testing checklist for PHP 8.0 migration
 - **[README.md](README.md)** - This file
