@@ -56,7 +56,7 @@ if ($visiteur >= $level_access && $level_access > -1) {
 
         $time = time();
         $cookiename = $nuked['cookiename'];
-        $user_pool_id = $_COOKIE[$cookiename . '_user_pool_' . $poll_id];
+        $user_pool_id = isset($_COOKIE[$cookiename . '_user_pool_' . $poll_id]) ? $_COOKIE[$cookiename . '_user_pool_' . $poll_id] : '';
         $verifip = 0;
 
         if (!empty($user[2])) $username = $user[2];
@@ -105,16 +105,16 @@ if ($visiteur >= $level_access && $level_access > -1) {
 
     function vote_message() {
 
-        if ($_REQUEST['error'] == 1) {
+        if (isset($_REQUEST['error']) && $_REQUEST['error'] == 1) {
             $texte_vote = _ONLYMEMBERS;
             $url_redirect = 'index.php?file=User';
-        } else if ($_REQUEST['error'] == 2) {
+        } else if (isset($_REQUEST['error']) && $_REQUEST['error'] == 2) {
             $texte_vote = _NOLEVEL;
             $url_redirect = 'index.php?file=Survey&op=affich_res&poll_id=' . $_REQUEST['poll_id'];
-        } else if ($_REQUEST['error'] == 3) {
+        } else if (isset($_REQUEST['error']) && $_REQUEST['error'] == 3) {
             $texte_vote = _ALREADYVOTE;
             $url_redirect = 'index.php?file=Survey&op=affich_res&poll_id=' . $_REQUEST['poll_id'];
-        } else if ($_REQUEST['error'] == 4) {
+        } else if (isset($_REQUEST['error']) && $_REQUEST['error'] == 4) {
             $texte_vote = _NOOPTION;
             $url_redirect = 'index.php?file=Survey&op=sondage&poll_id=' . $_REQUEST['poll_id'];
         } else {

@@ -1528,8 +1528,6 @@ if ($secu_user  == 1 && $row && isset($row['last_used'])) {
 - ⚠️ CSRF protection: No tokens implemented yet - recommended for future enhancement
 - ⚠️ Password hashing: Still uses SHA1/MD5 - migration to `password_hash()` recommended for future enhancement
 
-**Note:** For complete security audit details, see `SECURITY_AUDIT.md`. This section documents only the fixes that were implemented.
-
 ---
 
 ### 23. Search Module - Undefined Array Key 1 ($user[1]) (January 20, 2026)
@@ -1551,26 +1549,44 @@ if ($secu_user  == 1 && $row && isset($row['last_used'])) {
 
 **Result:** ✅ Resolved "Undefined array key 1" warnings and other uninitialized variable issues in the Search module.
 
+### 24. Survey Module - Undefined Array Keys (January 21, 2026)
+
+**Problem 1:** Warning: `Undefined array key "error"` in `modules/Survey/index.php`.
+**Problem 2:** Warning: `Undefined array key "nuked_user_pool_1"` in `modules/Survey/index.php`.
+
+**Fixes Applied:**
+- **File:** `modules/Survey/index.php`
+- **Error fix:** Added `isset($_REQUEST['error'])` checks in `vote_message()` function (line 108).
+- **Cookie fix:** Added `isset()` check for cookie access in `verif_check()` function (line 59).
+
+### 25. Stats Module - Encoding Issues (January 21, 2026)
+
+**Problem:** Stats block specifically displaying "ï¿½" replacement characters instead of bullet points.
+
+**Fix Applied:**
+- **File:** `modules/Stats/blok.php`
+- **Fix:** Replaced hardcoded "ï¿½" (replacement character) artifacts with standard HTML entity `&bull;`.
+
 ---
 
 ## Summary
 
 **Migration Status:** ✅ **COMPLETE** - Website and Admin Panel fully functional on PHP 8.0  
-**Total Fixes Applied:** 152+ issues across 64+ files  
+**Total Fixes Applied:** 155+ issues across 66+ files  
 **Codebase Scanned:** 84+ PHP files  
-**Last Updated:** January 20, 2026
+**Last Updated:** January 21, 2026
 
 ### Fix Categories:
 1. **Initial Migration Fixes (22 fixes):** MySQLi compatibility, deprecated functions, undefined variables, etc.
 2. **Comprehensive Audit Fixes (87+ fixes):** Auto-increment IDs, SQL injection, strftime(), strlen(), deprecated functions
-3. **Testing Bug Fixes (16 fixes):** Comment module, Contact notifications, Survey, User, Search (v1), Userbox, HTML filter, Search (v2 - user level)
+3. **Testing Bug Fixes (19 fixes):** Comment module, Contact notifications, Survey, User, Search (v1), Userbox, HTML filter, Search (v2 - user level), Survey (error keys), Stats (encoding)
 4. **Security Audit Fixes (26+ fixes):** RCE via eval(), command execution via system(), SQL injection, LFI/RFI, session security
 5. **Post-Deployment Fixes (1 fix):** nkSessions.php array access safety (January 19, 2026)
 
 ### Issue Statistics:
-- **Total Issues Found:** ~251+ potential issues
-- **Critical/High Priority Fixed:** 114+ issues (88 compatibility + 26 security)
-- **Files Modified:** 64+ files (50 compatibility + 14 security)
+- **Total Issues Found:** ~254+ potential issues
+- **Critical/High Priority Fixed:** 117+ issues (88 compatibility + 26 security + 3 bug fixes)
+- **Files Modified:** 66+ files (50 compatibility + 14 security + 2 bug fixes)
 - **Remaining Lower Priority:** ~100+ issues (XSS in some outputs, CSRF tokens, password hashing migration - can be addressed as needed)
 
 ### Testing Status:
@@ -1578,10 +1594,11 @@ if ($secu_user  == 1 && $row && isset($row['last_used'])) {
 - ✅ News module (full CRUD operations)
 - ✅ Comment module (AJAX submission, admin management)
 - ✅ Contact module (send, view, delete, notifications)
-- ✅ Survey module (list display)
+- ✅ Survey module (list display, voting, errors)
 - ✅ User module (profile edit, theme change)
 - ✅ Search module (search functionality)
 - ✅ Userbox module (messaging)
+- ✅ Stats module (display encoding)
 - ⏳ Additional modules pending systematic testing
 
 **For detailed testing checklist, see [TESTING.md](TESTING.md).**
