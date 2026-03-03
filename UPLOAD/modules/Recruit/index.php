@@ -126,7 +126,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 			sort ($rep);
 			reset ($rep);
 
-			while (list ($key, $filename) = each ($rep))
+			foreach ($rep as $key => $filename)
 			{
 				if ($filename == $pays)
 				{

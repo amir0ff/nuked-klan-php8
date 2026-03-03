@@ -289,7 +289,7 @@ if ($visiteur >= $level_admin && $level_admin > -1){
         sort ($rep);
         reset ($rep);
 
-        while (list ($key, $filename) = each ($rep)){
+        foreach ($rep as $key => $filename) {
             if ($filename == $pays_adv){
                 $checked5 = "selected=\"selected\"";
             } 

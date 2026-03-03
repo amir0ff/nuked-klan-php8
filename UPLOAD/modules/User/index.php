@@ -305,7 +305,7 @@ function reg_screen(){
             sort ($rep);
             reset ($rep);
 
-            while (list ($key, $filename) = each ($rep)){
+            foreach ($rep as $key => $filename) {
                 if ($filename == $pays){
                     $checked = "selected=\"selected\"";
                 }
@@ -410,7 +410,7 @@ function edit_account(){
         sort ($rep);
         reset ($rep);
 
-        while (list ($key, $filename) = each ($rep)){
+        foreach ($rep as $key => $filename) {
             if ($filename == $pays){
                 $checked = "selected=\"selected\"";
             }

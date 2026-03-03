@@ -123,7 +123,7 @@ if ($visiteur == 9)
         sort ($rep);
         reset ($rep);
 
-        while (list ($key, $filename) = each ($rep))
+        foreach ($rep as $key => $filename)
         {
                 echo "<option value=\"" . $filename . "\">" . $filename . "</option>\n";
         }
@@ -248,7 +248,7 @@ if ($visiteur == 9)
         sort ($rep);
         reset ($rep);
 
-        while (list ($key, $filename) = each ($rep))
+        foreach ($rep as $key => $filename)
         {
             if ($url == $filename)
             {
