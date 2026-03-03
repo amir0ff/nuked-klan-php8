@@ -100,7 +100,7 @@ function form($content, $sug_id)
     echo "<tr><td><b>" . _TEXT . "</b></td></tr>\n"
     . "<tr><td><textarea ";
 
-    echo isset($_REQUEST['page']) && $_REQUEST['page'] == 'admin' ? 'class="editor" ' : 'id="e_advanced" ';
+    echo isset($_REQUEST['page']) && nkHtmlEntities($_REQUEST['page'], ENT_QUOTES) == 'admin' ? 'class="editor" ' : 'id="e_advanced" ';
 
     echo "name=\"texte\" cols=\"65\" rows=\"12\">" .  nkHtmlEntities($content_texte, ENT_QUOTES) . "</textarea></td></tr>\n"
         . "<tr><td>&nbsp;<input type=\"hidden\" name=\"sug_id\" value=\"" . $sug_id . "\" />\n"

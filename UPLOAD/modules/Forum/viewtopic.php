@@ -132,7 +132,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         echo "<br /><a name=\"top\"></a><table width=\"100%\" id=\"Forum\" cellspacing=\"0\" cellpadding=\"4\" border=\"0\">\n"
         . "<tr><td><big><b>" . htmlspecialchars($titre) . "</b></big></td><td align=\"right\">" . $prev . "&nbsp;" . $next . "</td></tr>\n"
-        . "<tr><td valign=\"bottom\"><a href=\"index.php?file=Forum\"><b>" . _INDEXFORUM . "</b></a> -&gt; <a href=\"index.php?file=Forum&amp;cat=" . $cat . "\"><b>" . $cat_name . "</b></a> -&gt; <a href=\"index.php?file=Forum&amp;page=viewforum&amp;forum_id=" . $_REQUEST['forum_id'] . "\"><b>" . $nom . "</b></a>\n";
+        . "<tr><td valign=\"bottom\"><a href=\"index.php?file=Forum\"><b>" . _INDEXFORUM . "</b></a> -&gt; <a href=\"index.php?file=Forum&amp;cat=" . $cat . "\"><b>" . $cat_name . "</b></a> -&gt; <a href=\"index.php?file=Forum&amp;page=viewforum&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "\"><b>" . $nom . "</b></a>\n";
 
         $sql3 = mysql_query("SELECT thread_id FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $thread_id . "'");
         $count = mysql_num_rows($sql3);
@@ -155,7 +155,7 @@ if ($visiteur >= $level_access && $level_access > -1)
         } 
         else
         {
-            $url_page = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'];
+            $url_page = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . $_REQUEST['thread_id'];
         } 
 
         if ($count > $nb_mess_for_mess)
@@ -168,11 +168,11 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($level == 0 || $visiteur >= $level || $administrator == 1)
         {
-            echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . $_REQUEST['forum_id'] . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/newthread.gif\" alt=\"\" title=\"" . _NEWSTOPIC . "\" /></a>";
+            echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/newthread.gif\" alt=\"\" title=\"" . _NEWSTOPIC . "\" /></a>";
 
             if ($closed == 0 || $administrator == 1 || $visiteur >= admin_mod("Forum"))
             {
-                echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/reply.gif\" alt=\"\" title=\"" . _REPLY . "\" /></a>";
+                echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/reply.gif\" alt=\"\" title=\"" . _REPLY . "\" /></a>";
             } 
         } 
 
@@ -191,7 +191,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
             if ($user && $topic_aid == $user[0] && $closed == 0 || $visiteur >= admin_mod("Forum") || $administrator == 1)
             {
-                echo "<div style=\"text-align: right;\"><a href=\"index.php?file=Forum&amp;op=edit_poll&amp;poll_id=" . $poll_id . "&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/edit.gif\" alt=\"\" title=\"" . _EDITPOLL . "\" /></a>&nbsp;<a href=\"index.php?file=Forum&amp;op=del_poll&amp;poll_id=" . $poll_id . "&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/delete.gif\" alt=\"\" title=\"" . _DELPOLL . "\" /></a>&nbsp;</div>\n";
+                echo "<div style=\"text-align: right;\"><a href=\"index.php?file=Forum&amp;op=edit_poll&amp;poll_id=" . $poll_id . "&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/edit.gif\" alt=\"\" title=\"" . _EDITPOLL . "\" /></a>&nbsp;<a href=\"index.php?file=Forum&amp;op=del_poll&amp;poll_id=" . $poll_id . "&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/delete.gif\" alt=\"\" title=\"" . _DELPOLL . "\" /></a>&nbsp;</div>\n";
             } 
 
             $check = mysql_query("SELECT auteur_ip FROM " . FORUM_VOTE_TABLE . " WHERE poll_id = '" . $poll_id . "' AND auteur_id = '" . $user[0] . "'");
@@ -332,7 +332,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
                         if ($user && $auteur_id == $user[0] || $visiteur >= admin_mod("Forum") || $administrator == 1)
                         {
-                            $del = "&nbsp;<a href=\"index.php?file=Forum&amp;op=del_file&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "&amp;mess_id=" . $mess_id . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/del.gif\" alt=\"\" title=\"" . _DELFILE . "\" /></a>";
+                            $del = "&nbsp;<a href=\"index.php?file=Forum&amp;op=del_file&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "&amp;mess_id=" . $mess_id . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/del.gif\" alt=\"\" title=\"" . _DELFILE . "\" /></a>";
                         } 
                         else
                         {
@@ -521,11 +521,11 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($highlight_check != "")
         {
-            $url_page = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&thread_id=" . $_REQUEST['thread_id'] . "&amp;highlight=" . urlencode($_REQUEST['highlight']);
+            $url_page = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "&amp;highlight=" . urlencode($_REQUEST['highlight']);
         } 
         else
         {
-            $url_page = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&thread_id=" . $_REQUEST['thread_id'];
+            $url_page = "index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&thread_id=" . $_REQUEST['thread_id'];
         } 
 
         if ($count > $nb_mess_for_mess)
@@ -556,11 +556,11 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($inotify > 0)
         {
-                    echo "<a href=\"index.php?file=Forum&amp;op=notify&amp;do=off&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "\">" . _NOTIFYOFF . "</a><br />\n";
+                    echo "<a href=\"index.php?file=Forum&amp;op=notify&amp;do=off&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "\">" . _NOTIFYOFF . "</a><br />\n";
         }
         else
         {
-                    echo "<a href=\"index.php?file=Forum&amp;op=notify&amp;do=on&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "\">" . _NOTIFYON . "</a><br />\n";
+                    echo "<a href=\"index.php?file=Forum&amp;op=notify&amp;do=on&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "\">" . _NOTIFYON . "</a><br />\n";
         }
 
             }
@@ -569,11 +569,11 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($level == 0 || $visiteur >= $level || $administrator == 1)
         {
-            echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . $_REQUEST['forum_id'] . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/newthread.gif\" alt=\"\" title=\"" . _NEWSTOPIC . "\" /></a>";
+            echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/newthread.gif\" alt=\"\" title=\"" . _NEWSTOPIC . "\" /></a>";
 
             if ($closed == 0 || $administrator == 1 || $visiteur >= admin_mod("Forum"))
             {
-                echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/reply.gif\" alt=\"\" title=\"" . _REPLY . "\" /></a>";
+                echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/reply.gif\" alt=\"\" title=\"" . _REPLY . "\" /></a>";
             } 
 
         } 
@@ -582,25 +582,25 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($visiteur >= admin_mod("Forum") || $administrator == 1)
         {
-            echo "<br /><a href=\"index.php?file=Forum&amp;op=del_topic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/topic_delete.gif\" alt=\"\" title=\"" . _TOPICDEL . "\" /></a>"
-            . "&nbsp;<a href=\"index.php?file=Forum&amp;op=move&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/topic_move.gif\" alt=\"\" title=\"" . _TOPICMOVE . "\" /></a>";
+            echo "<br /><a href=\"index.php?file=Forum&amp;op=del_topic&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/topic_delete.gif\" alt=\"\" title=\"" . _TOPICDEL . "\" /></a>"
+            . "&nbsp;<a href=\"index.php?file=Forum&amp;op=move&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "\"><img style=\"border: 0;\" src=\"modules/Forum/images/topic_move.gif\" alt=\"\" title=\"" . _TOPICMOVE . "\" /></a>";
 
             if ($closed == 1)
             {
-                echo "&nbsp;<a href=\"index.php?file=Forum&amp;op=lock&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "&amp;do=open\"><img style=\"border: 0;\" src=\"modules/Forum/images/topic_unlock.gif\" alt=\"\" title=\"" . _TOPICUNLOCK . "\" /></a>";
+                echo "&nbsp;<a href=\"index.php?file=Forum&amp;op=lock&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "&amp;do=open\"><img style=\"border: 0;\" src=\"modules/Forum/images/topic_unlock.gif\" alt=\"\" title=\"" . _TOPICUNLOCK . "\" /></a>";
             } 
             else
             {
-                echo "&nbsp;<a href=\"index.php?file=Forum&amp;op=lock&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "&amp;do=close\"><img style=\"border: 0;\" src=\"modules/Forum/images/topic_lock.gif\" alt=\"\" title=\"" . _TOPICLOCK . "\" /></a>";
+                echo "&nbsp;<a href=\"index.php?file=Forum&amp;op=lock&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "&amp;do=close\"><img style=\"border: 0;\" src=\"modules/Forum/images/topic_lock.gif\" alt=\"\" title=\"" . _TOPICLOCK . "\" /></a>";
             } 
 
             if ($annonce == 1)
             {
-                echo "&nbsp;<a href=\"index.php?file=Forum&amp;op=announce&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "&amp;do=down\"><img style=\"border: 0;\" src=\"modules/Forum/images/topic_down.gif\" alt=\"\" title=\"" . _TOPICDOWN . "\" /></a>";
+                echo "&nbsp;<a href=\"index.php?file=Forum&amp;op=announce&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "&amp;do=down\"><img style=\"border: 0;\" src=\"modules/Forum/images/topic_down.gif\" alt=\"\" title=\"" . _TOPICDOWN . "\" /></a>";
             } 
             else
             {
-                echo "&nbsp;<a href=\"index.php?file=Forum&amp;op=announce&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $_REQUEST['thread_id'] . "&amp;do=up\"><img style=\"border: 0;\" src=\"modules/Forum/images/topic_up.gif\" alt=\"\" title=\"" . _TOPICUP . "\" /></a>";
+                echo "&nbsp;<a href=\"index.php?file=Forum&amp;op=announce&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . nkHtmlEntities($_REQUEST['thread_id'], ENT_QUOTES) . "&amp;do=up\"><img style=\"border: 0;\" src=\"modules/Forum/images/topic_up.gif\" alt=\"\" title=\"" . _TOPICUP . "\" /></a>";
             } 
         }
 

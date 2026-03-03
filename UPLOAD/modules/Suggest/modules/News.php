@@ -67,7 +67,7 @@ function form($content, $sug_id){
             . "<tr><td><b>" . _TEXT . " :</b></td></tr>\n"
             . "<tr><td><textarea ";
     
-    echo $_REQUEST['page'] == 'admin' ? 'class="editor" ' : 'id="e_advanced" ';
+    echo nkHtmlEntities($_REQUEST['page'], ENT_QUOTES) == 'admin' ? 'class="editor" ' : 'id="e_advanced" ';
 
     echo " name=\"texte\" cols=\"65\" rows=\"12\">" . $content[1] . "</textarea></td></tr>\n"
         . "<tr><td>&nbsp;<input type=\"hidden\" name=\"sug_id\" value=\"" . $sug_id . "\" />\n"

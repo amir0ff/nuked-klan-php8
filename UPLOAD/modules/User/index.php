@@ -1951,7 +1951,7 @@ function validation() {
             redirect('index.php?file=User', 3);
         }
         else {
-            $upd = mysql_query('UPDATE ' . USER_TABLE . ' SET niveau = 1 WHERE id = "' . $_REQUEST['id_user'] . '"');
+            $upd = mysql_query('UPDATE ' . USER_TABLE . ' SET niveau = 1 WHERE id = "' . (int)$_REQUEST['id_user'] . '"');
 
             echo '<br /><br /><div style="text-align: center">' . _VALIDUSER . '</div><br /><br />';
             redirect('index.php?file=User&op=login_screen', 3);

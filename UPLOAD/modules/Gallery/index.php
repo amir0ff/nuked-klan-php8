@@ -512,7 +512,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             $nb_subcat = 0;
         }
         
-        if ($_REQUEST['op'] == "classe")
+        if ($op_clean == "classe")
         {
             if ($nuked['gallery_title'] != "")
             {
@@ -587,7 +587,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             } 
             else
             {
-                echo "<a href=\"index.php?file=Gallery&amp;op=" . $_REQUEST['op'] . "&amp;orderby=news&amp;cat=" . $cat . "\">" . _DATE . "</a> | ";
+                echo "<a href=\"index.php?file=Gallery&amp;op=" . $op_clean . "&amp;orderby=news&amp;cat=" . $cat . "\">" . _DATE . "</a> | ";
             }
 
             if ($_REQUEST['orderby'] == "name")
@@ -597,7 +597,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
             else
             {
-                echo "<a href=\"index.php?file=Gallery&amp;op=" . $_REQUEST['op'] . "&amp;orderby=name&amp;cat=" . $cat . "\">" . _NAME . "</a> | ";
+                echo "<a href=\"index.php?file=Gallery&amp;op=" . $op_clean . "&amp;orderby=name&amp;cat=" . $cat . "\">" . _NAME . "</a> | ";
             }
 
             if ($_REQUEST['orderby'] == "count")
@@ -606,7 +606,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             } 
             else
             {
-                echo "<a href=\"index.php?file=Gallery&amp;op=" . $_REQUEST['op'] . "&amp;orderby=count&amp;cat=" . $cat . "\">" . _TOPFILE . "</a> | ";
+                echo "<a href=\"index.php?file=Gallery&amp;op=" . $op_clean . "&amp;orderby=count&amp;cat=" . $cat . "\">" . _TOPFILE . "</a> | ";
             }
 
             if ($_REQUEST['orderby'] == "note" && nivo_mod('Vote') > -1)
@@ -615,7 +615,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             }
             elseif (nivo_mod('Vote') > -1)
             {
-                echo "<a href=\"index.php?file=Gallery&amp;op=" . $_REQUEST['op'] . "&amp;orderby=note&amp;cat=" . $cat . "\">" . _NOTE . "</a>&nbsp;";
+                echo "<a href=\"index.php?file=Gallery&amp;op=" . $op_clean . "&amp;orderby=note&amp;cat=" . $cat . "\">" . _NOTE . "</a>&nbsp;";
             }
 
             echo "</small></td></tr></table>\n";
@@ -632,7 +632,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
             if ($count > $nb_img_guest)
             {
-                $url_page = "index.php?file=Gallery&amp;op=" . $_REQUEST['op'] . "&amp;cat=" . $cat . "&amp;orderby=" . $_REQUEST['orderby'];
+                $url_page = "index.php?file=Gallery&amp;op=" . $op_clean . "&amp;cat=" . $cat . "&amp;orderby=" . $_REQUEST['orderby'];
                 number($count, $nb_img_guest, $url_page);
             } 
             else
@@ -720,7 +720,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
             if ($count > $nb_img_guest)
             {
-                $url_page = "index.php?file=Gallery&amp;op=" . $_REQUEST['op'] . "&amp;cat=" . $cat . "&amp;orderby=" . $_REQUEST['orderby'];
+                $url_page = "index.php?file=Gallery&amp;op=" . $op_clean . "&amp;cat=" . $cat . "&amp;orderby=" . $_REQUEST['orderby'];
                 number($count, $nb_img_guest, $url_page);
             } 
             else
@@ -734,7 +734,7 @@ if ($visiteur >= $level_access && $level_access > -1)
         else
         {
              if ($nb_subcat == 0 && $cat > 0) echo "<div style=\"text-align: center;\"><br />" . _NOSCREEN . "</div><br /><br />\n";
-             if ($_REQUEST['op'] == "classe") echo "<div style=\"text-align: center;\"><br />" . _NOSCREENINDB . "</div><br /><br />\n";
+             if ($op_clean == "classe") echo "<div style=\"text-align: center;\"><br />" . _NOSCREENINDB . "</div><br /><br />\n";
         } 
     
     }
@@ -759,7 +759,7 @@ if ($visiteur >= $level_access && $level_access > -1)
         return($image_resize);
     }
 
-    switch ($_REQUEST['op'])
+    switch ($op_clean)
     {
         case "description":
             description($_REQUEST['sid']);

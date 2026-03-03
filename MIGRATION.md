@@ -1569,6 +1569,38 @@ if ($secu_user  == 1 && $row && isset($row['last_used'])) {
 
 ---
 
+---
+
+### 26. Security & Deprecation Fixes (March 2026)
+
+This phase of the audit targeted resolving remaining high-severity vulnerabilities and PHP 8.0 deprecations across the `main` and custom branches.
+
+**Issue Categories Fixed:**
+- ✅ **Command Injection (RCE):** Removed dangerous `@system()` call in `modules/Forum/index.php` 
+- ✅ **SQL Injection (SQLi):** Fixed 23 instances of `$_REQUEST` parameters passed directly to `mysql_query()` across 8 modules (Forum, Calendar, Vote, Admin, User, Wars, Stats) by adding `(int)` typecasting or `mysql_real_escape_string()`.
+- ✅ **Cross-Site Scripting (XSS):** Fixed 13 instances across 6 modules (Gallery, Links, Download, Sections, Suggest, Forum) where `$_REQUEST` inputs were being output directly to HTML attributes or URLs. Applied `nkHtmlEntities()` to sanitize the variables before output.
+- ✅ **PHP 8.0 Deprecation (`each()`):** Replaced the final 8 lingering instances of `while(list() = each())` with `foreach` loops across 5 core modules (`Admin/smilies`, `Links`, `User`, `Recruit`, `Wars`).
+
+**Files Modified:**
+- `modules/Forum/index.php`
+- `modules/Forum/viewtopic.php`
+- `modules/Forum/viewforum.php`
+- `modules/Calendar/index.php`
+- `modules/Vote/admin.php`
+- `modules/Admin/notification.php`
+- `modules/Admin/menu.php`
+- `modules/User/index.php`
+- `modules/Wars/admin.php`
+- `modules/Stats/visits.php`
+- `modules/Gallery/index.php`
+- `modules/Links/index.php`
+- `modules/Download/index.php`
+- `modules/Sections/index.php`
+- `modules/Suggest/modules/*.php` (5 files)
+- `themes/Impact_Nk/theme.php`
+- `modules/Admin/smilies.php`
+- `modules/Recruit/index.php`
+
 ## Summary
 
 **Migration Status:** ✅ **COMPLETE** - Website and Admin Panel fully functional on PHP 8.0  

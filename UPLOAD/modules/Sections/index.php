@@ -391,17 +391,18 @@ if ($visiteur >= $level_access && $level_access > -1){
             echo "<table style=\"margin-left: auto;margin-right: auto;text-align: left;\" width=\"90%\">\n"
                     . "<tr><td align=\"right\"><small>" . _ORDERBY . " : ";
 
-            if ($_REQUEST['orderby'] == "news") echo "<b>" . _DATE . "</b> | ";
-            else echo "<a href=\"index.php?file=Sections&amp;op=" . $_REQUEST['op'] . "&amp;orderby=news&amp;secid=" . $sid . "\">" . _DATE . "</a> | ";
+            $op_clean = nkHtmlEntities($_REQUEST['op'], ENT_QUOTES);
+            if ($orderby == "news") echo "<b>" . _DATE . "</b> | ";
+            else echo "<a href=\"index.php?file=Sections&amp;op=" . $op_clean . "&amp;orderby=news&amp;secid=" . $sid . "\">" . _DATE . "</a> | ";
 
-            if ($_REQUEST['orderby'] == "count") echo "<b>" . _TOPFILE . "</b> | ";
-            else echo "<a href=\"index.php?file=Sections&amp;op=" . $_REQUEST['op'] . "&amp;orderby=count&amp;secid=" . $sid . "\">" . _TOPFILE . "</a> | ";
+            if ($orderby == "count") echo "<b>" . _TOPFILE . "</b> | ";
+            else echo "<a href=\"index.php?file=Sections&amp;op=" . $op_clean . "&amp;orderby=count&amp;secid=" . $sid . "\">" . _TOPFILE . "</a> | ";
 
-            if ($_REQUEST['orderby'] == "name") echo "<b>" . _NAME . "</b> | ";
-            else echo"    <a href=\"index.php?file=Sections&amp;op=" . $_REQUEST['op'] . "&amp;orderby=name&amp;secid=" . $sid . "\">" . _NAME . "</a> | ";
+            if ($orderby == "name") echo "<b>" . _NAME . "</b> | ";
+            else echo"    <a href=\"index.php?file=Sections&amp;op=" . $op_clean . "&amp;orderby=name&amp;secid=" . $sid . "\">" . _NAME . "</a> | ";
 
-            if ($_REQUEST['orderby'] == "note") echo"<b>" . _NOTE . "</b>";
-            else echo"    <a href=\"index.php?file=Sections&amp;op=" . $_REQUEST['op'] . "&amp;orderby=note&amp;secid=" . $sid . "\">" . _NOTE . "</a>";
+            if ($orderby == "note") echo"<b>" . _NOTE . "</b>";
+            else echo"    <a href=\"index.php?file=Sections&amp;op=" . $op_clean . "&amp;orderby=note&amp;secid=" . $sid . "\">" . _NOTE . "</a>";
 
             echo "</small></td></tr></table>\n";
         } 

@@ -94,7 +94,7 @@ function form($content, $sug_id){
     echo "<tr><td><b>" . _DESCR . " :</b><br />\n"
             . "<textarea ";
     
-    echo $_REQUEST['page'] == 'admin' ? 'class="editor" ' : 'id="e_advanced" ';
+    echo nkHtmlEntities($_REQUEST['page'], ENT_QUOTES) == 'admin' ? 'class="editor" ' : 'id="e_advanced" ';
     
     echo " id=\"download_texte\" name=\"description\" rows=\"10\" cols=\"65\">" . $content[2] . "</textarea></td></tr>\n";
     

@@ -18,8 +18,8 @@ This is a **community-maintained, modernized version** of Nuked-Klan CMS 1.7.15 
 ✅ **Undefined Variables**: Fixed all undefined array key warnings and array offset on null issues  
 ✅ **Auto-Increment IDs**: Fixed 28+ MySQL 8.0 compatibility issues with auto-increment fields  
 ✅ **Type Safety**: Fixed 23+ `strlen()` calls on non-string values (PHP 8.0 TypeError prevention)  
-✅ **SQL Injection**: Fixed 30+ SQL injection vulnerabilities with proper escaping and type casting  
-✅ **Security**: Fixed 26+ critical security issues (RCE via eval(), command execution, LFI/RFI, XSS)  
+✅ **SQL Injection**: Fixed 53+ SQL injection vulnerabilities with proper escaping and type casting  
+✅ **Security**: Fixed 39+ critical security issues (RCE via eval(), command execution, LFI/RFI, XSS)  
 ✅ **Installer**: Fixed all PHP 8.0 compatibility issues  
 
 ---

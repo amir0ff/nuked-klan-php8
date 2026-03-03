@@ -111,7 +111,7 @@ function form($content, $sug_id){
     echo "<tr><td><b>" . _DESCR . " : </b></td></tr>\n"
             . "<tr><td><textarea ";
             
-    echo $_REQUEST['page'] == 'admin' ? 'class="editor" ' : 'id="e_advanced" ';
+    echo nkHtmlEntities($_REQUEST['page'], ENT_QUOTES) == 'admin' ? 'class="editor" ' : 'id="e_advanced" ';
 
     echo " name=\"description\" rows=\"10\" cols=\"65\">" . $content[2] . "</textarea></td></tr>\n"
         . "<tr><td><b>" . _URL . " :</b> <input type=\"text\" name=\"url\" value=\"" . $content[1] . "\" size=\"55\" /> " . $button . "</td></tr>\n"

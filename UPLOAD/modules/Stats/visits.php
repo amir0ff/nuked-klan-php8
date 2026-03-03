@@ -374,7 +374,7 @@ if ($visiteur >= $nuked['level_analys'] && $nuked['level_analys']!= -1) {
 
                 if (!empty($_REQUEST['omonth'])) {
                     echo '<select name="omonth">';
-                    $sql10 = mysql_query("SELECT month FROM " . STATS_VISITOR_TABLE . " WHERE year = '" . $_REQUEST['oyear'] . "' GROUP BY month ORDER BY month");
+                    $sql10 = mysql_query("SELECT month FROM " . STATS_VISITOR_TABLE . " WHERE year = '" . (int)$_REQUEST['oyear'] . "' GROUP BY month ORDER BY month");
                     while (list($newmonth) = mysql_fetch_array($sql10)) {
                         $selected1 = ($_REQUEST['omonth'] == $newmonth) ? 'selected="selected"' : '';
 

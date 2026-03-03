@@ -319,10 +319,10 @@ function show_event(){
 	global $bgcolor2, $user, $nuked, $theme, $language;
 	
 	if ($_REQUEST['type'] == "birthday" && ctype_alnum($_REQUEST['eid'])) {
-		$sql = mysql_query("SELECT pseudo FROM " . USER_TABLE . " WHERE id = '" . $_REQUEST['eid'] . "'");
+		$sql = mysql_query("SELECT pseudo FROM " . USER_TABLE . " WHERE id = '" . (int)$_REQUEST['eid'] . "'");
 		list($pseudo) = mysql_fetch_array($sql);
 		
-		$sql2 = mysql_query("SELECT prenom, age FROM " . USER_DETAIL_TABLE . " WHERE user_id = '" . $_REQUEST['eid'] . "'");
+		$sql2 = mysql_query("SELECT prenom, age FROM " . USER_DETAIL_TABLE . " WHERE user_id = '" . (int)$_REQUEST['eid'] . "'");
 		list($prenom, $birthday) = mysql_fetch_array($sql2);
 		
 		list ($jour, $mois, $an) = explode ('/', $birthday);
@@ -344,7 +344,7 @@ function show_event(){
 		. "<tr><td>&nbsp;</td></tr><tr><td align=\"center\"><b><a href=\"#\" onclick=\"self.close()\">" . _CLOSEWINDOW . "</a></b></td></tr></table></body></html>";
 		
 	}elseif ($_REQUEST['type'] == "match" && is_numeric($_REQUEST['eid'])){
-		$sql = mysql_query("SELECT warid, etat, team, adversaire, type, date_jour, date_mois, date_an, heure, style, tscore_team, tscore_adv, report FROM " . WARS_TABLE . " WHERE warid = '" . $_REQUEST['eid'] . "'");
+		$sql = mysql_query("SELECT warid, etat, team, adversaire, type, date_jour, date_mois, date_an, heure, style, tscore_team, tscore_adv, report FROM " . WARS_TABLE . " WHERE warid = '" . (int)$_REQUEST['eid'] . "'");
 		$nb_match = mysql_num_rows($sql);
 		list($warid, $etat, $team, $adv_name, $type_match, $jour, $mois, $an, $heure, $style, $score_team, $score_adv, $report) = mysql_fetch_array($sql);
 		
@@ -406,7 +406,7 @@ function show_event(){
 	
 	}else if (is_numeric($_REQUEST['eid'])){
 		
-		$sql = mysql_query("SELECT titre, description, date_jour, date_mois, date_an, heure, auteur FROM " . CALENDAR_TABLE . " WHERE id = '" . $_REQUEST['eid'] . "'");
+		$sql = mysql_query("SELECT titre, description, date_jour, date_mois, date_an, heure, auteur FROM " . CALENDAR_TABLE . " WHERE id = '" . (int)$_REQUEST['eid'] . "'");
 		list($titre, $description, $jour, $mois, $an, $heure, $auteur) = mysql_fetch_array($sql);
 		
 		$description = icon($description);

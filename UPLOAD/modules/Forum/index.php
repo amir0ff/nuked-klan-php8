@@ -277,7 +277,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                             $filesys = str_replace("/", "\\", $path);
                             @chmod ($path, 0775);
                             @unlink($path);
-                            @system("del $filesys");
+                            // SECURITY FIX: Remove system() call - unlink() is sufficient and safer
                         }
                     }
                 }
@@ -505,7 +505,7 @@ if ($visiteur >= $level_access && $level_access > -1)
         {
             echo "<br /><br /><div style=\"text-align: center;\">" . $lock_text . "</div><br /><br />";
 
-            $sql = mysql_query("UPDATE " . FORUM_THREADS_TABLE . " SET closed = '" . $lock_type . "' WHERE id = '" . $_REQUEST['thread_id'] . "'");
+            $sql = mysql_query("UPDATE " . FORUM_THREADS_TABLE . " SET closed = '" . $lock_type . "' WHERE id = '" . (int)$_REQUEST['thread_id'] . "'");
 
             $url = "index.php?file=Forum&page=viewtopic&forum_id=" . $_REQUEST['forum_id'] . "&thread_id=" . $_REQUEST['thread_id'];
             redirect($url, 2);
@@ -554,7 +554,7 @@ if ($visiteur >= $level_access && $level_access > -1)
         {
             echo "<br /><br /><div style=\"text-align: center;\">" . _TOPICMODIFIED . "</div><br /><br />";
 
-            $sql = mysql_query("UPDATE " . FORUM_THREADS_TABLE . " SET annonce = '" . $announce . "' WHERE id = '" . $_REQUEST['thread_id'] . "'");
+            $sql = mysql_query("UPDATE " . FORUM_THREADS_TABLE . " SET annonce = '" . $announce . "' WHERE id = '" . (int)$_REQUEST['thread_id'] . "'");
 
             $url = "index.php?file=Forum&page=viewtopic&forum_id=" . $_REQUEST['forum_id'] . "&thread_id=" . $_REQUEST['thread_id'];
             redirect($url, 2);
@@ -601,10 +601,10 @@ if ($visiteur >= $level_access && $level_access > -1)
             $administrator = 0;
         }
 
-        $lock = mysql_query("SELECT closed FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . $_REQUEST['forum_id'] . "' AND id = '" . $_REQUEST['thread_id'] . "'");
+        $lock = mysql_query("SELECT closed FROM " . FORUM_THREADS_TABLE . " WHERE forum_id = '" . (int)$_REQUEST['forum_id'] . "' AND id = '" . (int)$_REQUEST['thread_id'] . "'");
         list($closed) = mysql_fetch_array($lock);
 
-        $forum = mysql_query("SELECT FT.level FROM " . FORUM_TABLE . " AS FT INNER JOIN " . FORUM_THREADS_TABLE . " AS FTT ON FT.id = FTT.forum_id WHERE FTT.id = '" . $_REQUEST['thread_id'] . "'");
+        $forum = mysql_query("SELECT FT.level FROM " . FORUM_TABLE . " AS FT INNER JOIN " . FORUM_THREADS_TABLE . " AS FTT ON FT.id = FTT.forum_id WHERE FTT.id = '" . (int)$_REQUEST['thread_id'] . "'");
         list($level) = mysql_fetch_array($forum);
 
         if ($visiteur >= admin_mod("Forum") || $administrator == 1)
@@ -767,7 +767,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 			$upd = mysql_query("UPDATE " . USER_TABLE . " SET count = '" . $newcount . "' WHERE id = '" . $user[0] . "'");
 		}
 
-		$sql_page = mysql_query("SELECT id FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . $_REQUEST['thread_id'] . "'");
+		$sql_page = mysql_query("SELECT id FROM " . FORUM_MESSAGES_TABLE . " WHERE thread_id = '" . (int)$_REQUEST['thread_id'] . "'");
 		list($mess_id) = mysql_fetch_row($sql_page);
 		$nb_rep = mysql_num_rows($sql_page);
 
@@ -806,7 +806,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             exit();
         }
 
-        $forum = mysql_query("SELECT level, level_poll FROM " . FORUM_TABLE . " WHERE id = '" . $_REQUEST['forum_id'] . "'");
+        $forum = mysql_query("SELECT level, level_poll FROM " . FORUM_TABLE . " WHERE id = '" . (int)$_REQUEST['forum_id'] . "'");
         list($level, $level_poll) = mysql_fetch_array($forum);
 
         if ($level > $visiteur)
@@ -1100,7 +1100,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             $administrator = 0;
         }
 
-        $sql = mysql_query("SELECT file, auteur_id FROM " . FORUM_MESSAGES_TABLE . " WHERE id = '" . $_REQUEST['mess_id'] . "'");
+        $sql = mysql_query("SELECT file, auteur_id FROM " . FORUM_MESSAGES_TABLE . " WHERE id = '" . (int)$_REQUEST['mess_id'] . "'");
         list($filename, $auteur_id) = mysql_fetch_array($sql);
 
         if ($user && $auteur_id == $user[0] || $visiteur >= admin_mod("Forum") || $administrator == 1)
@@ -1112,7 +1112,7 @@ if ($visiteur >= $level_access && $level_access > -1)
                 @chmod ($path, 0775);
                 @unlink($path);
 
-                $upd = mysql_query("UPDATE " . FORUM_MESSAGES_TABLE . " SET file = '' WHERE id = '" . $_REQUEST['mess_id'] . "'");
+                $upd = mysql_query("UPDATE " . FORUM_MESSAGES_TABLE . " SET file = '' WHERE id = '" . (int)$_REQUEST['mess_id'] . "'");
                 echo "<br /><br /><div style=\"text-align: center;\">" . _FILEDELETED . "</div><br /><br />";
                 $url = "index.php?file=Forum&page=viewtopic&forum_id=" . $_REQUEST['forum_id'] . "&thread_id=" . $_REQUEST['thread_id'];
                 redirect($url, 2);
@@ -1134,10 +1134,10 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         opentable();
 
-        $sql = mysql_query("SELECT auteur_id, sondage FROM " . FORUM_THREADS_TABLE . " WHERE id = '" . $_REQUEST['thread_id'] . "'");
+        $sql = mysql_query("SELECT auteur_id, sondage FROM " . FORUM_THREADS_TABLE . " WHERE id = '" . (int)$_REQUEST['thread_id'] . "'");
         list($auteur_id, $sondage) = mysql_fetch_array($sql);
 
-        $sql_poll = mysql_query("SELECT level_poll FROM " . FORUM_TABLE . " WHERE id = '" . $_REQUEST['forum_id'] . "'");
+        $sql_poll = mysql_query("SELECT level_poll FROM " . FORUM_TABLE . " WHERE id = '" . (int)$_REQUEST['forum_id'] . "'");
         list($level_poll) = mysql_fetch_array($sql_poll);
 
         if ($user && $user[0] == $auteur_id && $sondage == 1 && $visiteur >= $level_poll)
@@ -1262,7 +1262,7 @@ if ($visiteur >= $level_access && $level_access > -1)
         {
             if ($visiteur > 0)
             {
-                $sql_poll = mysql_query("SELECT level_vote FROM " . FORUM_TABLE . " WHERE id = '" . $_REQUEST['forum_id'] . "'");
+                $sql_poll = mysql_query("SELECT level_vote FROM " . FORUM_TABLE . " WHERE id = '" . (int)$_REQUEST['forum_id'] . "'");
                 list($level_vote) = mysql_fetch_array($sql_poll);
 
                 if ($visiteur >= $level_vote)
@@ -1272,7 +1272,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
                     if ($check == 0)
                     {
-                        $upd = mysql_query("UPDATE " . FORUM_OPTIONS_TABLE . " SET option_vote = option_vote + 1 WHERE id = '" . $_REQUEST['voteid'] . "' AND poll_id = '" . $poll_id . "'");
+                        $upd = mysql_query("UPDATE " . FORUM_OPTIONS_TABLE . " SET option_vote = option_vote + 1 WHERE id = '" . (int)$_REQUEST['voteid'] . "' AND poll_id = '" . $poll_id . "'");
                         $insert = mysql_query("INSERT INTO " . FORUM_VOTE_TABLE . " ( `poll_id` , `auteur_id` , `auteur_ip` ) VALUES ( '" . $poll_id . "' , '" . $user[0] . "' , '" . $user_ip . "' )");
 
                         echo  "<br /><br /><div style=\"text-align: center;\">" . _VOTESUCCES . "</div><br /><br />";
@@ -1388,7 +1388,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             $administrator = 0;
         }
 
-        $sql = mysql_query("SELECT auteur_id FROM " . FORUM_THREADS_TABLE . " WHERE id = '" . $_REQUEST['thread_id'] . "'");
+        $sql = mysql_query("SELECT auteur_id FROM " . FORUM_THREADS_TABLE . " WHERE id = '" . (int)$_REQUEST['thread_id'] . "'");
         list($auteur_id) = mysql_fetch_array($sql);
 
         if ($user && $user[0] == $auteur_id || $visiteur >= admin_mod("Forum") || $administrator == 1)
@@ -1520,7 +1520,7 @@ if ($visiteur >= $level_access && $level_access > -1)
             $notify_texte = _NOTIFYISOFF;
             }
 
-        $upd = mysql_query("UPDATE " . FORUM_MESSAGES_TABLE . " SET emailnotify = '" . $notify . "' WHERE thread_id = '" . $_REQUEST['thread_id'] . "' AND auteur_id = '" . $user[0] . "'");
+        $upd = mysql_query("UPDATE " . FORUM_MESSAGES_TABLE . " SET emailnotify = '" . $notify . "' WHERE thread_id = '" . (int)$_REQUEST['thread_id'] . "' AND auteur_id = '" . $user[0] . "'");
 
         echo "<br /><br /><div style=\"text-align: center;\">" . $notify_texte . "</div><br /><br />";
 

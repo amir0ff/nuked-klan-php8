@@ -271,7 +271,7 @@ if ($visiteur >= $level_access && $level_access > -1)
 
                 for ($l = 1; $l <= $topicpages; $l++)
                 {
-                    $pagelinks .= " <a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . $_REQUEST['forum_id'] . "&amp;thread_id=" . $thread_id . "&amp;p=" . $l . "\">" . $l . "</a>";
+                    $pagelinks .= " <a href=\"index.php?file=Forum&amp;page=viewtopic&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "&amp;thread_id=" . $thread_id . "&amp;p=" . $l . "\">" . $l . "</a>";
                 }
 
                 $multipage2 = "<small>( " . _PAGES . ": " . $pagelinks . " )</small>";
@@ -352,12 +352,12 @@ if ($visiteur >= $level_access && $level_access > -1)
 
         if ($user)
         {
-            echo "<a href=\"index.php?file=Forum&amp;op=mark&amp;forum_id=" . $_REQUEST['forum_id'] . "\">" . _MARKSUBJECTREAD . "</a><br />\n";
+            echo "<a href=\"index.php?file=Forum&amp;op=mark&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "\">" . _MARKSUBJECTREAD . "</a><br />\n";
         }
 
         if ($level == 0 || $user[1] >= $level || $administrator == 1)
         {
-            echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . $_REQUEST['forum_id'] . "\">"
+            echo "<a href=\"index.php?file=Forum&amp;page=post&amp;forum_id=" . nkHtmlEntities($_REQUEST['forum_id'], ENT_QUOTES) . "\">"
             . "<img style=\"border: 0;\" src=\"modules/Forum/images/buttons/" . $language . "/newthread.gif\" alt=\"\" title=\"" . _NEWSTOPIC . "\" /></a>";
         }
 

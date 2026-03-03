@@ -309,7 +309,7 @@ if ($visiteur >= $level_admin && $level_admin > -1){
         . "<tr><td><b>" . _TYPE . " : </b><input type=\"text\" name=\"type\" maxlength=\"100\" size=\"20\" value=\"" . $type . "\" />&nbsp;&nbsp;<b>" . _STYLE . " : </b><input type=\"text\" name=\"style\" maxlength=\"100\" size=\"20\" value=\"" . $style . "\" /></td></tr>\n"
         . "<input type=\"hidden\" name=\"nbr\" value=\"" . $nbr . "\" />\n";
         
-        $sql3 = mysql_query("SELECT map FROM " . GAMES_TABLE . " WHERE id=".mysql_real_escape_string($_REQUEST['game']) ." ORDER BY name");
+        $sql3 = mysql_query("SELECT map FROM " . GAMES_TABLE . " WHERE id=".(int)$_REQUEST['game'] ." ORDER BY name");
         list($mapss) = mysql_fetch_array($sql3);
         $mapss = explode('|', $mapss);
         for($maps =1; $maps <= $nbr; $maps++){

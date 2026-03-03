@@ -331,7 +331,7 @@ if ($visiteur == 9)
     {
         global $nuked, $user, $b, $i, $u, $puce, $cid;
 
-        $sql = mysql_query("SELECT titre, content FROM " . BLOCK_TABLE . " WHERE bid = '" . $_REQUEST['bid'] . "'");
+        $sql = mysql_query("SELECT titre, content FROM " . BLOCK_TABLE . " WHERE bid = '" . (int)$_REQUEST['bid'] . "'");
         list($titre, $content) = mysql_fetch_array($sql);
 
         if ($_REQUEST['niveau'] != "")
@@ -374,7 +374,7 @@ if ($visiteur == 9)
 
         $content = mysql_real_escape_string(stripslashes($content));
 
-        $sql = mysql_query("UPDATE " . BLOCK_TABLE . " SET content = '" . $content . "' WHERE bid = '" . $_REQUEST['bid'] . "'");
+        $sql = mysql_query("UPDATE " . BLOCK_TABLE . " SET content = '" . $content . "' WHERE bid = '" . (int)$_REQUEST['bid'] . "'");
 		// Action
 		$texteaction = "". _ACTIONMODIFMENU .": ".$titre."";
 		$acdate = time();

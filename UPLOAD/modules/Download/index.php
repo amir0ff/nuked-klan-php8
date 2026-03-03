@@ -431,7 +431,7 @@ if ($visiteur >= $level_access && $level_access > -1) {
     {
         global $nuked, $theme, $visiteur, $bgcolor1, $bgcolor2, $bgcolor3;
 
-        if ($_REQUEST['op'] == "classe") {
+        if ($op_clean == "classe") {
 
             echo "<br /><div style=\"text-align: center;\"><big><b>" . _DOWNLOAD . "</b></big></div>\n"
                . "<div style=\"text-align: center;\"><br />\n"
@@ -483,23 +483,23 @@ if ($visiteur >= $level_access && $level_access > -1) {
                    . "<tr><td align=\"right\"><small>" . _ORDERBY . " : ";
 
                 if ($_REQUEST['orderby'] == "news") echo "<b>" . _DATE . "</b> | ";
-                else echo "<a href=\"index.php?file=Download&amp;op=" . $_REQUEST['op'] . "&amp;orderby=news&amp;cat=" . $cat . "\">" . _DATE . "</a> | ";
+                else echo "<a href=\"index.php?file=Download&amp;op=" . $op_clean . "&amp;orderby=news&amp;cat=" . $cat . "\">" . _DATE . "</a> | ";
 
                 if ($_REQUEST['orderby'] == "count") echo "<b>" . _TOPFILE . "</b> | ";
-                else echo"<a href=\"index.php?file=Download&amp;op=" . $_REQUEST['op'] . "&amp;orderby=count&amp;cat=" . $cat . "\">" . _TOPFILE . "</a> | ";
+                else echo"<a href=\"index.php?file=Download&amp;op=" . $op_clean . "&amp;orderby=count&amp;cat=" . $cat . "\">" . _TOPFILE . "</a> | ";
 
                 if ($_REQUEST['orderby'] == "name") echo "<b>" . _NAME . "</b> | ";
-                else echo "<a href=\"index.php?file=Download&amp;op=" . $_REQUEST['op'] . "&amp;orderby=name&amp;cat=" . $cat . "\">" . _NAME . "</a> | ";
+                else echo "<a href=\"index.php?file=Download&amp;op=" . $op_clean . "&amp;orderby=name&amp;cat=" . $cat . "\">" . _NAME . "</a> | ";
 
                 if ($_REQUEST['orderby'] == "note") echo "<b>" . _NOTE . "</b>";
-                else echo "<a href=\"index.php?file=Download&amp;op=" . $_REQUEST['op'] . "&amp;orderby=note&amp;cat=" . $cat . "\">" . _NOTE . "</a>";
+                else echo "<a href=\"index.php?file=Download&amp;op=" . $op_clean . "&amp;orderby=note&amp;cat=" . $cat . "\">" . _NOTE . "</a>";
 
                 echo "</small></td></tr></table>\n";
             }
 
             if ($nb_dl > $nb_download) {
                 echo "<table style=\"margin-left: auto;margin-right: auto;text-align: left;\" width=\"90%\"><tr><td>";
-                $url_page = "index.php?file=Download&amp;op=". $_REQUEST['op'] . "&amp;cat=" . $cat . "&amp;orderby=" . $_REQUEST['orderby'];
+                $url_page = "index.php?file=Download&amp;op=". $op_clean . "&amp;cat=" . $cat . "&amp;orderby=" . $_REQUEST['orderby'];
                 number($nb_dl, $nb_download, $url_page);
                 echo "</td></tr></table>\n";
             }
@@ -597,18 +597,18 @@ if ($visiteur >= $level_access && $level_access > -1) {
 
             if ($nb_dl > $nb_download) {
                 echo "<table style=\"margin-left: auto;margin-right: auto;text-align: left;\" width=\"90%\"><tr><td>";
-                $url_page = "index.php?file=Download&amp;op=". $_REQUEST['op'] . "&amp;cat=" . $cat . "&amp;orderby=" . $_REQUEST['orderby'];
+                $url_page = "index.php?file=Download&amp;op=". $op_clean . "&amp;cat=" . $cat . "&amp;orderby=" . $_REQUEST['orderby'];
                 number($nb_dl, $nb_download, $url_page);
                 echo "</td></tr></table>\n";
             }
         } else {
             if ($nb_subcat == 0 && $cat > 0) echo "<div style=\"text-align: center;\"><br />" . _NODOWNLOADS . "</div><br /><br />\n";
-            if ($_REQUEST['op'] == "classe") echo "<div style=\"text-align: center;\"><br />" . _NODOWNLOADINDB . "</div><br /><br />\n";
+            if ($op_clean == "classe") echo "<div style=\"text-align: center;\"><br />" . _NODOWNLOADINDB . "</div><br /><br />\n";
         }
 
     }
 
-    switch ($_REQUEST['op']) {
+    switch ($op_clean) {
         case "categorie":
             opentable();
             categorie($_REQUEST['cat']);

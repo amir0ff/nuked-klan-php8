@@ -64,10 +64,10 @@ if ($visiteur >= $level_admin && $level_admin > -1) {
     function modify_module_vote() {
         global $nuked, $user;
 
-        mysql_query("UPDATE ". VOTE_MODULES_TABLE ." SET active = '". $_REQUEST['download'] ."' WHERE module = 'download'");
-        mysql_query("UPDATE ". VOTE_MODULES_TABLE ." SET active = '". $_REQUEST['sections'] ."' WHERE module = 'sections'");
-        mysql_query("UPDATE ". VOTE_MODULES_TABLE ." SET active = '". $_REQUEST['links'] ."' WHERE module = 'links'");
-        mysql_query("UPDATE ". VOTE_MODULES_TABLE ." SET active = '". $_REQUEST['gallery'] ."' WHERE module = 'gallery'");
+        mysql_query("UPDATE ". VOTE_MODULES_TABLE ." SET active = '". (int)$_REQUEST['download'] ."' WHERE module = 'download'");
+        mysql_query("UPDATE ". VOTE_MODULES_TABLE ." SET active = '". (int)$_REQUEST['sections'] ."' WHERE module = 'sections'");
+        mysql_query("UPDATE ". VOTE_MODULES_TABLE ." SET active = '". (int)$_REQUEST['links'] ."' WHERE module = 'links'");
+        mysql_query("UPDATE ". VOTE_MODULES_TABLE ." SET active = '". (int)$_REQUEST['gallery'] ."' WHERE module = 'gallery'");
 
         // Action
         mysql_query(

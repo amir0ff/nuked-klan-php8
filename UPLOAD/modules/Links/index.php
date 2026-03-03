@@ -345,14 +345,15 @@ if ($visiteur >= $level_access && $level_access > -1){
             echo '<table style="margin: auto" width="90%">'."\n"
             . '<tr><td align="right"><small>' . _ORDERBY . ' : ';
 
+            $op_clean = nkHtmlEntities($_REQUEST['op'], ENT_QUOTES);
             if ($_REQUEST['orderby'] == 'news') echo '<b>' . _DATE . '</b> | ';
-            else echo '<a href="index.php?file=Links&amp;op=' . $_REQUEST['op'] . '&amp;orderby=news&amp;cat=' . $cat . '">' . _DATE . '</a> | ';
+            else echo '<a href="index.php?file=Links&amp;op=' . $op_clean . '&amp;orderby=news&amp;cat=' . $cat . '">' . _DATE . '</a> | ';
             if ($_REQUEST['orderby'] == 'count') echo '<b>' . _TOPFILE . '</b> | ';
-            else echo '<a href="index.php?file=Links&amp;op=' . $_REQUEST['op'] . '&amp;orderby=count&amp;cat=' . $cat . '">' . _TOPFILE . '</a> | ';
+            else echo '<a href="index.php?file=Links&amp;op=' . $op_clean . '&amp;orderby=count&amp;cat=' . $cat . '">' . _TOPFILE . '</a> | ';
             if ($_REQUEST['orderby'] == 'name') echo '<b>' . _NAME . '</b> | ';
-            else echo '<a href="index.php?file=Links&amp;op=' . $_REQUEST['op'] . '&amp;orderby=name&amp;cat=' . $cat . '">' . _NAME . '</a> | ';
+            else echo '<a href="index.php?file=Links&amp;op=' . $op_clean . '&amp;orderby=name&amp;cat=' . $cat . '">' . _NAME . '</a> | ';
             if ($_REQUEST['orderby'] == 'note') echo '<b>' . _NOTE . '</b>';
-            else echo '<a href="index.php?file=Links&amp;op=' . $_REQUEST['op'] . '&amp;orderby=note&amp;cat=' . $cat . '">' . _NOTE . '</a>';
+            else echo '<a href="index.php?file=Links&amp;op=' . $op_clean . '&amp;orderby=note&amp;cat=' . $cat . '">' . _NOTE . '</a>';
 
             echo '</small></td></tr></table>'."\n";
         }

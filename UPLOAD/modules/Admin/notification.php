@@ -48,7 +48,7 @@ if ($visiteur >= 2)
 		if ($visiteur == "9" AND $_REQUEST['id'] != "")
 		{
 			$_REQUEST['id'] = mysql_real_escape_string(stripslashes($_REQUEST['id']));
-			$sql3 = mysql_query("DELETE FROM ". $nuked['prefix'] ."_notification WHERE id = '" . $_REQUEST['id'] . "'");
+			$sql3 = mysql_query("DELETE FROM ". $nuked['prefix'] ."_notification WHERE id = '" . (int)$_REQUEST['id'] . "'");
 			// Action
 			$texteaction = "". _ACTIONDELNOT .".";
 			$acdate = time();
