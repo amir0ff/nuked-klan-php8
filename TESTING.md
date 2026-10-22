@@ -14,6 +14,20 @@ This checklist helps ensure systematic, thorough testing of all functionality af
 
 ---
 
+## Session regression checks
+
+Run the session regression test against an existing installation configuration:
+
+```bash
+php8.4 -d zend.exception_ignore_args=1 tests/session-regression.php /path/to/conf.inc.php
+```
+
+Use a PHP CLI version with MySQLi installed and permission to read the configuration. The database user must be allowed to create temporary tables. The test reads credentials without printing them and creates uniquely named, connection-local MySQL temporary tables; closing the connection removes those fixtures. Real users and session tables are not modified.
+
+Coverage includes repeated and unchanged session writes, escaped-data round trips, preserved session start times, existing authenticated cookies, activity timestamp updates, and fresh/renewed login sessions. PHP warnings fail the test. Full browser login, administration and concurrent-request testing remain separate checks.
+
+---
+
 ## Phase 1: Core Functionality ✅
 
 ### Homepage & Frontend

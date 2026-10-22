@@ -205,19 +205,18 @@ function session_write($id, $data){
     if (!defined('TMPSES_TABLE')) {
         return false; // Constants not loaded yet
     }
-    
+
     connect();
-    
+
     $id_escaped = mysql_real_escape_string($id);
     $data_escaped = mysql_real_escape_string($data);
 
-    $sql = mysql_query('INSERT INTO ' . TMPSES_TABLE . ' (session_id, session_start, session_vars) VALUES ("' . $id_escaped . '", ' . time() . ', \'' . $data_escaped . '\')');
+    // Existing sessions must update atomically, without a duplicate-key exception.
+    $query = 'INSERT INTO ' . TMPSES_TABLE . ' (session_id, session_start, session_vars)'
+        . ' VALUES ("' . $id_escaped . '", ' . time() . ', \'' . $data_escaped . '\')'
+        . ' ON DUPLICATE KEY UPDATE session_vars = \'' . $data_escaped . '\'';
 
-    if ($sql === false || mysql_affected_rows() == 0) {
-        $sql = mysql_query('UPDATE ' . TMPSES_TABLE . ' SET session_vars = \'' . $data_escaped . '\' WHERE session_id = "' . $id_escaped . '"');
-    }
-
-    return $sql !== false;
+    return mysql_query($query) !== false;
 }
 
 // DELETE PHP SESSION
